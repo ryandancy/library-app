@@ -1,0 +1,39 @@
+General
+-------
+
+TODO document more fully, with examples and stuff.
+TODO authentication? OAuth? HOW?
+
+Paths
+-----
+
+TODO Should XML be supported? YAML?
+TODO HATEOAS?
+
+Schemas
+-------
+
+TODO: proper ids, references
+TODO: should json-schema be extended with a permissions metadata keyword to
+specify the permissions needed to modify something?
+
+Admin schema:
+
+TODO: should permissions be an object (string -> bool) or an array (where
+presence indicates having the permission)? Probably object.
+TODO: more permissions.
+TODO: should there be a username and a name? Should name be renamed username?
+TODO: should createItem, createUser, createAdmin be renamed as they encompass
+modifying/deleting as well as creating the things?
+
+Patron schema:
+
+TODO: proper 'missing' picture.
+
+Item schema:
+
+TODO Is there a better way to say 'if status == out, then checkout is required,
+else not' etc?
+TODO copy marc+json schema into marc-in-json.json
+TODO more statuses? They're currently: out, in, missing, lost.
+TODO should item type be a field additional to MARC record?

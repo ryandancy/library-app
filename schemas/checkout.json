@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "id": "http://example.org/schemas/checkout.json",
+  "title": "Checkout",
+  "description": "An object describing the checking out of an item",
+  "type": "object",
+  "properties": {
+    "item": { "$ref": "item.json" },
+    "patron": { "$ref": "patron.json" },
+    "outDate": { "type": "string" },
+    "dueDate": { "type": "string" },
+    "onTime": { "type": "boolean" },
+    "late": { "type": "boolean" },
+    "out": { "type": "boolean" },
+    "returned": { "type": "boolean" }
+  },
+  "required": [
+    "item", "patron", "outDate", "dueDate", "onTime", "late", "out", "returned"
+  ]
+}
