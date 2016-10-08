@@ -11,3 +11,14 @@ description: >
 version: v0
 baseUri: /{version}
 mediaType: application/json
+types:
+  MARCRecord:
+    type: !include marc.json
+    displayName: MARC record
+    description: >
+      A *MA*chine *R*eadable *C*ataloging record, a format for storing
+      bibliographic information. More information about the MARC format can be
+      found at http://www.loc.gov/marc/bibliographic. MARC is serialized in JSON
+      here using the schema found at
+      https://rossfsinger.com/blog/2010/09/a-proposal-to-serialize-marc-in-json.
+    example: !include marc-example.json
