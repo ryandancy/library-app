@@ -12,6 +12,11 @@ version: v0
 baseUri: /{version}
 mediaType: application/json
 types:
+  char:
+    type: string
+    description: A single character (i.e. a string with exactly one character).
+    minLength: 1
+    maxLength: 1
   MARCLeader:
     type: string
     description: >
@@ -35,14 +40,8 @@ types:
       A variable field in a MARC record. Variable-length, can contain multiple
       subfields.
     properties:
-      ind1: # TODO extract this type into a "char" type/resourceType
-        type: string
-        minLength: 1
-        maxLength: 1
-      ind2:
-        type: string
-        minLength: 1
-        maxLength: 1
+      ind1: char
+      ind2: char
       subfields: MARCControlOrSubField[]
     additionalProperties: false
   MARCField:
