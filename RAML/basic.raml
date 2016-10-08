@@ -1,0 +1,13 @@
+#%RAML 1.0 Library
+
+# TODO: should this file be renamed utils.raml? util.raml?
+
+usage: |
+  Contains basic types for utility usage in other files, such as a character
+  type.
+types:
+  char:
+    type: string
+    description: A single character (i.e. a string with exactly one character).
+    minLength: 1
+    maxLength: 1

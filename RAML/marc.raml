@@ -1,0 +1,85 @@
+#%RAML 1.0 Library
+
+# All the MARC type format stuff is from https://rossfsinger.com/blog/2010/09
+# /a-proposal-to-serialize-marc-in-json/
+
+usage: |
+  Contains types for using [MARC](http://www.loc.gov/marc/bibliographic/) within
+  RAML. Uses a translation of [MARC-in-JSON](https://rossfsinger.com/blog/2010/
+  09/a-proposal-to-serialize-marc-in-json/).
+uses:
+  basic: basic.raml
+types:
+  MARCLeader:
+    type: string
+    description: >
+      The leader field of a MARC record. See
+      https://www.loc.gov/marc/bibliographic/bdleader.html for details.
+    minLength: 24
+    maxLength: 24
+    examples:
+      music: '01471cjm a2200349 a 4500'
+      book: '01297nam a2200368 a 4500'
+  MARCControlField:
+    type: object
+    description: >
+      A control field in a MARC record. Provides information for the processing
+      of the record.
+    properties:
+      /^00\d$/: string
+    minProperties: 1
+    maxProperties: 1
+    example:
+      '001': '5674874'
+  MARCSubfield:
+    type: object
+    description: >
+      A subfield of a variable field in a MARC record. Segments information part
+      of a variable field.
+    properties:
+      /^.$/: string
+    minProperties: 1
+    maxProperties: 1
+    example:
+      a: 'Columbia CS 8786'
+  MARCVariableField:
+    type: object
+    description: >
+      A variable field in a MARC record. Variable-length, can contain multiple
+      subfields.
+    properties:
+      ind1: basic.char
+      ind2: basic.char
+      subfields: MARCSubfield[]
+    additionalProperties: false
+    examples:
+      simple:
+        '010':
+          subfields:
+            - a: '   93707283 '
+          ind1: ' '
+          ind2: ' '
+      complex:
+        '245':
+          subfields:
+            - a: "The freewheelin' Bob Dylan"
+            - h: '[sound recording].'
+          ind1: '1'
+          ind2: '4'
+  MARCField:
+    type: MARCControlField | MARCVariableField
+    description: >
+      A MARC field, either control or variable.
+  MARCRecord:
+    type: object
+    description: >
+      A *MA*chine *R*eadable *C*ataloging record, a format for storing
+      bibliographic information. More information about the MARC format can be
+      found at http://www.loc.gov/marc/bibliographic. MARC is serialized in JSON
+      here using a translation of the schema found at
+      https://rossfsinger.com/blog/2010/09/a-proposal-to-serialize-marc-in-json.
+    properties:
+      leader: MARCLeader
+      fields: MARCField[]
+    additionalProperties: false
+    examples: !include marc-example.raml
