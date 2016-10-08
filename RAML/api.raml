@@ -29,18 +29,28 @@ types:
     examples:
       music: '01471cjm a2200349 a 4500'
       book: '01297nam a2200368 a 4500'
-  MARCControlOrSubField:
+  MARCControlField:
     type: object
     description: >
-      A control field or subfield in a MARC record. Provides information for the
-      processing of the record, or is part of a variable record.
+      A control field in a MARC record. Provides information for the processing
+      of the record.
     properties:
-      //: string
-    examples:
-      controlField:
-        '001': '5674874'
-      subfield:
-        a: 'Columbia CS 8786'
+      /^00\d$/: string
+    minProperties: 1
+    maxProperties: 1
+    example:
+      '001': '5674874'
+  MARCSubfield:
+    type: object
+    description: >
+      A subfield of a variable field in a MARC record. Segments information part
+      of a variable field.
+    properties:
+      /^.$/: string
+    minProperties: 1
+    maxProperties: 1
+    example:
+      a: 'Columbia CS 8786'
   MARCVariableField:
     type: object
     description: >
@@ -49,7 +59,7 @@ types:
     properties:
       ind1: char
       ind2: char
-      subfields: MARCControlOrSubField[]
+      subfields: MARCSubfield[]
     additionalProperties: false
     examples:
       simple:
@@ -66,7 +76,7 @@ types:
           ind1: '1'
           ind2: '4'
   MARCField:
-    type: MARCControlOrSubField | MARCVariableField
+    type: MARCControlField | MARCVariableField
     description: >
       A MARC field, either control or variable.
   MARCRecord:
@@ -75,7 +85,7 @@ types:
       A *MA*chine *R*eadable *C*ataloging record, a format for storing
       bibliographic information. More information about the MARC format can be
       found at http://www.loc.gov/marc/bibliographic. MARC is serialized in JSON
-      here using the schema found at
+      here using a translation of the schema found at
       https://rossfsinger.com/blog/2010/09/a-proposal-to-serialize-marc-in-json.
     properties:
       leader: MARCLeader
