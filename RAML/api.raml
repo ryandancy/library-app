@@ -12,13 +12,53 @@ version: v0
 baseUri: /{version}
 mediaType: application/json
 types:
+  MARCLeader:
+    type: string
+    description: >
+      The leader field of a MARC record. See
+      https://www.loc.gov/marc/bibliographic/bdleader.html for details.
+    minLength: 24
+    maxLength: 24
+    examples:
+      music: "01471cjm a2200349 a 4500"
+      book: "01297nam a2200368 a 4500"
+  MARCControlOrSubField:
+    type: object
+    description: >
+      A control field or subfield in a MARC record. Provides information for the
+      processing of the record, or is part of a variable record.
+    properties:
+      //: string
+  MARCVariableField:
+    type: object
+    description: >
+      A variable field in a MARC record. Variable-length, can contain multiple
+      subfields.
+    properties:
+      ind1: # TODO extract this type into a "char" type/resourceType
+        type: string
+        minLength: 1
+        maxLength: 1
+      ind2:
+        type: string
+        minLength: 1
+        maxLength: 1
+      subfields: MARCControlOrSubField[]
+    additionalProperties: false
+  MARCField:
+    type: MARCControlOrSubField | MARCVariableField
+    description: >
+      A MARC field, either control or variable.
   MARCRecord:
-    type: !include marc.json
-    displayName: MARC record
+    type: object
     description: >
       A *MA*chine *R*eadable *C*ataloging record, a format for storing
       bibliographic information. More information about the MARC format can be
       found at http://www.loc.gov/marc/bibliographic. MARC is serialized in JSON
       here using the schema found at
       https://rossfsinger.com/blog/2010/09/a-proposal-to-serialize-marc-in-json.
+    properties:
+      leader?: MARCLeader
+      fields?: MARCFields[]
+    additionalProperties: false
     example: !include marc-example.json
