@@ -73,3 +73,41 @@ types:
         default: http://localhost:8080/missing-pic.png # TODO proper missing pic
       checkouts: Checkout[]
     additionalProperties: false
+  ReadWritePermission:
+    type: object
+    description: >
+      An object representing an admin's permissions to read or write something.
+    properties:
+      read: boolean
+      write: boolean
+    additionalProperties: false
+  Admin:
+    type: object
+    description: >
+      An object representing an admin in the library. This could be a librarian,
+      IT person, volunteer, or anyone who needs read or write access to the
+      library. An admin has a set of permissions that correspond with OAuth
+      scopes.
+    # TODO permissions will be duplicated here and in the security schemes --
+    # combine somehow?
+    # TODO should signOut/signIn (a) be capitalized and (b) be somehow put under
+    # the checkout object? Implement with separate CRUD permissions?
+    properties:
+      item: ReadWritePermission
+      patron: ReadWritePermission
+      checkout: ReadWritePermission
+      signOut:
+        type: boolean
+        description: >
+          An admin with this permission can check out an item on behalf of a
+          Patron. Note that this permission is different than checkout/write, as
+          that permission also implies the ability to update/delete existing
+          checkouts.
+      signIn:
+        type: boolean
+        description: >
+          An admin with this permission can check in an item on behalf of a
+          Patron. Note that this permission is different than checkout/write, as
+          that permission also implies the ability to update/delete existing
+          checkouts.
+    additionalProperties: false
