@@ -38,32 +38,37 @@ types:
           - missing
           - lost
       checkout?: Checkout # Not present if in Checkout or not applicable
+    additionalProperties: false
   Checkout:
     type: object
     description: >
       An object representing a checkout of an item. Contains information
       relevant only to checking out, but not to the item, hence the separate
       object.
-    item?: Item # Not present if in Item; TODO show this
-    patron?: Patron # Not present if in Patron
-    outDate: date-only
-    dueDate: date-only
-    numRenewals: integer
-    status:
-      type: string
-      enum:
-        - onTime
-        - late
-        - returned
-        - lost
+    properties:
+      item?: Item # Not present if in Item; TODO show this
+      patron?: Patron # Not present if in Patron
+      outDate: date-only
+      dueDate: date-only
+      numRenewals: integer
+      status:
+        type: string
+        enum:
+          - onTime
+          - late
+          - returned
+          - lost
+    additionalProperties: false
   Patron:
     type: object
     description: >
       An object representing a patron of the library. Patrons may have items
       checked out in their name.
-    name: string
-    pic:
-      # TODO Can the media type of image/whatever be noted?
-      type: basic.uri
-      default: http://example.org/missing-pic.png # TODO proper missing pic
-    checkouts: Checkout[]
+    properties:
+      name: string
+      pic:
+        # TODO Can the media type of image/whatever be noted?
+        type: basic.uri
+        default: http://example.org/missing-pic.png # TODO proper missing pic
+      checkouts: Checkout[]
+    additionalProperties: false
