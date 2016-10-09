@@ -13,3 +13,27 @@ mediaType: application/json
 uses:
   marc: marc.raml
 types:
+  Item:
+    type: object
+    description: >
+      An object representing an item in the system. Items can be checked out and
+      in, and can be any kind of item, like books, maps, audio files, etc. All
+      bibliographic information is specified through MARC records. Anything not
+      in the `marc` property is information additional to MARC.
+    # TODO Should there be some properties duplicating info in the MARC record
+    # for easier access?
+    # TODO Should the if-then nature of the checkout property be expressed more?
+    properties:
+      marc: marc.MARCRecord
+      created: datetime
+      barcode:
+        type: string
+        pattern: ^\d+$
+      status:
+        type: string
+        enum:
+          - in
+          - out
+          - missing
+          - lost
+      checkout?: Checkout # TODO Checkout object
