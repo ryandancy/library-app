@@ -2,6 +2,7 @@
 
 # TODO: XML support? YAML support?
 # TODO: security schemes
+# TODO: use something other than localhost?
 
 title: Library App
 description: >
@@ -69,6 +70,6 @@ types:
       pic:
         # TODO Can the media type of image/whatever be noted?
         type: basic.uri
-        default: http://example.org/missing-pic.png # TODO proper missing pic
+        default: http://localhost:8080/missing-pic.png # TODO proper missing pic
       checkouts: Checkout[]
     additionalProperties: false
