@@ -1,8 +1,8 @@
 #%RAML 1.0
 
 # TODO: XML support? YAML support?
-# TODO: security schemes
 # TODO: use something other than localhost?
+# TODO: HTTPS
 
 title: Library App
 description: >
@@ -14,6 +14,49 @@ mediaType: application/json
 uses:
   marc: marc.raml
   basic: basic.raml
+securitySchemes:
+  oauth2:
+    type: OAuth 2.0
+    description: >
+      OAuth 2.0 is used for all requests that require authentication.
+    describedBy:
+      headers:
+        Authorization:
+          description: >
+            Used to send a valid OAuth 2.0 access token. Incompatible with the
+            "access_token" query parameter.
+          type: string
+      queryParameters:
+        access_token:
+          description: >
+            Used to send a valid OAuth 2.0 access token. Incompatible with the
+            "Authorization" HTTP header.
+          type: string
+      responses:
+        401: # Unauthorized
+          description: >
+            The client is not authorized to perform the request (i.e., not
+            logged in). Perform authentication, then try again.
+        403:
+          description: >
+            The client is logged in, but does not have the requisite permissions
+            to perform the request.
+    settings:
+      authorizationUri: http://localhost:8080/{version}/oauth2/authorize
+      accessTokenUri: http://localhost:8080/{version}/oauth2/token
+      authorizationGrants:
+        - authorization_code # TODO implicit too?
+    scopes:
+      - item.read
+      - item.write
+      - patron.read
+      - patron.write
+      - checkout.read
+      - checkout.write
+      - signOut
+      - signIn
+      - admin.read
+      - admin.write
 types:
   Item:
     type: object
