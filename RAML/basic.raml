@@ -11,3 +11,12 @@ types:
     description: A single character (i.e. a string with exactly one character).
     minLength: 1
     maxLength: 1
+  uri:
+    type: string
+    description: >
+      A string that looks like a URI. Regex found [here](http://snipplr.com/view
+      /6889/regular-expressions-for-uri-validationparsing/), then modified to be
+      case-insensitive.
+    # TODO Can this be split into multiple lines? Does the regex engine support
+    # backreferences?
+    pattern: ^(\w[\w\d+.-]*):(?:\/\/((?:(?=((?:[\w\d-._~!$&'()*+,;=:]|%[\da-fA-F]{2})*))(\3)@)?(?=(\[[\da-fA-F:.]{2,}\]|(?:[\w\d-._~!$&'()*+,;=]|%[\da-fA-F]{2})*))\5(?::(?=(\d*))\6)?)(\/(?=((?:[\w\d-._~!$&'()*+,;=:@\/]|%[\da-fA-F]{2})*))\8)?|(\/?(?!\/)(?=((?:[\w\d-._~!$&'()*+,;=:@\/]|%[\da-fA-F]{2})*))\10)?)(?:\?(?=((?:[\w\d-._~!$&'()*+,;=:@\/?]|%[\da-fA-F]{2})*))\11)?(?:#(?=((?:[\w\d-._~!$&'()*+,;=:@\/?]|%[\da-fA-F]{2})*))\12)?$
