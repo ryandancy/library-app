@@ -46,6 +46,28 @@ securitySchemes:
       accessTokenUri: http://localhost:8080/{version}/oauth2/token
       authorizationGrants:
         - authorization_code # TODO any others?
+annotationTypes:
+  permissions:
+    description: >
+      Used to show what permissions an admin must have to use the resource or
+      method. If applied on a resource, the permissions are for all methods on
+      the resource; if applied to a method directly, the permissions are for
+      that specific method only.
+    enum:
+      - nil
+      - item.read
+      - item.write
+      - patron.read
+      - patron.write
+      - checkout.read
+      - checkout.write
+      - admin.read
+      - admin.write
+      - signIn
+      - signOut
+    allowedTargets:
+      - Resource
+      - Method
 types:
   Item:
     type: object
@@ -132,6 +154,8 @@ types:
       scopes.
     # TODO should signOut/signIn (a) be capitalized and (b) be somehow put under
     # the checkout object? Implement with separate CRUD permissions?
+    # TODO permissions are duplicated here and in the permissions annotations --
+    # somehow merge?
     properties:
       item: ReadWritePermission
       patron: ReadWritePermission
