@@ -37,7 +37,7 @@ securitySchemes:
           description: >
             The client is not authorized to perform the request (i.e., not
             logged in). Perform authentication, then try again.
-        403:
+        403: # Forbidden
           description: >
             The client is logged in, but does not have the requisite permissions
             to perform the request.
@@ -45,18 +45,7 @@ securitySchemes:
       authorizationUri: http://localhost:8080/{version}/oauth2/authorize
       accessTokenUri: http://localhost:8080/{version}/oauth2/token
       authorizationGrants:
-        - authorization_code # TODO implicit too?
-    scopes:
-      - item.read
-      - item.write
-      - patron.read
-      - patron.write
-      - checkout.read
-      - checkout.write
-      - signOut
-      - signIn
-      - admin.read
-      - admin.write
+        - authorization_code # TODO any others?
 types:
   Item:
     type: object
@@ -81,7 +70,11 @@ types:
           - out
           - missing
           - lost
-      checkout?: Checkout # Not present if in Checkout or not applicable
+      checkout?:
+        type: Checkout
+        description: >
+          Not present if this Item is embedded in a Checkout, or if a checkout
+          is not applicable (e.g. status is in).
     additionalProperties: false
   Checkout:
     type: object
@@ -90,8 +83,14 @@ types:
       relevant only to checking out, but not to the item, hence the separate
       object.
     properties:
-      item?: Item # Not present if in Item; TODO show this
-      patron?: Patron # Not present if in Patron
+      item?:
+        type: Item
+        description: >
+          Not present if this Checkout is embedded in an Item.
+      patron?:
+        type: Patron
+        description: >
+          Not present if this Checkout is embedded in a Patron.
       outDate: date-only
       dueDate: date-only
       numRenewals: integer
@@ -131,8 +130,6 @@ types:
       IT person, volunteer, or anyone who needs read or write access to the
       library. An admin has a set of permissions that correspond with OAuth
       scopes.
-    # TODO permissions will be duplicated here and in the security schemes --
-    # combine somehow?
     # TODO should signOut/signIn (a) be capitalized and (b) be somehow put under
     # the checkout object? Implement with separate CRUD permissions?
     properties:

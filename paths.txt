@@ -157,3 +157,9 @@ Partially update the checkout data. Return new checkout data.
 DELETE /checkouts/:checkoutid
 
 Delete the checkout. Return nothing.
+
+-----------------------------
+
+GET /me
+
+Return the admin you're currently logged in as.
