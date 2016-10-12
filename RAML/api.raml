@@ -47,6 +47,8 @@ securitySchemes:
       accessTokenUri: http://localhost:8080/{version}/oauth2/token
       authorizationGrants:
         - authorization_code # TODO any others?
+securedBy:
+  - oauth2
 annotationTypes:
   permissions:
     description: >
