@@ -3,6 +3,7 @@
 # TODO: XML support? YAML support?
 # TODO: use something other than localhost?
 # TODO: HTTPS
+# TODO: examples for ALL the things!
 
 title: Library App
 description: >
@@ -176,3 +177,63 @@ types:
           checkouts.
       admin: ReadWritePermission
     additionalProperties: false
+resourceTypes:
+  collection:
+    usage: Apply on a collection for standard `GET` and `POST` methods.
+    get:
+      description: >
+        Get a list of all <<resourcePathName | !pluralize>>. Can be sorted and
+        supports pagination.
+      (permissions): <<resourcePathName | !lowercase | !singularize>>.read
+      queryParameters:
+        # TODO extract sortable (?), pageable trait(s)?
+        page:
+          description: The page to retrieve, zero-indexed.
+          type: integer
+          default: 0
+        per_page:
+          description: >
+            How many <<resourcePathName | !pluralize>> to include in the list in
+            the response.
+          type: integer
+          minimum: 1
+          maximum: 200
+          default: 30
+        sort_by:
+          description: >
+            What to sort the returned <<resourcePathName | !pluralize>> list by.
+          enum: # TODO any more sort_by values?
+            - created
+            - name
+          default: created
+        direction:
+          order: >
+            The order in which to sort the <<resoucePathName | !pluralize>> --
+            either ascending or descending.
+          enum:
+            - asc
+            - desc
+          default: asc
+      responses:
+        200:
+          body:
+            properties:
+              items: <<resourcePathName | !uppercamelcase | !singularize>>[]
+              hasMore: boolean
+              maxItems: integer
+              remainingItems: integer
+        422: # Unprocessable Entity - semantic error
+          properties:
+            msg: string
+    post:
+      description: Create a new <<resourcePathName | !singularize>>.
+      (permissions): <<resourcePathName | !lowercase | !singularize>>.write
+      body:
+        type: <<resourcePathName | !uppercamelcase | !singularize>>
+      responses:
+        201:
+          headers:
+            Location: string
+        400:
+          properties:
+            msg: string
