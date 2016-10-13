@@ -13,172 +13,13 @@ version: v0
 baseUri: /{version}
 mediaType: application/json
 uses:
-  marc: marc.raml
-  basic: basic.raml
+  types: types.raml
 securitySchemes:
-  oauth2:
-    type: OAuth 2.0
-    description: >
-      OAuth 2.0 is used for all requests that require authentication.
-    describedBy:
-      headers:
-        Authorization:
-          description: >
-            Used to send a valid OAuth 2.0 access token. Incompatible with the
-            "access_token" query parameter.
-          type: string
-      queryParameters:
-        access_token:
-          description: >
-            Used to send a valid OAuth 2.0 access token. Incompatible with the
-            "Authorization" HTTP header.
-          type: string
-      responses:
-        401: # Unauthorized
-          description: >
-            The client is not authorized to perform the request (i.e., not
-            logged in). Perform authentication, then try again.
-        403: # Forbidden
-          description: >
-            The client is logged in, but does not have the requisite permissions
-            to perform the request.
-    settings:
-      authorizationUri: http://localhost:8080/{version}/oauth2/authorize
-      accessTokenUri: http://localhost:8080/{version}/oauth2/token
-      authorizationGrants:
-        - authorization_code # TODO any others?
+  oauth2: !include security.raml
 securedBy:
   - oauth2
 annotationTypes:
-  permissions:
-    description: >
-      Used to show what permissions an admin must have to use the resource or
-      method. If applied on a resource, the permissions are for all methods on
-      the resource; if applied to a method directly, the permissions are for
-      that specific method only.
-    enum:
-      - nil
-      - item.read
-      - item.write
-      - patron.read
-      - patron.write
-      - checkout.read
-      - checkout.write
-      - admin.read
-      - admin.write
-      - signIn
-      - signOut
-    allowedTargets:
-      - Resource
-      - Method
-types:
-  Item:
-    type: object
-    description: >
-      An object representing an item in the system. Items can be checked out and
-      in, and can be any kind of item, like books, maps, audio files, etc. All
-      bibliographic information is specified through MARC records. Anything not
-      in the `marc` property is information additional to MARC.
-    # TODO Should there be some properties duplicating info in the MARC record
-    # for easier access?
-    # TODO Should the if-then nature of the checkout property be expressed more?
-    properties:
-      marc: marc.MARCRecord
-      created: datetime
-      barcode:
-        type: string
-        pattern: ^\d+$
-      status:
-        type: string
-        enum:
-          - in
-          - out
-          - missing
-          - lost
-      checkout?:
-        type: Checkout
-        description: >
-          Not present if this Item is embedded in a Checkout, or if a checkout
-          is not applicable (e.g. status is in).
-    additionalProperties: false
-  Checkout:
-    type: object
-    description: >
-      An object representing a checkout of an item. Contains information
-      relevant only to checking out, but not to the item, hence the separate
-      object.
-    properties:
-      item?:
-        type: Item
-        description: >
-          Not present if this Checkout is embedded in an Item.
-      patron?:
-        type: Patron
-        description: >
-          Not present if this Checkout is embedded in a Patron.
-      outDate: date-only
-      dueDate: date-only
-      numRenewals: integer
-      status:
-        type: string
-        enum:
-          - onTime
-          - late
-          - returned
-          - lost
-    additionalProperties: false
-  Patron:
-    type: object
-    description: >
-      An object representing a patron of the library. Patrons may have items
-      checked out in their name.
-    properties:
-      name: string
-      pic:
-        # TODO Can the media type of image/whatever be noted?
-        type: basic.uri
-        default: http://localhost:8080/missing-pic.png # TODO proper missing pic
-      checkouts: Checkout[]
-    additionalProperties: false
-  ReadWritePermission:
-    type: object
-    description: >
-      An object representing an admin's permissions to read or write something.
-    properties:
-      read: boolean
-      write: boolean
-    additionalProperties: false
-  Admin:
-    type: object
-    description: >
-      An object representing an admin in the library. This could be a librarian,
-      IT person, volunteer, or anyone who needs read or write access to the
-      library. An admin has a set of permissions that correspond with OAuth
-      scopes.
-    # TODO should signOut/signIn (a) be capitalized and (b) be somehow put under
-    # the checkout object? Implement with separate CRUD permissions?
-    # TODO permissions are duplicated here and in the permissions annotations --
-    # somehow merge?
-    properties:
-      item: ReadWritePermission
-      patron: ReadWritePermission
-      checkout: ReadWritePermission
-      signOut:
-        type: boolean
-        description: >
-          An admin with this permission can check out an item on behalf of a
-          Patron. Note that this permission is different than checkout/write, as
-          that permission also implies the ability to update/delete existing
-          checkouts.
-      signIn:
-        type: boolean
-        description: >
-          An admin with this permission can check in an item on behalf of a
-          Patron. Note that this permission is different than checkout/write, as
-          that permission also implies the ability to update/delete existing
-          checkouts.
-      admin: ReadWritePermission
-    additionalProperties: false
+  permissions: !include permissions.raml
 resourceTypes:
   collection:
     usage: Apply on a collection for standard `GET` and `POST` methods.
@@ -220,7 +61,7 @@ resourceTypes:
         200:
           body:
             properties:
-              items: <<resourcePathName | !uppercamelcase | !singularize>>[]
+              items: types.<<resourcePathName|!uppercamelcase|!singularize>>[]
               hasMore: boolean
               maxItems: integer
               remainingItems: integer
@@ -231,7 +72,7 @@ resourceTypes:
       description: Create a new <<resourcePathName | !singularize>>.
       (permissions): <<resourcePathName | !lowercase | !singularize>>.write
       body:
-        type: <<resourcePathName | !uppercamelcase | !singularize>>
+        type: types.<<resourcePathName | !uppercamelcase | !singularize>>
       responses:
         201:
           headers:
