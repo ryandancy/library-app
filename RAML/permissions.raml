@@ -1,23 +1,22 @@
 #%RAML 1.0 AnnotationType
 
-permissions:
-  description: >
-    Used to show what permissions an admin must have to use the resource or
-    method. If applied on a resource, the permissions are for all methods on
-    the resource; if applied to a method directly, the permissions are for
-    that specific method only.
-  enum:
-    - nil
-    - item.read
-    - item.write
-    - patron.read
-    - patron.write
-    - checkout.read
-    - checkout.write
-    - admin.read
-    - admin.write
-    - signIn
-    - signOut
-  allowedTargets:
-    - Resource
-    - Method
+description: >
+  Used to show what permissions an admin must have to use the resource or
+  method. If applied on a resource, the permissions are for all methods on
+  the resource; if applied to a method directly, the permissions are for
+  that specific method only.
+enum:
+  - nil
+  - item.read
+  - item.write
+  - patron.read
+  - patron.write
+  - checkout.read
+  - checkout.write
+  - admin.read
+  - admin.write
+  - signIn
+  - signOut
+allowedTargets:
+  - Resource
+  - Method
