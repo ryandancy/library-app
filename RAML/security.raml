@@ -10,21 +10,33 @@ describedBy:
         Used to send a valid OAuth 2.0 access token. Incompatible with the
         "access_token" query parameter.
       type: string
+      example: Bearer cn389ncoiwuencr
   queryParameters:
     access_token:
       description: >
         Used to send a valid OAuth 2.0 access token. Incompatible with the
         "Authorization" HTTP header.
       type: string
+      example: cn389ncoiwuencr
   responses:
-    401: # Unauthorized
+    401:
       description: >
         The client is not authorized to perform the request (i.e., not
         logged in). Perform authentication, then try again.
-    403: # Forbidden
+      body:
+        msg: string
+      example:
+        msg: Unauthorized request. Perform authentication, then try again.
+    403:
       description: >
         The client is logged in, but does not have the requisite permissions
         to perform the request.
+      body:
+        msg: string
+      example:
+        msg: >
+          The client does not have the requisite permissions to perform the
+          request. Contact an administrator to obtain access.
 settings:
   authorizationUri: http://localhost:8080/{version}/oauth2/authorize
   accessTokenUri: http://localhost:8080/{version}/oauth2/token

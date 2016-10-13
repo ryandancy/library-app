@@ -11,6 +11,11 @@ types:
     description: A single character (i.e. a string with exactly one character).
     minLength: 1
     maxLength: 1
+    examples:
+      alphabetic: 'a'
+      numeric: '5'
+      symbol: '%'
+      unicode: '♫'
   uri:
     type: string
     description: >
@@ -20,3 +25,6 @@ types:
     # TODO Can this be split into multiple lines? Does the regex engine support
     # backreferences?
     pattern: ^(\w[\w\d+.-]*):(?:\/\/((?:(?=((?:[\w\d-._~!$&'()*+,;=:]|%[\da-fA-F]{2})*))(\3)@)?(?=(\[[\da-fA-F:.]{2,}\]|(?:[\w\d-._~!$&'()*+,;=]|%[\da-fA-F]{2})*))\5(?::(?=(\d*))\6)?)(\/(?=((?:[\w\d-._~!$&'()*+,;=:@\/]|%[\da-fA-F]{2})*))\8)?|(\/?(?!\/)(?=((?:[\w\d-._~!$&'()*+,;=:@\/]|%[\da-fA-F]{2})*))\10)?)(?:\?(?=((?:[\w\d-._~!$&'()*+,;=:@\/?]|%[\da-fA-F]{2})*))\11)?(?:#(?=((?:[\w\d-._~!$&'()*+,;=:@\/?]|%[\da-fA-F]{2})*))\12)?$
+    examples:
+      simple: http://foo.com
+      complex: ftp:a@b:127.0.0.1:8080/pATh/tO/f0o?foo=bar,baz&a=b#fragment

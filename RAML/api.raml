@@ -3,7 +3,6 @@
 # TODO: XML support? YAML support?
 # TODO: use something other than localhost?
 # TODO: HTTPS
-# TODO: examples for ALL the things!
 
 title: Library App
 description: >
@@ -34,6 +33,7 @@ resourceTypes:
           description: The page to retrieve, zero-indexed.
           type: integer
           default: 0
+          example: 3
         per_page:
           description: >
             How many <<resourcePathName | !pluralize>> to include in the list in
@@ -42,6 +42,7 @@ resourceTypes:
           minimum: 1
           maximum: 200
           default: 30
+          example: 50
         sort_by:
           description: >
             What to sort the returned <<resourcePathName | !pluralize>> list by.
