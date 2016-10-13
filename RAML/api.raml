@@ -12,6 +12,7 @@ version: v0
 baseUri: /{version}
 mediaType: application/json
 uses:
+  basic: basic.raml
   types: types.raml
 securitySchemes:
   oauth2: !include security.raml
@@ -31,7 +32,7 @@ resourceTypes:
         # TODO extract sortable (?), pageable trait(s)?
         page:
           description: The page to retrieve, zero-indexed.
-          type: integer
+          type: basic.natural
           default: 0
           example: 3
         per_page:
