@@ -3,6 +3,7 @@
 # TODO: XML support? YAML support?
 # TODO: use something other than localhost?
 # TODO: HTTPS
+# TODO: more responses (4xx, 5xx)
 
 title: Library App
 description: >
@@ -82,3 +83,37 @@ resourceTypes:
         400:
           properties:
             msg: string
+  collectionItem:
+    usage: >
+      Apply to a subresource of a collection (i.e. an individual item) for
+      standard `GET`, `PUT`, `PATCH`, and `DELETE` methods.
+    get:
+      description: Get the <<resourcePathName | !singularize>> with this ID.
+      (permissions): <<resourcePathName | !lowercase | !singularize>>.read
+      responses:
+        200:
+          body:
+            type: types.<<resourcePathName | !uppercamelcase | !singularize>>
+    put:
+      description: Update the <<resourcePathName | !singularize>> with this ID.
+      (permissions): <<resourcePathName | !lowercase | !singularize>>.write
+      body:
+        type: types.<<resourcePathName | !uppercamelcase | !singularize>>
+      responses:
+        204:
+    patch:
+      description: >
+        Partially update the <<resourcePathName | !singularize>> with this ID.
+      (permissions): <<resourcePathName | !lowercase | !singularize>>.write
+      body:
+        application/merge-patch+json:
+      responses:
+        200:
+          body:
+            type: types.<<resourcePathName | !uppercamelcase | !singularize>>
+    delete:
+      description: >
+        Delete the <<resourcePathName | !singularize>> with this ID.
+      (permissions): <<resourcePathName | !lowercase | !singularize>>.write
+      reponses:
+        204:
