@@ -117,3 +117,19 @@ resourceTypes:
       (permissions): <<resourcePathName | !lowercase | !singularize>>.write
       reponses:
         204:
+/admins:
+  type: collection
+  /{id}:
+    type: collectionItem
+/patrons:
+  type: collection
+  /{id}:
+    type: collectionItem
+/items: # TODO MARC stuff, signIn/signOut
+  type: collection
+  /{id}:
+    type: collectionItem
+/checkouts:
+  type: collection
+  /{id}:
+    type: collectionItem
