@@ -26,9 +26,9 @@ resourceTypes:
     usage: Apply on a collection for standard `GET` and `POST` methods.
     get:
       description: >
-        Get a list of all <<resourcePathName | !pluralize>>. Can be sorted and
-        supports pagination.
-      (permissions): <<resourcePathName | !lowercase | !singularize>>.read
+        Get a list of all <<itemType | !pluralize>>. Can be sorted and supports
+        pagination.
+      (permissions): <<itemType | !lowercase | !singularize>>.read
       queryParameters:
         # TODO extract sortable (?), pageable trait(s)?
         page:
@@ -38,8 +38,8 @@ resourceTypes:
           example: 3
         per_page:
           description: >
-            How many <<resourcePathName | !pluralize>> to include in the list in
-            the response.
+            How many <<itemType | !pluralize>> to include in the list in the
+            response.
           type: integer
           minimum: 1
           maximum: 200
@@ -47,15 +47,15 @@ resourceTypes:
           example: 50
         sort_by:
           description: >
-            What to sort the returned <<resourcePathName | !pluralize>> list by.
+            What to sort the returned <<itemType | !pluralize>> list by.
           enum: # TODO any more sort_by values?
             - created
             - name
           default: created
         direction:
           order: >
-            The order in which to sort the <<resoucePathName | !pluralize>> --
-            either ascending or descending.
+            The order in which to sort the <<itemType | !pluralize>> -- either
+            ascending or descending.
           enum:
             - asc
             - desc
@@ -64,7 +64,7 @@ resourceTypes:
         200:
           body:
             properties:
-              items: types.<<resourcePathName|!uppercamelcase|!singularize>>[]
+              items: types.<<itemType | !uppercamelcase | !singularize>>[]
               hasMore: boolean
               maxItems: integer
               remainingItems: integer
@@ -72,10 +72,10 @@ resourceTypes:
           properties:
             msg: string
     post:
-      description: Create a new <<resourcePathName | !singularize>>.
-      (permissions): <<resourcePathName | !lowercase | !singularize>>.write
+      description: Create a new <<itemType | !singularize>>.
+      (permissions): <<itemType | !lowercase | !singularize>>.write
       body:
-        type: types.<<resourcePathName | !uppercamelcase | !singularize>>
+        type: types.<<itemType | !uppercamelcase | !singularize>>
       responses:
         201:
           headers:
@@ -88,48 +88,64 @@ resourceTypes:
       Apply to a subresource of a collection (i.e. an individual item) for
       standard `GET`, `PUT`, `PATCH`, and `DELETE` methods.
     get:
-      description: Get the <<resourcePathName | !singularize>> with this ID.
-      (permissions): <<resourcePathName | !lowercase | !singularize>>.read
+      description: Get the <<itemType | !singularize>> with this ID.
+      (permissions): <<itemType | !lowercase | !singularize>>.read
       responses:
         200:
           body:
-            type: types.<<resourcePathName | !uppercamelcase | !singularize>>
+            type: types.<<itemType | !uppercamelcase | !singularize>>
     put:
-      description: Update the <<resourcePathName | !singularize>> with this ID.
-      (permissions): <<resourcePathName | !lowercase | !singularize>>.write
+      description: Update the <<itemType | !singularize>> with this ID.
+      (permissions): <<itemType | !lowercase | !singularize>>.write
       body:
-        type: types.<<resourcePathName | !uppercamelcase | !singularize>>
+        type: types.<<itemType | !uppercamelcase | !singularize>>
       responses:
         204:
     patch:
       description: >
-        Partially update the <<resourcePathName | !singularize>> with this ID.
-      (permissions): <<resourcePathName | !lowercase | !singularize>>.write
+        Partially update the <<itemType | !singularize>> with this ID.
+      (permissions): <<itemType | !lowercase | !singularize>>.write
       body:
         application/merge-patch+json:
       responses:
         200:
           body:
-            type: types.<<resourcePathName | !uppercamelcase | !singularize>>
+            type: types.<<itemType | !uppercamelcase | !singularize>>
     delete:
       description: >
-        Delete the <<resourcePathName | !singularize>> with this ID.
-      (permissions): <<resourcePathName | !lowercase | !singularize>>.write
+        Delete the <<itemType | !singularize>> with this ID.
+      (permissions): <<itemType | !lowercase | !singularize>>.write
       reponses:
         204:
 /admins:
-  type: collection
+  type:
+    collection:
+      itemType: admin
   /{id}:
-    type: collectionItem
+    type:
+      collectionItem:
+        itemType: admin
 /patrons:
-  type: collection
+  type:
+    collection:
+      itemType: patron
   /{id}:
-    type: collectionItem
+    type:
+      collectionItem:
+        itemType: patron
 /items: # TODO MARC stuff, signIn/signOut
-  type: collection
+  type:
+    collection:
+      itemType: item
   /{id}:
-    type: collectionItem
+    type:
+      collectionItem:
+        itemType: item
 /checkouts:
-  type: collection
+  type:
+    collection:
+      itemType: checkout
   /{id}:
-    type: collectionItem
+    type:
+      collectionItem:
+        itemType: checkout
