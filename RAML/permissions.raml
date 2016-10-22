@@ -5,18 +5,9 @@ description: >
   method. If applied on a resource, the permissions are for all methods on
   the resource; if applied to a method directly, the permissions are for
   that specific method only.
-enum:
-  - nil
-  - item.read
-  - item.write
-  - patron.read
-  - patron.write
-  - checkout.read
-  - checkout.write
-  - admin.read
-  - admin.write
-  - signIn
-  - signOut
+uses:
+  perm-type: permission-type.raml
+type: nil | perm-type.Permission | perm-type.Permission[]
 allowedTargets:
   - Resource
   - Method
