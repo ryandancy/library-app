@@ -142,7 +142,7 @@ resourceTypes:
         name: patron
         itemType: types.Patron
         permission: patron
-/items: # TODO signIn/signOut
+/items:
   type:
     collection:
       name: item
@@ -167,9 +167,19 @@ resourceTypes:
       name: checkout
       itemType: types.Checkout
       permission: checkout
+  post:
+    (permissions): signOut
   /{id}:
     type:
       collectionItem:
         name: checkout
         itemType: types.Checkout
         permission: checkout
+    patch:
+      description: >
+        Partially update this checkout. Note that if the PATCH body contains
+        only `status: returned` the permission required is `signIn`; otherwise,
+        it's `checkout.write`.
+      (permissions):
+        - checkout.write
+        - signOut
