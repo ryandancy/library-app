@@ -16,6 +16,10 @@ types:
     # TODO Should there be some properties duplicating info in the MARC record
     # for easier access?
     properties:
+      id?:
+        type: basic.nat
+        description: >
+          The item ID for this Item. Only present in GET responses.
       marc: marc.MARCRecord
       created?:
         type: datetime
@@ -79,6 +83,10 @@ types:
       relevant only to checking out, but not to the item, hence the separate
       object.
     properties:
+      id?:
+        type: basic.nat
+        description: >
+          The checkout ID for this Checkout. Only present in GET responses.
       item?:
         type: Item
         description: >
@@ -148,6 +156,10 @@ types:
       An object representing a patron of the library. Patrons may have items
       checked out in their name.
     properties:
+      id?:
+        type: basic.nat
+        description: >
+          The patron ID for this Patron. Only present in GET responses.
       name: string
       pic?:
         # TODO Can the media type of image/whatever be noted?
@@ -212,6 +224,10 @@ types:
     # TODO permissions are duplicated here and in the permissions annotations --
     # somehow merge?
     properties:
+      id?:
+        type: basic.nat
+        description: >
+          The admin ID for this Admin. Only present in GET responses.
       name: string
       item: ReadWritePermission
       patron: ReadWritePermission
