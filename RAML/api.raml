@@ -15,6 +15,7 @@ mediaType: application/json
 uses:
   basic: basic.raml
   types: types.raml
+  marc: marc.raml
 securitySchemes:
   oauth2: !include security.raml
 securedBy:
@@ -141,7 +142,7 @@ resourceTypes:
         name: patron
         itemType: types.Patron
         permission: patron
-/items: # TODO MARC stuff, signIn/signOut
+/items: # TODO signIn/signOut
   type:
     collection:
       name: item
@@ -153,6 +154,13 @@ resourceTypes:
         name: item
         itemType: types.Item
         permission: item
+    /marc: # TODO content negotiation -- marc.MARCRecord or application/marc
+      description: The MARC record of the item with this ID.
+      type:
+        collectionItem:
+          name: MARC record
+          itemType: marc.MARCRecord
+          permission: item
 /checkouts:
   type:
     collection:
