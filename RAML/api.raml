@@ -88,14 +88,14 @@ resourceTypes:
       Apply to a subresource of a collection (i.e. an individual item) for
       standard `GET`, `PUT`, `PATCH`, and `DELETE` methods.
     get:
-      description: Get the <<itemType | !singularize>> with this ID.
+      description: Get the contents of this <<itemType | !singularize>>.
       (permissions): <<itemType | !lowercase | !singularize>>.read
       responses:
         200:
           body:
             type: types.<<itemType | !uppercamelcase | !singularize>>
     put:
-      description: Update the <<itemType | !singularize>> with this ID.
+      description: Update this <<itemType | !singularize>>.
       (permissions): <<itemType | !lowercase | !singularize>>.write
       body:
         type: types.<<itemType | !uppercamelcase | !singularize>>
@@ -103,7 +103,7 @@ resourceTypes:
         204:
     patch:
       description: >
-        Partially update the <<itemType | !singularize>> with this ID.
+        Partially update this <<itemType | !singularize>>.
       (permissions): <<itemType | !lowercase | !singularize>>.write
       body:
         application/merge-patch+json:
@@ -113,7 +113,7 @@ resourceTypes:
             type: types.<<itemType | !uppercamelcase | !singularize>>
     delete:
       description: >
-        Delete the <<itemType | !singularize>> with this ID.
+        Delete this <<itemType | !singularize>>.
       (permissions): <<itemType | !lowercase | !singularize>>.write
       reponses:
         204:
