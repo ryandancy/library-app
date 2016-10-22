@@ -17,7 +17,12 @@ types:
     # for easier access?
     properties:
       marc: marc.MARCRecord
-      created: datetime
+      created?:
+        type: datetime
+        description: >
+          The date and time this Item was created. Not present in a POST request
+          body.
+        example: 2016-06-01T09:31:02-03:30
       barcode:
         type: string
         pattern: ^\d+$
@@ -82,7 +87,11 @@ types:
         type: Patron
         description: >
           Not present if this Checkout is embedded in a Patron.
-      outDate: date-only
+      outDate?:
+        type: date-only
+        description: >
+          The time the item was checked out; i.e. the time the Checkout was
+          created. Not present in a POST request body.
       dueDate: date-only
       numRenewals: basic.natural
       status:
