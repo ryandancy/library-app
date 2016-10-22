@@ -89,14 +89,14 @@ resourceTypes:
       standard `GET`, `PUT`, `PATCH`, and `DELETE` methods.
     get:
       description: Get the contents of this <<itemType | !singularize>>.
-      (permissions): <<itemType | !lowercase | !singularize>>.read
+      (permissions): <<permission | !lowercase | !singularize>>.read
       responses:
         200:
           body:
             type: types.<<itemType | !uppercamelcase | !singularize>>
     put:
       description: Update this <<itemType | !singularize>>.
-      (permissions): <<itemType | !lowercase | !singularize>>.write
+      (permissions): <<permission | !lowercase | !singularize>>.write
       body:
         type: types.<<itemType | !uppercamelcase | !singularize>>
       responses:
@@ -104,7 +104,7 @@ resourceTypes:
     patch:
       description: >
         Partially update this <<itemType | !singularize>>.
-      (permissions): <<itemType | !lowercase | !singularize>>.write
+      (permissions): <<permission | !lowercase | !singularize>>.write
       body:
         application/merge-patch+json:
       responses:
@@ -114,38 +114,46 @@ resourceTypes:
     delete:
       description: >
         Delete this <<itemType | !singularize>>.
-      (permissions): <<itemType | !lowercase | !singularize>>.write
+      (permissions): <<permission | !lowercase | !singularize>>.write
       reponses:
         204:
 /admins:
   type:
     collection:
       itemType: admin
+      permission: admin
   /{id}:
     type:
       collectionItem:
         itemType: admin
+        permission: admin
 /patrons:
   type:
     collection:
       itemType: patron
+      permission: patron
   /{id}:
     type:
       collectionItem:
         itemType: patron
+        permission: patron
 /items: # TODO MARC stuff, signIn/signOut
   type:
     collection:
       itemType: item
+      permission: item
   /{id}:
     type:
       collectionItem:
         itemType: item
+        permission: item
 /checkouts:
   type:
     collection:
       itemType: checkout
+      permission: checkout
   /{id}:
     type:
       collectionItem:
         itemType: checkout
+        permission: checkout
