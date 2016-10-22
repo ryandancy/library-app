@@ -26,7 +26,7 @@ resourceTypes:
     usage: Apply on a collection for standard `GET` and `POST` methods.
     get:
       description: >
-        Get a list of all <<itemType | !pluralize>>. Can be sorted and supports
+        Get a list of all <<name | !pluralize>>. Can be sorted and supports
         pagination.
       (permissions): <<permission>>.read
       queryParameters:
@@ -38,7 +38,7 @@ resourceTypes:
           example: 3
         per_page:
           description: >
-            How many <<itemType | !pluralize>> to include in the list in the
+            How many <<name | !pluralize>> to include in the list in the
             response.
           type: integer
           minimum: 1
@@ -47,14 +47,14 @@ resourceTypes:
           example: 50
         sort_by:
           description: >
-            What to sort the returned <<itemType | !pluralize>> list by.
+            What to sort the returned <<name | !pluralize>> list by.
           enum: # TODO any more sort_by values?
             - created
             - name
           default: created
         direction:
           order: >
-            The order in which to sort the <<itemType | !pluralize>> -- either
+            The order in which to sort the <<name | !pluralize>> -- either
             ascending or descending.
           enum:
             - asc
@@ -72,7 +72,7 @@ resourceTypes:
           properties:
             msg: string
     post:
-      description: Create a new <<itemType>>.
+      description: Create a new <<name>>.
       (permissions): <<permission>>.write
       body:
         type: <<itemType>>
@@ -88,14 +88,14 @@ resourceTypes:
       Apply to a subresource of a collection (i.e. an individual item) for
       standard `GET`, `PUT`, `PATCH`, and `DELETE` methods.
     get:
-      description: Get the contents of this <<itemType>>.
+      description: Get the contents of this <<name>>.
       (permissions): <<permission>>.read
       responses:
         200:
           body:
             type: <<itemType>>
     put:
-      description: Update this <<itemType>>.
+      description: Update this <<name>>.
       (permissions): <<permission>>.write
       body:
         type: <<itemType>>
@@ -103,7 +103,7 @@ resourceTypes:
         204:
     patch:
       description: >
-        Partially update this <<itemType>>.
+        Partially update this <<name>>.
       (permissions): <<permission>>.write
       body:
         application/merge-patch+json:
@@ -120,40 +120,48 @@ resourceTypes:
 /admins:
   type:
     collection:
+      name: admin
       itemType: types.Admin
       permission: admin
   /{id}:
     type:
       collectionItem:
+        name: admin
         itemType: types.Admin
         permission: admin
 /patrons:
   type:
     collection:
+      name: patron
       itemType: types.Patron
       permission: patron
   /{id}:
     type:
       collectionItem:
+        name: patron
         itemType: types.Patron
         permission: patron
 /items: # TODO MARC stuff, signIn/signOut
   type:
     collection:
+      name: item
       itemType: types.Item
       permission: item
   /{id}:
     type:
       collectionItem:
+        name: item
         itemType: types.Item
         permission: item
 /checkouts:
   type:
     collection:
+      name: checkout
       itemType: types.Checkout
       permission: checkout
   /{id}:
     type:
       collectionItem:
+        name: checkout
         itemType: types.Checkout
         permission: checkout
