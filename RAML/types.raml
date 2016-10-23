@@ -17,7 +17,7 @@ types:
     # for easier access?
     properties:
       id?:
-        type: basic.nat
+        type: integer
         description: >
           The item ID for this Item. Only present in GET responses.
       marc: marc.MARCRecord
@@ -38,13 +38,13 @@ types:
           - out
           - missing
           - lost
-      checkout?:
-        type: Checkout
+      checkoutID?:
+        type: integer
         description: >
-          Not present if this Item is embedded in a Checkout, or if a checkout
-          is not applicable. Note that this property is forbidden if `status` is
-          `in`, `lost`, or `missing`, and is required if `status` is `out`.
-          Also, this is not present if this Item is embedded in a Checkout.
+          The ID of this item's checkout, if it has one. Not present if a
+          checkout is not applicable. Note that this property is forbidden if
+          `status` is `in`, `lost`, or `missing`, and is required if `status` is
+          `out`.
     additionalProperties: false
     examples:
       in:
@@ -57,25 +57,12 @@ types:
         created: 2016-06-01T09:31:02-03:30
         status: out
         barcode: '53620000000087'
-        checkout:
-          patron:
-            name: John Smith
-          outDate: 2016-07-15
-          dueDate: 2016-07-29
-          numRenewals: 0
-          status: onTime
+        checkoutID: 11425543
       lost:
         marc: !include marc-example.raml
         created: 2015-11-24T10:34:01-04:00
         status: lost
         barcode: '76543200000246'
-      embedded:
-        description: This example Item is embedded in a Checkout.
-        value:
-          marc: !include marc-example.raml
-          created: 2016-06-01T09:31:02+03:00
-          status: out
-          barcode: '76543200000246'
   Checkout:
     type: object
     description: >
@@ -84,24 +71,24 @@ types:
       object.
     properties:
       id?:
-        type: basic.nat
+        type: integer
         description: >
           The checkout ID for this Checkout. Only present in GET responses.
-      item?:
-        type: Item
+      itemID:
+        type: integer
         description: >
-          Not present if this Checkout is embedded in an Item.
-      patron?:
-        type: Patron
+          The ID of the Item associated with this Checkout.
+      patronID:
+        type: integer
         description: >
-          Not present if this Checkout is embedded in a Patron.
+          The ID of the Patron associated with this Checkout.
       outDate?:
         type: date-only
         description: >
           The time the item was checked out; i.e. the time the Checkout was
           created. Not present in a POST request body.
       dueDate: date-only
-      numRenewals: basic.natural
+      numRenewals: basic.nat
       status:
         type: string
         enum:
@@ -110,46 +97,13 @@ types:
           - returned
           - lost
     additionalProperties: false
-    examples:
-      standalone:
-        description: >
-          This example Checkout is not embedded in an Item or a Patron.
-        value:
-          item:
-            marc: !include marc-example.raml
-            created: 2016-06-01T09:31:02-03:30
-            status: out
-            barcode: '53620000000087'
-          patron:
-            name: Joe Shmoe
-            pic: http://example.com/path/to/pic.png
-          outDate: 2016-07-30
-          dueDate: 2016-09-13
-          numRenewals: 2
-          status: onTime
-      inItem:
-        description: >
-          This example Checkout is embedded in an Item.
-        value:
-          patron:
-            name: Ima Nexamplé
-          outDate: 2017-01-05
-          dueDate: 2017-01-12
-          numRenewals: 0
-          status: returned
-      inPatron:
-        description: >
-          This example Checkout is embedded in a Patron.
-        value:
-          item:
-            marc: !include marc-example.raml
-            created: 2009-07-24T21:02:00Z
-            status: out
-            barcode: '53001024091248'
-          outDate: 2013-10-31
-          dueDate: 2014-03-20
-          numRenewals: 4
-          status: late
+    example:
+      itemID: 54336
+      patronID: 102411
+      outDate: 2016-07-30
+      dueDate: 2016-09-13
+      numRenewals: 2
+      status: onTime
   Patron:
     type: object
     description: >
@@ -157,7 +111,7 @@ types:
       checked out in their name.
     properties:
       id?:
-        type: basic.nat
+        type: integer
         description: >
           The patron ID for this Patron. Only present in GET responses.
       name: string
@@ -165,42 +119,20 @@ types:
         # TODO Can the media type of image/whatever be noted?
         type: basic.uri
         default: http://localhost:8080/missing-pic.png # TODO proper missing pic
-      checkouts?:
-        type: Checkout[]
-        description: Not present if embedded in Checkout.
+      checkoutIDs:
+        type: integer[]
+        description: A list of checkouts this Patron has.
     additionalProperties: false
     examples:
       simple:
         name: Pewdiepie
-        checkouts: []
+        checkoutIDs: []
       complex:
         name: Ima Nexamplé
         pic: http://some.where/a/path/to/a/picture/ima-nexamplé.jpg
         checkouts:
-          - item:
-              marc: !include marc-example.raml
-              created: 1996-04-16T20:01:24-05:00
-              status: out
-              barcode: '50030886800009'
-            outDate: 2015-01-23
-            dueDate: 2015-02-12
-            numRenewals: 1
-            status: late
-          - item:
-              marc: !include marc-example.raml
-              created: 2005-12-14T10:04:58-05:00
-              status: out
-              barcode: '31203598711892'
-            outDate: 2015-03-14
-            dueDate: 2015-03-26
-            numRenewals: 0
-            status: onTime
-      embedded:
-        description: >
-          This Patron is embedded in a Checkout.
-        value:
-          name: Ihaveafirstname Amiddle Andalastname
-          pic: http://localhost:8080/i-a-a.png
+          - 102441
+          - 230527
   ReadWritePermission:
     type: object
     description: >
@@ -225,7 +157,7 @@ types:
     # somehow merge?
     properties:
       id?:
-        type: basic.nat
+        type: integer
         description: >
           The admin ID for this Admin. Only present in GET responses.
       name: string
