@@ -54,7 +54,7 @@ resourceTypes:
             - name
           default: created
         direction:
-          order: >
+          description: >
             The order in which to sort the <<name | !pluralize>> -- either
             ascending or descending.
           enum:
@@ -117,7 +117,7 @@ resourceTypes:
       description: >
         Delete this <<name>>.
       (permissions): <<permission>>.write
-      reponses:
+      responses:
         204:
 /admins:
   type:

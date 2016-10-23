@@ -25,18 +25,18 @@ describedBy:
         logged in). Perform authentication, then try again.
       body:
         msg: string
-      example:
-        msg: Unauthorized request. Perform authentication, then try again.
+        example:
+          msg: Unauthorized request. Perform authentication, then try again.
     403:
       description: >
         The client is logged in, but does not have the requisite permissions
         to perform the request.
       body:
         msg: string
-      example:
-        msg: >
-          The client does not have the requisite permissions to perform the
-          request. Contact an administrator to obtain access.
+        example:
+          msg: >
+            The client does not have the requisite permissions to perform the
+            request. Contact an administrator to obtain access.
 settings:
   authorizationUri: http://localhost:8080/{version}/oauth2/authorize
   accessTokenUri: http://localhost:8080/{version}/oauth2/token
