@@ -154,13 +154,23 @@ resourceTypes:
         name: item
         itemType: types.Item
         permission: item
-    /marc: # TODO content negotiation -- marc.MARCRecord or application/marc
+    /marc:
       description: The MARC record of the item with this ID.
       type:
         collectionItem:
           name: MARC record
           itemType: marc.MARCRecord
           permission: item
+      get: # XXX this might not work (does RAML do media type extensions?)
+        responses:
+          200:
+            body:
+              application/marc:
+                type: string
+      post:
+        body:
+          application/marc:
+            type: string
 /checkouts:
   type:
     collection:
