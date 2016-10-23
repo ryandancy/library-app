@@ -54,18 +54,16 @@ types:
     additionalProperties: false
     examples:
       simple:
-        '010':
-          subfields:
-            - a: '   93707283 '
-          ind1: ' '
-          ind2: ' '
+        subfields:
+          - a: '   93707283 '
+        ind1: ' '
+        ind2: ' '
       complex:
-        '245':
-          subfields:
-            - a: "The freewheelin' Bob Dylan"
-            - h: '[sound recording].'
-          ind1: '1'
-          ind2: '4'
+        subfields:
+          - a: "The freewheelin' Bob Dylan"
+          - h: '[sound recording].'
+        ind1: '1'
+        ind2: '4'
   MARCField:
     type: MARCControlField | MARCVariableField
     description: >
