@@ -1,14 +1,15 @@
-#%RAML 1.0 ResourceType
+#%RAML 1.0 Library
 
-Permission:
-  enum:
-    - item.read
-    - item.write
-    - patron.read
-    - patron.write
-    - checkout.read
-    - checkout.write
-    - admin.read
-    - admin.write
-    - signIn
-    - signOut
+types:
+  Permission:
+    enum:
+      - item.read
+      - item.write
+      - patron.read
+      - patron.write
+      - checkout.read
+      - checkout.write
+      - admin.read
+      - admin.write
+      - signIn
+      - signOut
