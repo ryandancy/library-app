@@ -70,8 +70,9 @@ resourceTypes:
               maxItems: integer
               remainingItems: integer
         422: # Unprocessable Entity - semantic error
-          properties:
-            msg: string
+          body:
+            properties:
+              msg: string
     post:
       description: Create a new <<name>>.
       (permissions): <<permission>>.write
@@ -82,8 +83,9 @@ resourceTypes:
           headers:
             Location: string
         400:
-          properties:
-            msg: string
+          body:
+            properties:
+              msg: string
   collectionItem:
     usage: >
       Apply to a subresource of a collection (i.e. an individual item) for
