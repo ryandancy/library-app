@@ -194,7 +194,12 @@ resourceTypes:
               application/marc:
                 type: string
         (permissions): [item.read]
-      post:
+      put:
+        body:
+          application/marc:
+            type: string
+        (permissions): [item.write]
+      patch:
         body:
           application/marc:
             type: string
