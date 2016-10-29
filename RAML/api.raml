@@ -121,66 +121,66 @@ resourceTypes:
       name: admin
       itemType: types.Admin
   get:
-    (permissions): admin.read
+    (permissions): [admin.read]
   post:
-    (permissions): admin.write
+    (permissions): [admin.write]
   /{id}:
     type:
       collectionItem:
         name: admin
         itemType: types.Admin
     get:
-      (permissions): admin.read
+      (permissions): [admin.read]
     put:
-      (permissions): admin.write
+      (permissions): [admin.write]
     patch:
-      (permissions): admin.write
+      (permissions): [admin.write]
     delete:
-      (permissions): admin.write
+      (permissions): [admin.write]
 /patrons:
   type:
     collection:
       name: patron
       itemType: types.Patron
   get:
-    (permissions): patron.read
+    (permissions): [patron.read]
   post:
-    (permissions): patron.write
+    (permissions): [patron.write]
   /{id}:
     type:
       collectionItem:
         name: patron
         itemType: types.Patron
     get:
-      (permissions): patron.read
+      (permissions): [patron.read]
     put:
-      (permissions): patron.write
+      (permissions): [patron.write]
     patch:
-      (permissions): patron.write
+      (permissions): [patron.write]
     delete:
-      (permissions): patron.write
+      (permissions): [patron.write]
 /items:
   type:
     collection:
       name: item
       itemType: types.Item
   get:
-    (permissions): item.read
+    (permissions): [item.read]
   post:
-    (permissions): item.write
+    (permissions): [item.write]
   /{id}:
     type:
       collectionItem:
         name: item
         itemType: types.Item
     get:
-      (permissions): item.read
+      (permissions): [item.read]
     put:
-      (permissions): item.write
+      (permissions): [item.write]
     patch:
-      (permissions): item.write
+      (permissions): [item.write]
     delete:
-      (permissions): item.write
+      (permissions): [item.write]
     /marc:
       description: The MARC record of the item with this ID.
       type:
@@ -193,30 +193,30 @@ resourceTypes:
             body:
               application/marc:
                 type: string
-        (permissions): item.read
+        (permissions): [item.read]
       post:
         body:
           application/marc:
             type: string
-        (permissions): item.write
+        (permissions): [item.write]
 /checkouts:
   type:
     collection:
       name: checkout
       itemType: types.Checkout
   get:
-    (permissions): checkout.read
+    (permissions): [checkout.read]
   post:
-    (permissions): signOut
+    (permissions): [signOut]
   /{id}:
     type:
       collectionItem:
         name: checkout
         itemType: types.Checkout
     get:
-      (permissions): checkout.read
+      (permissions): [checkout.read]
     put:
-      (permissions): checkout.write
+      (permissions): [checkout.write]
     patch:
       description: >
         Partially update this checkout. Note that if the PATCH body contains
@@ -226,4 +226,4 @@ resourceTypes:
         - checkout.write
         - signOut
     delete:
-      (permissions): checkout.write
+      (permissions): [checkout.write]
