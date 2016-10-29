@@ -29,7 +29,6 @@ resourceTypes:
       description: >
         Get a list of all <<name | !pluralize>>. Can be sorted and supports
         pagination.
-      (permissions): <<permission>>.read
       queryParameters:
         # TODO extract sortable (?), pageable trait(s)?
         page:
@@ -75,7 +74,6 @@ resourceTypes:
               msg: string
     post:
       description: Create a new <<name>>.
-      (permissions): <<permission>>.write
       body:
         type: <<itemType>>
       responses:
@@ -92,14 +90,12 @@ resourceTypes:
       standard `GET`, `PUT`, `PATCH`, and `DELETE` methods.
     get:
       description: Get the contents of this <<name>>.
-      (permissions): <<permission>>.read
       responses:
         200:
           body:
             type: <<itemType>>
     put:
       description: Update this <<name>>.
-      (permissions): <<permission>>.write
       body:
         type: <<itemType>>
       responses:
@@ -107,7 +103,6 @@ resourceTypes:
     patch:
       description: >
         Partially update this <<name>>.
-      (permissions): <<permission>>.write
       body:
         application/merge-patch+json:
           type: object
@@ -118,7 +113,6 @@ resourceTypes:
     delete:
       description: >
         Delete this <<name>>.
-      (permissions): <<permission>>.write
       responses:
         204:
 /admins:
@@ -126,60 +120,92 @@ resourceTypes:
     collection:
       name: admin
       itemType: types.Admin
-      permission: admin
+  get:
+    (permissions): admin.read
+  post:
+    (permissions): admin.write
   /{id}:
     type:
       collectionItem:
         name: admin
         itemType: types.Admin
-        permission: admin
+    get:
+      (permissions): admin.read
+    put:
+      (permissions): admin.write
+    patch:
+      (permissions): admin.write
+    delete:
+      (permissions): admin.write
 /patrons:
   type:
     collection:
       name: patron
       itemType: types.Patron
-      permission: patron
+  get:
+    (permissions): patron.read
+  post:
+    (permissions): patron.write
   /{id}:
     type:
       collectionItem:
         name: patron
         itemType: types.Patron
-        permission: patron
+    get:
+      (permissions): patron.read
+    put:
+      (permissions): patron.write
+    patch:
+      (permissions): patron.write
+    delete:
+      (permissions): patron.write
 /items:
   type:
     collection:
       name: item
       itemType: types.Item
-      permission: item
+  get:
+    (permissions): item.read
+  post:
+    (permissions): item.write
   /{id}:
     type:
       collectionItem:
         name: item
         itemType: types.Item
-        permission: item
+    get:
+      (permissions): item.read
+    put:
+      (permissions): item.write
+    patch:
+      (permissions): item.write
+    delete:
+      (permissions): item.write
     /marc:
       description: The MARC record of the item with this ID.
       type:
         collectionItem:
           name: MARC record
           itemType: marc.MARCRecord
-          permission: item
       get: # XXX this might not work (does RAML do media type extensions?)
         responses:
           200:
             body:
               application/marc:
                 type: string
+        (permissions): item.read
       post:
         body:
           application/marc:
             type: string
+        (permissions): item.write
 /checkouts:
   type:
     collection:
       name: checkout
       itemType: types.Checkout
-      permission: checkout
+  get:
+    (permissions): checkout.read
   post:
     (permissions): signOut
   /{id}:
@@ -187,7 +213,10 @@ resourceTypes:
       collectionItem:
         name: checkout
         itemType: types.Checkout
-        permission: checkout
+    get:
+      (permissions): checkout.read
+    put:
+      (permissions): checkout.write
     patch:
       description: >
         Partially update this checkout. Note that if the PATCH body contains
@@ -196,3 +225,5 @@ resourceTypes:
       (permissions):
         - checkout.write
         - signOut
+    delete:
+      (permissions): checkout.write
