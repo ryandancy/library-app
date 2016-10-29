@@ -1,0 +1,4759 @@
+<!DOCTYPE HTML><html><head><title>Library App API documentation</title><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="generator" content="https://github.com/raml2html/raml2html 4.0.0-beta9"><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css"><script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script><script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/highlight.min.js"></script><script type="text/javascript">
+      $(document).ready(function() {
+        $('.page-header pre code, .top-resource-description pre code, .modal-body pre code').each(function(i, block) {
+          hljs.highlightBlock(block);
+        });
+
+        $('[data-toggle]').click(function() {
+          var selector = $(this).data('target') + ' pre code';
+          $(selector).each(function(i, block) {
+            hljs.highlightBlock(block);
+          });
+        });
+
+        // open modal on hashes like #_action_get
+        $(window).bind('hashchange', function(e) {
+          var anchor_id = document.location.hash.substr(1); //strip #
+          var element = $('#' + anchor_id);
+
+          // do we have such element + is it a modal?  --> show it
+          if (element.length && element.hasClass('modal')) {
+            element.modal('show');
+          }
+        });
+
+        // execute hashchange on first page load
+        $(window).trigger('hashchange');
+
+        // remove url fragment on modal hide
+        $('.modal').on('hidden.bs.modal', function() {
+          try {
+            if (history && history.replaceState) {
+                history.replaceState({}, '', '#');
+            }
+          } catch(e) {}
+        });
+      });
+    </script><style>
+      .hljs {
+        background: transparent;
+      }
+      .parent {
+        color: #999;
+      }
+      .list-group-item > .badge {
+        float: none;
+        margin-right: 6px;
+      }
+      .panel-title > .methods {
+        float: right;
+      }
+      .badge {
+        border-radius: 0;
+        text-transform: uppercase;
+        width: 70px;
+        font-weight: normal;
+        color: #f3f3f6;
+        line-height: normal;
+      }
+      .badge_get {
+        background-color: #63a8e2;
+      }
+      .badge_post {
+        background-color: #6cbd7d;
+      }
+      .badge_put {
+        background-color: #22bac4;
+      }
+      .badge_delete {
+        background-color: #d26460;
+      }
+      .badge_patch {
+        background-color: #ccc444;
+      }
+      .list-group, .panel-group {
+        margin-bottom: 0;
+      }
+      .panel-group .panel+.panel-white {
+        margin-top: 0;
+      }
+      .panel-group .panel-white {
+        border-bottom: 1px solid #F5F5F5;
+        border-radius: 0;
+      }
+      .panel-white:last-child {
+        border-bottom-color: white;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+      }
+      .panel-white .panel-heading {
+        background: white;
+      }
+      .tab-pane ul {
+        padding-left: 2em;
+      }
+      .tab-pane h1 {
+        font-size: 1.3em;
+      }
+      .tab-pane h2 {
+        font-size: 1.2em;
+        padding-bottom: 4px;
+        border-bottom: 1px solid #ddd;
+      }
+      .tab-pane h3 {
+        font-size: 1.1em;
+      }
+      .tab-content {
+        border-left: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        padding: 10px;
+      }
+      #sidebar {
+        margin-top: 30px;
+        padding-right: 5px;
+        overflow: auto;
+        height: 90%;
+      }
+      .top-resource-description {
+        border-bottom: 1px solid #ddd;
+        background: #fcfcfc;
+        padding: 15px 15px 0 15px;
+        margin: -15px -15px 10px -15px;
+      }
+      .resource-description {
+        border-bottom: 1px solid #fcfcfc;
+        background: #fcfcfc;
+        padding: 15px 15px 0 15px;
+        margin: -15px -15px 10px -15px;
+      }
+      .resource-description p:last-child {
+        margin: 0;
+      }
+      .list-group .badge {
+        float: left;
+      }
+      .method_description {
+        margin-left: 85px;
+      }
+      .method_description p:last-child {
+        margin: 0;
+      }
+      .list-group-item {
+        cursor: pointer;
+      }
+      .list-group-item:hover {
+        background-color: #f5f5f5;
+      }
+
+      pre code {
+        overflow: auto;
+        word-wrap: normal;
+        white-space: pre;
+      }
+    </style></head><body data-spy="scroll" data-target="#sidebar"><div class="container"><div class="row"><div class="col-md-9" role="main"><div class="page-header"><h1>Library App API documentation <small>version v0</small></h1><p>/{version}</p><ul><li><strong>version</strong>: <em>required (v0)</em></li></ul></div><div class="panel panel-default"><div class="panel-heading"><h3 id="admins" class="panel-title">/admins</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_admins"><span class="parent"></span>/admins</a> <span class="methods"><a href="#admins_get"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#admins_post"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a></span></h4></div><div id="panel_admins" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#admins_get'" class="list-group-item"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Get a list of all admins. Can be sorted and supports pagination.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#admins_post'" class="list-group-item"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Create a new admin.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="admins_get"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent"></span>/admins</h4></div><div class="modal-body"><div class="alert alert-info"><p>Get a list of all admins. Can be sorted and supports pagination.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#admins_get_request" data-toggle="tab">Request</a></li><li><a href="#admins_get_response" data-toggle="tab">Response</a></li><li><a href="#admins_get_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="admins_get_request"><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["admin.read"]</code></pre></li></ul><h3>Query Parameters</h3><ul><li><strong>natural</strong>: <em>required (integer - default: 0 - minimum: 0)</em><p>A natural number (integer &gt;= 0).</p><p><strong>Examples</strong>:</p><pre><code>0</code></pre><pre><code>1402</code></pre><pre><code>3</code></pre></li><li><strong>per_page</strong>: <em>required (integer - default: 30 - minimum: 1 - maximum: 200)</em><p>How many admins to include in the list in the response.</p><p><strong>Examples</strong>:</p><pre><code>50</code></pre></li><li><strong>sort_by</strong>: <em>required (one of created, name - default: created)</em><p>What to sort the returned admins list by.</p></li><li><strong>direction</strong>: <em>required (one of asc, desc - default: asc)</em><p>The order in which to sort the admins -- either ascending or descending.</p></li></ul></div><div class="tab-pane" id="admins_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>items</strong>: <em>required (array)</em></li><li><strong>hasMore</strong>: <em>required (boolean)</em></li><li><strong>maxItems</strong>: <em>required (integer)</em></li><li><strong>remainingItems</strong>: <em>required (integer)</em></li></ul><h2>HTTP status code <a href="http://httpstatus.es/422" target="_blank">422</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>msg</strong>: <em>required (string)</em></li></ul></div><div class="tab-pane" id="admins_get_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="admins_post"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent"></span>/admins</h4></div><div class="modal-body"><div class="alert alert-info"><p>Create a new admin.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#admins_post_request" data-toggle="tab">Request</a></li><li><a href="#admins_post_response" data-toggle="tab">Response</a></li><li><a href="#admins_post_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="admins_post_request"><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["admin.write"]</code></pre></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em>(integer)</em><p>The admin ID for this Admin. Only present in GET responses.</p></li><li><strong>name</strong>: <em>required (string)</em></li><li><strong>ReadWritePermission</strong>: <em>required (object)</em><p>An object representing an admin&#39;s permissions to read or write something.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "read": true,
+  "write": false
+}</code></pre></li><li><strong>ReadWritePermission</strong>: <em>required (object)</em><p>An object representing an admin&#39;s permissions to read or write something.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "read": true,
+  "write": false
+}</code></pre></li><li><strong>ReadWritePermission</strong>: <em>required (object)</em><p>An object representing an admin&#39;s permissions to read or write something.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "read": true,
+  "write": false
+}</code></pre></li><li><strong>signOut</strong>: <em>required (boolean)</em><p>An admin with this permission can check out an item on behalf of a Patron. Note that this permission is different than checkout/write, as that permission also implies the ability to update/delete existing checkouts.</p></li><li><strong>signIn</strong>: <em>required (boolean)</em><p>An admin with this permission can check in an item on behalf of a Patron. Note that this permission is different than checkout/write, as that permission also implies the ability to update/delete existing checkouts.</p></li><li><strong>ReadWritePermission</strong>: <em>required (object)</em><p>An object representing an admin&#39;s permissions to read or write something.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "read": true,
+  "write": false
+}</code></pre></li></ul><p><strong>Examples</strong>:</p><pre><code>{
+  "name": "Lieb Rarian",
+  "item": {
+    "read": true,
+    "write": true
+  },
+  "patron": {
+    "read": true,
+    "write": false
+  },
+  "checkout": {
+    "read": true,
+    "write": false
+  },
+  "signOut": true,
+  "signIn": true,
+  "admin": {
+    "read": false,
+    "write": false
+  }
+}</code></pre></div><div class="tab-pane" id="admins_post_response"><h2>HTTP status code <a href="http://httpstatus.es/201" target="_blank">201</a></h2><h3>Headers</h3><ul><li><strong>Location</strong>: <em>required (string)</em></li></ul><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>msg</strong>: <em>required (string)</em></li></ul></div><div class="tab-pane" id="admins_post_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div></div><div class="panel panel-white"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_admins__id_"><span class="parent">/admins</span>/{id}</a> <span class="methods"><a href="#admins__id__get"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#admins__id__put"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#admins__id__patch"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#admins__id__delete"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a></span></h4></div><div id="panel_admins__id_" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#admins__id__get'" class="list-group-item"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Get the contents of this admin.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#admins__id__put'" class="list-group-item"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Update this admin.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#admins__id__patch'" class="list-group-item"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Partially update this admin.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#admins__id__delete'" class="list-group-item"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Delete this admin.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="admins__id__get"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/admins</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Get the contents of this admin.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#admins__id__get_request" data-toggle="tab">Request</a></li><li><a href="#admins__id__get_response" data-toggle="tab">Response</a></li><li><a href="#admins__id__get_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="admins__id__get_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["admin.read"]</code></pre></li></ul></div><div class="tab-pane" id="admins__id__get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em>(integer)</em><p>The admin ID for this Admin. Only present in GET responses.</p></li><li><strong>name</strong>: <em>required (string)</em></li><li><strong>ReadWritePermission</strong>: <em>required (object)</em><p>An object representing an admin&#39;s permissions to read or write something.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "read": true,
+  "write": false
+}</code></pre></li><li><strong>ReadWritePermission</strong>: <em>required (object)</em><p>An object representing an admin&#39;s permissions to read or write something.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "read": true,
+  "write": false
+}</code></pre></li><li><strong>ReadWritePermission</strong>: <em>required (object)</em><p>An object representing an admin&#39;s permissions to read or write something.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "read": true,
+  "write": false
+}</code></pre></li><li><strong>signOut</strong>: <em>required (boolean)</em><p>An admin with this permission can check out an item on behalf of a Patron. Note that this permission is different than checkout/write, as that permission also implies the ability to update/delete existing checkouts.</p></li><li><strong>signIn</strong>: <em>required (boolean)</em><p>An admin with this permission can check in an item on behalf of a Patron. Note that this permission is different than checkout/write, as that permission also implies the ability to update/delete existing checkouts.</p></li><li><strong>ReadWritePermission</strong>: <em>required (object)</em><p>An object representing an admin&#39;s permissions to read or write something.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "read": true,
+  "write": false
+}</code></pre></li></ul><p><strong>Examples</strong>:</p><pre><code>{
+  "name": "Lieb Rarian",
+  "item": {
+    "read": true,
+    "write": true
+  },
+  "patron": {
+    "read": true,
+    "write": false
+  },
+  "checkout": {
+    "read": true,
+    "write": false
+  },
+  "signOut": true,
+  "signIn": true,
+  "admin": {
+    "read": false,
+    "write": false
+  }
+}</code></pre></div><div class="tab-pane" id="admins__id__get_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="admins__id__put"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/admins</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Update this admin.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#admins__id__put_request" data-toggle="tab">Request</a></li><li><a href="#admins__id__put_response" data-toggle="tab">Response</a></li><li><a href="#admins__id__put_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="admins__id__put_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["admin.write"]</code></pre></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em>(integer)</em><p>The admin ID for this Admin. Only present in GET responses.</p></li><li><strong>name</strong>: <em>required (string)</em></li><li><strong>ReadWritePermission</strong>: <em>required (object)</em><p>An object representing an admin&#39;s permissions to read or write something.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "read": true,
+  "write": false
+}</code></pre></li><li><strong>ReadWritePermission</strong>: <em>required (object)</em><p>An object representing an admin&#39;s permissions to read or write something.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "read": true,
+  "write": false
+}</code></pre></li><li><strong>ReadWritePermission</strong>: <em>required (object)</em><p>An object representing an admin&#39;s permissions to read or write something.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "read": true,
+  "write": false
+}</code></pre></li><li><strong>signOut</strong>: <em>required (boolean)</em><p>An admin with this permission can check out an item on behalf of a Patron. Note that this permission is different than checkout/write, as that permission also implies the ability to update/delete existing checkouts.</p></li><li><strong>signIn</strong>: <em>required (boolean)</em><p>An admin with this permission can check in an item on behalf of a Patron. Note that this permission is different than checkout/write, as that permission also implies the ability to update/delete existing checkouts.</p></li><li><strong>ReadWritePermission</strong>: <em>required (object)</em><p>An object representing an admin&#39;s permissions to read or write something.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "read": true,
+  "write": false
+}</code></pre></li></ul><p><strong>Examples</strong>:</p><pre><code>{
+  "name": "Lieb Rarian",
+  "item": {
+    "read": true,
+    "write": true
+  },
+  "patron": {
+    "read": true,
+    "write": false
+  },
+  "checkout": {
+    "read": true,
+    "write": false
+  },
+  "signOut": true,
+  "signIn": true,
+  "admin": {
+    "read": false,
+    "write": false
+  }
+}</code></pre></div><div class="tab-pane" id="admins__id__put_response"><h2>HTTP status code <a href="http://httpstatus.es/204" target="_blank">204</a></h2></div><div class="tab-pane" id="admins__id__put_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="admins__id__patch"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/admins</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Partially update this admin.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#admins__id__patch_request" data-toggle="tab">Request</a></li><li><a href="#admins__id__patch_response" data-toggle="tab">Response</a></li><li><a href="#admins__id__patch_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="admins__id__patch_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["admin.write"]</code></pre></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/merge-patch+json</p><p><strong>Type</strong>: object</p></div><div class="tab-pane" id="admins__id__patch_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: types.types.Admin</p></div><div class="tab-pane" id="admins__id__patch_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="admins__id__delete"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/admins</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Delete this admin.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#admins__id__delete_request" data-toggle="tab">Request</a></li><li><a href="#admins__id__delete_response" data-toggle="tab">Response</a></li><li><a href="#admins__id__delete_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="admins__id__delete_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["admin.write"]</code></pre></li></ul></div><div class="tab-pane" id="admins__id__delete_response"><h2>HTTP status code <a href="http://httpstatus.es/204" target="_blank">204</a></h2></div><div class="tab-pane" id="admins__id__delete_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="patrons" class="panel-title">/patrons</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_patrons"><span class="parent"></span>/patrons</a> <span class="methods"><a href="#patrons_get"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#patrons_post"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a></span></h4></div><div id="panel_patrons" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#patrons_get'" class="list-group-item"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Get a list of all patrons. Can be sorted and supports pagination.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#patrons_post'" class="list-group-item"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Create a new patron.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="patrons_get"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent"></span>/patrons</h4></div><div class="modal-body"><div class="alert alert-info"><p>Get a list of all patrons. Can be sorted and supports pagination.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#patrons_get_request" data-toggle="tab">Request</a></li><li><a href="#patrons_get_response" data-toggle="tab">Response</a></li><li><a href="#patrons_get_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="patrons_get_request"><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["patron.read"]</code></pre></li></ul><h3>Query Parameters</h3><ul><li><strong>natural</strong>: <em>required (integer - default: 0 - minimum: 0)</em><p>A natural number (integer &gt;= 0).</p><p><strong>Examples</strong>:</p><pre><code>0</code></pre><pre><code>1402</code></pre><pre><code>3</code></pre></li><li><strong>per_page</strong>: <em>required (integer - default: 30 - minimum: 1 - maximum: 200)</em><p>How many patrons to include in the list in the response.</p><p><strong>Examples</strong>:</p><pre><code>50</code></pre></li><li><strong>sort_by</strong>: <em>required (one of created, name - default: created)</em><p>What to sort the returned patrons list by.</p></li><li><strong>direction</strong>: <em>required (one of asc, desc - default: asc)</em><p>The order in which to sort the patrons -- either ascending or descending.</p></li></ul></div><div class="tab-pane" id="patrons_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>items</strong>: <em>required (array)</em></li><li><strong>hasMore</strong>: <em>required (boolean)</em></li><li><strong>maxItems</strong>: <em>required (integer)</em></li><li><strong>remainingItems</strong>: <em>required (integer)</em></li></ul><h2>HTTP status code <a href="http://httpstatus.es/422" target="_blank">422</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>msg</strong>: <em>required (string)</em></li></ul></div><div class="tab-pane" id="patrons_get_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="patrons_post"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent"></span>/patrons</h4></div><div class="modal-body"><div class="alert alert-info"><p>Create a new patron.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#patrons_post_request" data-toggle="tab">Request</a></li><li><a href="#patrons_post_response" data-toggle="tab">Response</a></li><li><a href="#patrons_post_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="patrons_post_request"><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["patron.write"]</code></pre></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em>(integer)</em><p>The patron ID for this Patron. Only present in GET responses.</p></li><li><strong>name</strong>: <em>required (string)</em></li><li><strong>uri</strong>: <em>required (string - default: http://localhost:8080/missing-pic.png - pattern: ^(\w[\w\d+.-]*):(?:\/\/((?:(?=((?:[\w\d-._~!$&'()*+,;=:]|%[\da-fA-F]{2})*))(\3)@)?(?=(\[[\da-fA-F:.]{2,}\]|(?:[\w\d-._~!$&'()*+,;=]|%[\da-fA-F]{2})*))\5(?::(?=(\d*))\6)?)(\/(?=((?:[\w\d-._~!$&'()*+,;=:@\/]|%[\da-fA-F]{2})*))\8)?|(\/?(?!\/)(?=((?:[\w\d-._~!$&'()*+,;=:@\/]|%[\da-fA-F]{2})*))\10)?)(?:\?(?=((?:[\w\d-._~!$&'()*+,;=:@\/?]|%[\da-fA-F]{2})*))\11)?(?:#(?=((?:[\w\d-._~!$&'()*+,;=:@\/?]|%[\da-fA-F]{2})*))\12)?$)</em><p>A string that looks like a URI. Regex found <a href="http://snipplr.com/view /6889/regular-expressions-for-uri-validationparsing/">here</a>, then modified to be case-insensitive.</p><p><strong>Examples</strong>:</p><pre>http://foo.com</pre><pre>ftp:a@b:127.0.0.1:8080/pATh/tO/f0o?foo=bar,baz&amp;a=b#fragment</pre></li><li><strong>checkoutIDs</strong>: <em>required (array)</em><p>A list of checkouts this Patron has.</p></li></ul><p><strong>Examples</strong>:</p><pre><code>{
+  "name": "Pewdiepie",
+  "checkoutIDs": []
+}</code></pre><pre><code>{
+  "name": "Ima Nexamplé",
+  "pic": "http://some.where/a/path/to/a/picture/ima-nexample.jpg",
+  "checkoutIDs": [
+    102441,
+    230527
+  ]
+}</code></pre></div><div class="tab-pane" id="patrons_post_response"><h2>HTTP status code <a href="http://httpstatus.es/201" target="_blank">201</a></h2><h3>Headers</h3><ul><li><strong>Location</strong>: <em>required (string)</em></li></ul><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>msg</strong>: <em>required (string)</em></li></ul></div><div class="tab-pane" id="patrons_post_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div></div><div class="panel panel-white"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_patrons__id_"><span class="parent">/patrons</span>/{id}</a> <span class="methods"><a href="#patrons__id__get"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#patrons__id__put"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#patrons__id__patch"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#patrons__id__delete"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a></span></h4></div><div id="panel_patrons__id_" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#patrons__id__get'" class="list-group-item"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Get the contents of this patron.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#patrons__id__put'" class="list-group-item"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Update this patron.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#patrons__id__patch'" class="list-group-item"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Partially update this patron.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#patrons__id__delete'" class="list-group-item"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Delete this patron.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="patrons__id__get"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/patrons</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Get the contents of this patron.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#patrons__id__get_request" data-toggle="tab">Request</a></li><li><a href="#patrons__id__get_response" data-toggle="tab">Response</a></li><li><a href="#patrons__id__get_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="patrons__id__get_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["patron.read"]</code></pre></li></ul></div><div class="tab-pane" id="patrons__id__get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em>(integer)</em><p>The patron ID for this Patron. Only present in GET responses.</p></li><li><strong>name</strong>: <em>required (string)</em></li><li><strong>uri</strong>: <em>required (string - default: http://localhost:8080/missing-pic.png - pattern: ^(\w[\w\d+.-]*):(?:\/\/((?:(?=((?:[\w\d-._~!$&'()*+,;=:]|%[\da-fA-F]{2})*))(\3)@)?(?=(\[[\da-fA-F:.]{2,}\]|(?:[\w\d-._~!$&'()*+,;=]|%[\da-fA-F]{2})*))\5(?::(?=(\d*))\6)?)(\/(?=((?:[\w\d-._~!$&'()*+,;=:@\/]|%[\da-fA-F]{2})*))\8)?|(\/?(?!\/)(?=((?:[\w\d-._~!$&'()*+,;=:@\/]|%[\da-fA-F]{2})*))\10)?)(?:\?(?=((?:[\w\d-._~!$&'()*+,;=:@\/?]|%[\da-fA-F]{2})*))\11)?(?:#(?=((?:[\w\d-._~!$&'()*+,;=:@\/?]|%[\da-fA-F]{2})*))\12)?$)</em><p>A string that looks like a URI. Regex found <a href="http://snipplr.com/view /6889/regular-expressions-for-uri-validationparsing/">here</a>, then modified to be case-insensitive.</p><p><strong>Examples</strong>:</p><pre>http://foo.com</pre><pre>ftp:a@b:127.0.0.1:8080/pATh/tO/f0o?foo=bar,baz&amp;a=b#fragment</pre></li><li><strong>checkoutIDs</strong>: <em>required (array)</em><p>A list of checkouts this Patron has.</p></li></ul><p><strong>Examples</strong>:</p><pre><code>{
+  "name": "Pewdiepie",
+  "checkoutIDs": []
+}</code></pre><pre><code>{
+  "name": "Ima Nexamplé",
+  "pic": "http://some.where/a/path/to/a/picture/ima-nexample.jpg",
+  "checkoutIDs": [
+    102441,
+    230527
+  ]
+}</code></pre></div><div class="tab-pane" id="patrons__id__get_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="patrons__id__put"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/patrons</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Update this patron.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#patrons__id__put_request" data-toggle="tab">Request</a></li><li><a href="#patrons__id__put_response" data-toggle="tab">Response</a></li><li><a href="#patrons__id__put_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="patrons__id__put_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["patron.write"]</code></pre></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em>(integer)</em><p>The patron ID for this Patron. Only present in GET responses.</p></li><li><strong>name</strong>: <em>required (string)</em></li><li><strong>uri</strong>: <em>required (string - default: http://localhost:8080/missing-pic.png - pattern: ^(\w[\w\d+.-]*):(?:\/\/((?:(?=((?:[\w\d-._~!$&'()*+,;=:]|%[\da-fA-F]{2})*))(\3)@)?(?=(\[[\da-fA-F:.]{2,}\]|(?:[\w\d-._~!$&'()*+,;=]|%[\da-fA-F]{2})*))\5(?::(?=(\d*))\6)?)(\/(?=((?:[\w\d-._~!$&'()*+,;=:@\/]|%[\da-fA-F]{2})*))\8)?|(\/?(?!\/)(?=((?:[\w\d-._~!$&'()*+,;=:@\/]|%[\da-fA-F]{2})*))\10)?)(?:\?(?=((?:[\w\d-._~!$&'()*+,;=:@\/?]|%[\da-fA-F]{2})*))\11)?(?:#(?=((?:[\w\d-._~!$&'()*+,;=:@\/?]|%[\da-fA-F]{2})*))\12)?$)</em><p>A string that looks like a URI. Regex found <a href="http://snipplr.com/view /6889/regular-expressions-for-uri-validationparsing/">here</a>, then modified to be case-insensitive.</p><p><strong>Examples</strong>:</p><pre>http://foo.com</pre><pre>ftp:a@b:127.0.0.1:8080/pATh/tO/f0o?foo=bar,baz&amp;a=b#fragment</pre></li><li><strong>checkoutIDs</strong>: <em>required (array)</em><p>A list of checkouts this Patron has.</p></li></ul><p><strong>Examples</strong>:</p><pre><code>{
+  "name": "Pewdiepie",
+  "checkoutIDs": []
+}</code></pre><pre><code>{
+  "name": "Ima Nexamplé",
+  "pic": "http://some.where/a/path/to/a/picture/ima-nexample.jpg",
+  "checkoutIDs": [
+    102441,
+    230527
+  ]
+}</code></pre></div><div class="tab-pane" id="patrons__id__put_response"><h2>HTTP status code <a href="http://httpstatus.es/204" target="_blank">204</a></h2></div><div class="tab-pane" id="patrons__id__put_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="patrons__id__patch"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/patrons</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Partially update this patron.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#patrons__id__patch_request" data-toggle="tab">Request</a></li><li><a href="#patrons__id__patch_response" data-toggle="tab">Response</a></li><li><a href="#patrons__id__patch_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="patrons__id__patch_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["patron.write"]</code></pre></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/merge-patch+json</p><p><strong>Type</strong>: object</p></div><div class="tab-pane" id="patrons__id__patch_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: types.types.Patron</p></div><div class="tab-pane" id="patrons__id__patch_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="patrons__id__delete"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/patrons</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Delete this patron.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#patrons__id__delete_request" data-toggle="tab">Request</a></li><li><a href="#patrons__id__delete_response" data-toggle="tab">Response</a></li><li><a href="#patrons__id__delete_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="patrons__id__delete_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["patron.write"]</code></pre></li></ul></div><div class="tab-pane" id="patrons__id__delete_response"><h2>HTTP status code <a href="http://httpstatus.es/204" target="_blank">204</a></h2></div><div class="tab-pane" id="patrons__id__delete_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="items" class="panel-title">/items</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_items"><span class="parent"></span>/items</a> <span class="methods"><a href="#items_get"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#items_post"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a></span></h4></div><div id="panel_items" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#items_get'" class="list-group-item"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Get a list of all items. Can be sorted and supports pagination.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#items_post'" class="list-group-item"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Create a new item.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="items_get"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent"></span>/items</h4></div><div class="modal-body"><div class="alert alert-info"><p>Get a list of all items. Can be sorted and supports pagination.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#items_get_request" data-toggle="tab">Request</a></li><li><a href="#items_get_response" data-toggle="tab">Response</a></li><li><a href="#items_get_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="items_get_request"><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["item.read"]</code></pre></li></ul><h3>Query Parameters</h3><ul><li><strong>natural</strong>: <em>required (integer - default: 0 - minimum: 0)</em><p>A natural number (integer &gt;= 0).</p><p><strong>Examples</strong>:</p><pre><code>0</code></pre><pre><code>1402</code></pre><pre><code>3</code></pre></li><li><strong>per_page</strong>: <em>required (integer - default: 30 - minimum: 1 - maximum: 200)</em><p>How many items to include in the list in the response.</p><p><strong>Examples</strong>:</p><pre><code>50</code></pre></li><li><strong>sort_by</strong>: <em>required (one of created, name - default: created)</em><p>What to sort the returned items list by.</p></li><li><strong>direction</strong>: <em>required (one of asc, desc - default: asc)</em><p>The order in which to sort the items -- either ascending or descending.</p></li></ul></div><div class="tab-pane" id="items_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>items</strong>: <em>required (array)</em></li><li><strong>hasMore</strong>: <em>required (boolean)</em></li><li><strong>maxItems</strong>: <em>required (integer)</em></li><li><strong>remainingItems</strong>: <em>required (integer)</em></li></ul><h2>HTTP status code <a href="http://httpstatus.es/422" target="_blank">422</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>msg</strong>: <em>required (string)</em></li></ul></div><div class="tab-pane" id="items_get_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="items_post"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent"></span>/items</h4></div><div class="modal-body"><div class="alert alert-info"><p>Create a new item.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#items_post_request" data-toggle="tab">Request</a></li><li><a href="#items_post_response" data-toggle="tab">Response</a></li><li><a href="#items_post_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="items_post_request"><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["item.write"]</code></pre></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em>(integer)</em><p>The item ID for this Item. Only present in GET responses.</p></li><li><strong>MARCRecord</strong>: <em>required (object)</em><p>A <em>MA</em>chine <em>R</em>eadable <em>C</em>ataloging record, a format for storing bibliographic information. More information about the MARC format can be found at <a href="http://www.loc.gov/marc/bibliographic">http://www.loc.gov/marc/bibliographic</a>. MARC is serialized in JSON here using a translation of the schema found at <a href="https://rossfsinger.com/blog/2010/09/a-proposal-to-serialize-marc-in-json">https://rossfsinger.com/blog/2010/09/a-proposal-to-serialize-marc-in-json</a>.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "leader": "01471cjm a2200349 a 4500",
+  "fields": [
+    {
+      "001": "5674874"
+    },
+    {
+      "005": "20030305110405.0"
+    },
+    {
+      "007": "sdubsmennmplu"
+    },
+    {
+      "035": {
+        "subfields": [
+          {
+            "9": "(DLC)   93707283"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "906": {
+        "subfields": [
+          {
+            "a": "7"
+          },
+          {
+            "b": "cbc"
+          },
+          {
+            "c": "copycat"
+          },
+          {
+            "d": "4"
+          },
+          {
+            "e": "ncip"
+          },
+          {
+            "f": "19"
+          },
+          {
+            "g": "y-soundrec"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "010": {
+        "subfields": [
+          {
+            "a": "   93707283 "
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "028": {
+        "subfields": [
+          {
+            "a": "CS 8786"
+          },
+          {
+            "b": "Columbia"
+          }
+        ],
+        "ind1": "0",
+        "ind2": "2"
+      }
+    },
+    {
+      "035": {
+        "subfields": [
+          {
+            "a": "(OCoLC)13083787"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "040": {
+        "subfields": [
+          {
+            "a": "OClU"
+          },
+          {
+            "c": "DLC"
+          },
+          {
+            "d": "DLC"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "041": {
+        "subfields": [
+          {
+            "a": "lccopycat"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "050": {
+        "subfields": [
+          {
+            "a": "Columbia CS 8786"
+          }
+        ],
+        "ind1": "0",
+        "ind2": "0"
+      }
+    },
+    {
+      "100": {
+        "subfields": [
+          {
+            "a": "Dylan, Bob"
+          },
+          {
+            "d": "1941-"
+          }
+        ],
+        "ind1": "1",
+        "ind2": " "
+      }
+    },
+    {
+      "245": {
+        "subfields": [
+          {
+            "a": "The freewheelin&#39; Bob Dylan"
+          },
+          {
+            "h": "[sound recording]."
+          }
+        ],
+        "ind1": "1",
+        "ind2": "4"
+      }
+    },
+    {
+      "260": {
+        "subfields": [
+          {
+            "a": "New York, N.Y.:"
+          },
+          {
+            "b": "Columbia,"
+          },
+          {
+            "c": "[1963]"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "300": {
+        "subfields": [
+          {
+            "a": "1 sound disc :"
+          },
+          {
+            "b": "analog, 33 1 / 3 rpm, stereo.;"
+          },
+          {
+            "c": "12 in."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "500": {
+        "subfields": [
+          {
+            "a": "Songs."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "511": {
+        "subfields": [
+          {
+            "a": "The composer accompanying himself on the guitar ; in part with instrumental ensemble.\n"
+          }
+        ],
+        "ind1": "0",
+        "ind2": " "
+      }
+    },
+    {
+      "500": {
+        "subfields": [
+          {
+            "a": "Program notes by Nat Hentoff on container."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "505": {
+        "subfields": [
+          {
+            "a": "Blowin&#39; in the wind -- Girl from the north country -- Masters of war -- Down on the highway -- Bob Dylan&#39;s blues -- A hard rain&#39;s a-gonna fall -- Don&#39;t think twice, it&#39;s all right -- Bob Dylan&#39;s dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free.\n"
+          }
+        ],
+        "ind1": "0",
+        "ind2": " "
+      }
+    },
+    {
+      "650": {
+        "subfields": [
+          {
+            "a": "Popular music"
+          },
+          {
+            "y": "1961-1970."
+          }
+        ],
+        "ind1": " ",
+        "ind2": "0"
+      }
+    },
+    {
+      "650": {
+        "subfields": [
+          {
+            "a": "Blues (Music)"
+          },
+          {
+            "y": "1961-1970."
+          }
+        ],
+        "ind1": " ",
+        "ind2": "0"
+      }
+    },
+    {
+      "856": {
+        "subfields": [
+          {
+            "3": "Preservation copy (limited access)"
+          },
+          {
+            "u": "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln"
+          }
+        ],
+        "ind1": "4",
+        "ind2": "1"
+      }
+    },
+    {
+      "952": {
+        "subfields": [
+          {
+            "a": "New"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "953": {
+        "subfields": [
+          {
+            "a": "TA28"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "991": {
+        "subfields": [
+          {
+            "b": "c-RecSound"
+          },
+          {
+            "h": "Columbia CS 8786"
+          },
+          {
+            "w": "MUSIC"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    }
+  ]
+}</code></pre></li><li><strong>created</strong>: <em>(datetime)</em><p>The date and time this Item was created. Not present in a POST request body.</p><p><strong>Examples</strong>:</p><pre><code>2016-06-01T09:31:02-03:30</code></pre></li><li><strong>barcode</strong>: <em>required (string - pattern: ^\d+$)</em><p><strong>Examples</strong>:</p><pre>64020000035237</pre></li><li><strong>status</strong>: <em>required (one of in, out, missing, lost)</em></li><li><strong>checkoutID</strong>: <em>(integer)</em><p>The ID of this item&#39;s checkout, if it has one. Not present if a checkout is not applicable. Note that this property is forbidden if <code>status</code> is <code>in</code>, <code>lost</code>, or <code>missing</code>, and is required if <code>status</code> is <code>out</code>.</p></li></ul><p><strong>Examples</strong>:</p><pre><code>{
+  "marc": {
+    "leader": "01471cjm a2200349 a 4500",
+    "fields": [
+      {
+        "001": "5674874"
+      },
+      {
+        "005": "20030305110405.0"
+      },
+      {
+        "007": "sdubsmennmplu"
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "9": "(DLC)   93707283"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "906": {
+          "subfields": [
+            {
+              "a": "7"
+            },
+            {
+              "b": "cbc"
+            },
+            {
+              "c": "copycat"
+            },
+            {
+              "d": "4"
+            },
+            {
+              "e": "ncip"
+            },
+            {
+              "f": "19"
+            },
+            {
+              "g": "y-soundrec"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "010": {
+          "subfields": [
+            {
+              "a": "   93707283 "
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "028": {
+          "subfields": [
+            {
+              "a": "CS 8786"
+            },
+            {
+              "b": "Columbia"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "2"
+        }
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "a": "(OCoLC)13083787"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "040": {
+          "subfields": [
+            {
+              "a": "OClU"
+            },
+            {
+              "c": "DLC"
+            },
+            {
+              "d": "DLC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "041": {
+          "subfields": [
+            {
+              "a": "lccopycat"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "050": {
+          "subfields": [
+            {
+              "a": "Columbia CS 8786"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "0"
+        }
+      },
+      {
+        "100": {
+          "subfields": [
+            {
+              "a": "Dylan, Bob"
+            },
+            {
+              "d": "1941-"
+            }
+          ],
+          "ind1": "1",
+          "ind2": " "
+        }
+      },
+      {
+        "245": {
+          "subfields": [
+            {
+              "a": "The freewheelin&#39; Bob Dylan"
+            },
+            {
+              "h": "[sound recording]."
+            }
+          ],
+          "ind1": "1",
+          "ind2": "4"
+        }
+      },
+      {
+        "260": {
+          "subfields": [
+            {
+              "a": "New York, N.Y.:"
+            },
+            {
+              "b": "Columbia,"
+            },
+            {
+              "c": "[1963]"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "300": {
+          "subfields": [
+            {
+              "a": "1 sound disc :"
+            },
+            {
+              "b": "analog, 33 1 / 3 rpm, stereo.;"
+            },
+            {
+              "c": "12 in."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Songs."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "511": {
+          "subfields": [
+            {
+              "a": "The composer accompanying himself on the guitar ; in part with instrumental ensemble.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Program notes by Nat Hentoff on container."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "505": {
+          "subfields": [
+            {
+              "a": "Blowin&#39; in the wind -- Girl from the north country -- Masters of war -- Down on the highway -- Bob Dylan&#39;s blues -- A hard rain&#39;s a-gonna fall -- Don&#39;t think twice, it&#39;s all right -- Bob Dylan&#39;s dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Popular music"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Blues (Music)"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "856": {
+          "subfields": [
+            {
+              "3": "Preservation copy (limited access)"
+            },
+            {
+              "u": "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln"
+            }
+          ],
+          "ind1": "4",
+          "ind2": "1"
+        }
+      },
+      {
+        "952": {
+          "subfields": [
+            {
+              "a": "New"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "953": {
+          "subfields": [
+            {
+              "a": "TA28"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "991": {
+          "subfields": [
+            {
+              "b": "c-RecSound"
+            },
+            {
+              "h": "Columbia CS 8786"
+            },
+            {
+              "w": "MUSIC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      }
+    ]
+  },
+  "created": "2014-03-26T17:20:34-05:00",
+  "status": "in",
+  "barcode": "29563023651983"
+}</code></pre><pre><code>{
+  "marc": {
+    "leader": "01471cjm a2200349 a 4500",
+    "fields": [
+      {
+        "001": "5674874"
+      },
+      {
+        "005": "20030305110405.0"
+      },
+      {
+        "007": "sdubsmennmplu"
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "9": "(DLC)   93707283"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "906": {
+          "subfields": [
+            {
+              "a": "7"
+            },
+            {
+              "b": "cbc"
+            },
+            {
+              "c": "copycat"
+            },
+            {
+              "d": "4"
+            },
+            {
+              "e": "ncip"
+            },
+            {
+              "f": "19"
+            },
+            {
+              "g": "y-soundrec"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "010": {
+          "subfields": [
+            {
+              "a": "   93707283 "
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "028": {
+          "subfields": [
+            {
+              "a": "CS 8786"
+            },
+            {
+              "b": "Columbia"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "2"
+        }
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "a": "(OCoLC)13083787"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "040": {
+          "subfields": [
+            {
+              "a": "OClU"
+            },
+            {
+              "c": "DLC"
+            },
+            {
+              "d": "DLC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "041": {
+          "subfields": [
+            {
+              "a": "lccopycat"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "050": {
+          "subfields": [
+            {
+              "a": "Columbia CS 8786"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "0"
+        }
+      },
+      {
+        "100": {
+          "subfields": [
+            {
+              "a": "Dylan, Bob"
+            },
+            {
+              "d": "1941-"
+            }
+          ],
+          "ind1": "1",
+          "ind2": " "
+        }
+      },
+      {
+        "245": {
+          "subfields": [
+            {
+              "a": "The freewheelin&#39; Bob Dylan"
+            },
+            {
+              "h": "[sound recording]."
+            }
+          ],
+          "ind1": "1",
+          "ind2": "4"
+        }
+      },
+      {
+        "260": {
+          "subfields": [
+            {
+              "a": "New York, N.Y.:"
+            },
+            {
+              "b": "Columbia,"
+            },
+            {
+              "c": "[1963]"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "300": {
+          "subfields": [
+            {
+              "a": "1 sound disc :"
+            },
+            {
+              "b": "analog, 33 1 / 3 rpm, stereo.;"
+            },
+            {
+              "c": "12 in."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Songs."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "511": {
+          "subfields": [
+            {
+              "a": "The composer accompanying himself on the guitar ; in part with instrumental ensemble.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Program notes by Nat Hentoff on container."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "505": {
+          "subfields": [
+            {
+              "a": "Blowin&#39; in the wind -- Girl from the north country -- Masters of war -- Down on the highway -- Bob Dylan&#39;s blues -- A hard rain&#39;s a-gonna fall -- Don&#39;t think twice, it&#39;s all right -- Bob Dylan&#39;s dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Popular music"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Blues (Music)"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "856": {
+          "subfields": [
+            {
+              "3": "Preservation copy (limited access)"
+            },
+            {
+              "u": "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln"
+            }
+          ],
+          "ind1": "4",
+          "ind2": "1"
+        }
+      },
+      {
+        "952": {
+          "subfields": [
+            {
+              "a": "New"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "953": {
+          "subfields": [
+            {
+              "a": "TA28"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "991": {
+          "subfields": [
+            {
+              "b": "c-RecSound"
+            },
+            {
+              "h": "Columbia CS 8786"
+            },
+            {
+              "w": "MUSIC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      }
+    ]
+  },
+  "created": "2016-06-01T09:31:02-03:30",
+  "status": "out",
+  "barcode": "53620000000087",
+  "checkoutID": 11425543
+}</code></pre><pre><code>{
+  "marc": {
+    "leader": "01471cjm a2200349 a 4500",
+    "fields": [
+      {
+        "001": "5674874"
+      },
+      {
+        "005": "20030305110405.0"
+      },
+      {
+        "007": "sdubsmennmplu"
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "9": "(DLC)   93707283"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "906": {
+          "subfields": [
+            {
+              "a": "7"
+            },
+            {
+              "b": "cbc"
+            },
+            {
+              "c": "copycat"
+            },
+            {
+              "d": "4"
+            },
+            {
+              "e": "ncip"
+            },
+            {
+              "f": "19"
+            },
+            {
+              "g": "y-soundrec"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "010": {
+          "subfields": [
+            {
+              "a": "   93707283 "
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "028": {
+          "subfields": [
+            {
+              "a": "CS 8786"
+            },
+            {
+              "b": "Columbia"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "2"
+        }
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "a": "(OCoLC)13083787"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "040": {
+          "subfields": [
+            {
+              "a": "OClU"
+            },
+            {
+              "c": "DLC"
+            },
+            {
+              "d": "DLC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "041": {
+          "subfields": [
+            {
+              "a": "lccopycat"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "050": {
+          "subfields": [
+            {
+              "a": "Columbia CS 8786"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "0"
+        }
+      },
+      {
+        "100": {
+          "subfields": [
+            {
+              "a": "Dylan, Bob"
+            },
+            {
+              "d": "1941-"
+            }
+          ],
+          "ind1": "1",
+          "ind2": " "
+        }
+      },
+      {
+        "245": {
+          "subfields": [
+            {
+              "a": "The freewheelin&#39; Bob Dylan"
+            },
+            {
+              "h": "[sound recording]."
+            }
+          ],
+          "ind1": "1",
+          "ind2": "4"
+        }
+      },
+      {
+        "260": {
+          "subfields": [
+            {
+              "a": "New York, N.Y.:"
+            },
+            {
+              "b": "Columbia,"
+            },
+            {
+              "c": "[1963]"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "300": {
+          "subfields": [
+            {
+              "a": "1 sound disc :"
+            },
+            {
+              "b": "analog, 33 1 / 3 rpm, stereo.;"
+            },
+            {
+              "c": "12 in."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Songs."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "511": {
+          "subfields": [
+            {
+              "a": "The composer accompanying himself on the guitar ; in part with instrumental ensemble.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Program notes by Nat Hentoff on container."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "505": {
+          "subfields": [
+            {
+              "a": "Blowin&#39; in the wind -- Girl from the north country -- Masters of war -- Down on the highway -- Bob Dylan&#39;s blues -- A hard rain&#39;s a-gonna fall -- Don&#39;t think twice, it&#39;s all right -- Bob Dylan&#39;s dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Popular music"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Blues (Music)"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "856": {
+          "subfields": [
+            {
+              "3": "Preservation copy (limited access)"
+            },
+            {
+              "u": "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln"
+            }
+          ],
+          "ind1": "4",
+          "ind2": "1"
+        }
+      },
+      {
+        "952": {
+          "subfields": [
+            {
+              "a": "New"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "953": {
+          "subfields": [
+            {
+              "a": "TA28"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "991": {
+          "subfields": [
+            {
+              "b": "c-RecSound"
+            },
+            {
+              "h": "Columbia CS 8786"
+            },
+            {
+              "w": "MUSIC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      }
+    ]
+  },
+  "created": "2015-11-24T10:34:01-04:00",
+  "status": "lost",
+  "barcode": "76543200000246"
+}</code></pre></div><div class="tab-pane" id="items_post_response"><h2>HTTP status code <a href="http://httpstatus.es/201" target="_blank">201</a></h2><h3>Headers</h3><ul><li><strong>Location</strong>: <em>required (string)</em></li></ul><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>msg</strong>: <em>required (string)</em></li></ul></div><div class="tab-pane" id="items_post_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div></div><div class="panel panel-white"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_items__id_"><span class="parent">/items</span>/{id}</a> <span class="methods"><a href="#items__id__get"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#items__id__put"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#items__id__patch"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#items__id__delete"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a></span></h4></div><div id="panel_items__id_" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#items__id__get'" class="list-group-item"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Get the contents of this item.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#items__id__put'" class="list-group-item"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Update this item.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#items__id__patch'" class="list-group-item"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Partially update this item.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#items__id__delete'" class="list-group-item"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Delete this item.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="items__id__get"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/items</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Get the contents of this item.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#items__id__get_request" data-toggle="tab">Request</a></li><li><a href="#items__id__get_response" data-toggle="tab">Response</a></li><li><a href="#items__id__get_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="items__id__get_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["item.read"]</code></pre></li></ul></div><div class="tab-pane" id="items__id__get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em>(integer)</em><p>The item ID for this Item. Only present in GET responses.</p></li><li><strong>MARCRecord</strong>: <em>required (object)</em><p>A <em>MA</em>chine <em>R</em>eadable <em>C</em>ataloging record, a format for storing bibliographic information. More information about the MARC format can be found at <a href="http://www.loc.gov/marc/bibliographic">http://www.loc.gov/marc/bibliographic</a>. MARC is serialized in JSON here using a translation of the schema found at <a href="https://rossfsinger.com/blog/2010/09/a-proposal-to-serialize-marc-in-json">https://rossfsinger.com/blog/2010/09/a-proposal-to-serialize-marc-in-json</a>.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "leader": "01471cjm a2200349 a 4500",
+  "fields": [
+    {
+      "001": "5674874"
+    },
+    {
+      "005": "20030305110405.0"
+    },
+    {
+      "007": "sdubsmennmplu"
+    },
+    {
+      "035": {
+        "subfields": [
+          {
+            "9": "(DLC)   93707283"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "906": {
+        "subfields": [
+          {
+            "a": "7"
+          },
+          {
+            "b": "cbc"
+          },
+          {
+            "c": "copycat"
+          },
+          {
+            "d": "4"
+          },
+          {
+            "e": "ncip"
+          },
+          {
+            "f": "19"
+          },
+          {
+            "g": "y-soundrec"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "010": {
+        "subfields": [
+          {
+            "a": "   93707283 "
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "028": {
+        "subfields": [
+          {
+            "a": "CS 8786"
+          },
+          {
+            "b": "Columbia"
+          }
+        ],
+        "ind1": "0",
+        "ind2": "2"
+      }
+    },
+    {
+      "035": {
+        "subfields": [
+          {
+            "a": "(OCoLC)13083787"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "040": {
+        "subfields": [
+          {
+            "a": "OClU"
+          },
+          {
+            "c": "DLC"
+          },
+          {
+            "d": "DLC"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "041": {
+        "subfields": [
+          {
+            "a": "lccopycat"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "050": {
+        "subfields": [
+          {
+            "a": "Columbia CS 8786"
+          }
+        ],
+        "ind1": "0",
+        "ind2": "0"
+      }
+    },
+    {
+      "100": {
+        "subfields": [
+          {
+            "a": "Dylan, Bob"
+          },
+          {
+            "d": "1941-"
+          }
+        ],
+        "ind1": "1",
+        "ind2": " "
+      }
+    },
+    {
+      "245": {
+        "subfields": [
+          {
+            "a": "The freewheelin&#39; Bob Dylan"
+          },
+          {
+            "h": "[sound recording]."
+          }
+        ],
+        "ind1": "1",
+        "ind2": "4"
+      }
+    },
+    {
+      "260": {
+        "subfields": [
+          {
+            "a": "New York, N.Y.:"
+          },
+          {
+            "b": "Columbia,"
+          },
+          {
+            "c": "[1963]"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "300": {
+        "subfields": [
+          {
+            "a": "1 sound disc :"
+          },
+          {
+            "b": "analog, 33 1 / 3 rpm, stereo.;"
+          },
+          {
+            "c": "12 in."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "500": {
+        "subfields": [
+          {
+            "a": "Songs."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "511": {
+        "subfields": [
+          {
+            "a": "The composer accompanying himself on the guitar ; in part with instrumental ensemble.\n"
+          }
+        ],
+        "ind1": "0",
+        "ind2": " "
+      }
+    },
+    {
+      "500": {
+        "subfields": [
+          {
+            "a": "Program notes by Nat Hentoff on container."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "505": {
+        "subfields": [
+          {
+            "a": "Blowin&#39; in the wind -- Girl from the north country -- Masters of war -- Down on the highway -- Bob Dylan&#39;s blues -- A hard rain&#39;s a-gonna fall -- Don&#39;t think twice, it&#39;s all right -- Bob Dylan&#39;s dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free.\n"
+          }
+        ],
+        "ind1": "0",
+        "ind2": " "
+      }
+    },
+    {
+      "650": {
+        "subfields": [
+          {
+            "a": "Popular music"
+          },
+          {
+            "y": "1961-1970."
+          }
+        ],
+        "ind1": " ",
+        "ind2": "0"
+      }
+    },
+    {
+      "650": {
+        "subfields": [
+          {
+            "a": "Blues (Music)"
+          },
+          {
+            "y": "1961-1970."
+          }
+        ],
+        "ind1": " ",
+        "ind2": "0"
+      }
+    },
+    {
+      "856": {
+        "subfields": [
+          {
+            "3": "Preservation copy (limited access)"
+          },
+          {
+            "u": "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln"
+          }
+        ],
+        "ind1": "4",
+        "ind2": "1"
+      }
+    },
+    {
+      "952": {
+        "subfields": [
+          {
+            "a": "New"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "953": {
+        "subfields": [
+          {
+            "a": "TA28"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "991": {
+        "subfields": [
+          {
+            "b": "c-RecSound"
+          },
+          {
+            "h": "Columbia CS 8786"
+          },
+          {
+            "w": "MUSIC"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    }
+  ]
+}</code></pre></li><li><strong>created</strong>: <em>(datetime)</em><p>The date and time this Item was created. Not present in a POST request body.</p><p><strong>Examples</strong>:</p><pre><code>2016-06-01T09:31:02-03:30</code></pre></li><li><strong>barcode</strong>: <em>required (string - pattern: ^\d+$)</em><p><strong>Examples</strong>:</p><pre>64020000035237</pre></li><li><strong>status</strong>: <em>required (one of in, out, missing, lost)</em></li><li><strong>checkoutID</strong>: <em>(integer)</em><p>The ID of this item&#39;s checkout, if it has one. Not present if a checkout is not applicable. Note that this property is forbidden if <code>status</code> is <code>in</code>, <code>lost</code>, or <code>missing</code>, and is required if <code>status</code> is <code>out</code>.</p></li></ul><p><strong>Examples</strong>:</p><pre><code>{
+  "marc": {
+    "leader": "01471cjm a2200349 a 4500",
+    "fields": [
+      {
+        "001": "5674874"
+      },
+      {
+        "005": "20030305110405.0"
+      },
+      {
+        "007": "sdubsmennmplu"
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "9": "(DLC)   93707283"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "906": {
+          "subfields": [
+            {
+              "a": "7"
+            },
+            {
+              "b": "cbc"
+            },
+            {
+              "c": "copycat"
+            },
+            {
+              "d": "4"
+            },
+            {
+              "e": "ncip"
+            },
+            {
+              "f": "19"
+            },
+            {
+              "g": "y-soundrec"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "010": {
+          "subfields": [
+            {
+              "a": "   93707283 "
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "028": {
+          "subfields": [
+            {
+              "a": "CS 8786"
+            },
+            {
+              "b": "Columbia"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "2"
+        }
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "a": "(OCoLC)13083787"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "040": {
+          "subfields": [
+            {
+              "a": "OClU"
+            },
+            {
+              "c": "DLC"
+            },
+            {
+              "d": "DLC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "041": {
+          "subfields": [
+            {
+              "a": "lccopycat"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "050": {
+          "subfields": [
+            {
+              "a": "Columbia CS 8786"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "0"
+        }
+      },
+      {
+        "100": {
+          "subfields": [
+            {
+              "a": "Dylan, Bob"
+            },
+            {
+              "d": "1941-"
+            }
+          ],
+          "ind1": "1",
+          "ind2": " "
+        }
+      },
+      {
+        "245": {
+          "subfields": [
+            {
+              "a": "The freewheelin&#39; Bob Dylan"
+            },
+            {
+              "h": "[sound recording]."
+            }
+          ],
+          "ind1": "1",
+          "ind2": "4"
+        }
+      },
+      {
+        "260": {
+          "subfields": [
+            {
+              "a": "New York, N.Y.:"
+            },
+            {
+              "b": "Columbia,"
+            },
+            {
+              "c": "[1963]"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "300": {
+          "subfields": [
+            {
+              "a": "1 sound disc :"
+            },
+            {
+              "b": "analog, 33 1 / 3 rpm, stereo.;"
+            },
+            {
+              "c": "12 in."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Songs."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "511": {
+          "subfields": [
+            {
+              "a": "The composer accompanying himself on the guitar ; in part with instrumental ensemble.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Program notes by Nat Hentoff on container."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "505": {
+          "subfields": [
+            {
+              "a": "Blowin&#39; in the wind -- Girl from the north country -- Masters of war -- Down on the highway -- Bob Dylan&#39;s blues -- A hard rain&#39;s a-gonna fall -- Don&#39;t think twice, it&#39;s all right -- Bob Dylan&#39;s dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Popular music"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Blues (Music)"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "856": {
+          "subfields": [
+            {
+              "3": "Preservation copy (limited access)"
+            },
+            {
+              "u": "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln"
+            }
+          ],
+          "ind1": "4",
+          "ind2": "1"
+        }
+      },
+      {
+        "952": {
+          "subfields": [
+            {
+              "a": "New"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "953": {
+          "subfields": [
+            {
+              "a": "TA28"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "991": {
+          "subfields": [
+            {
+              "b": "c-RecSound"
+            },
+            {
+              "h": "Columbia CS 8786"
+            },
+            {
+              "w": "MUSIC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      }
+    ]
+  },
+  "created": "2014-03-26T17:20:34-05:00",
+  "status": "in",
+  "barcode": "29563023651983"
+}</code></pre><pre><code>{
+  "marc": {
+    "leader": "01471cjm a2200349 a 4500",
+    "fields": [
+      {
+        "001": "5674874"
+      },
+      {
+        "005": "20030305110405.0"
+      },
+      {
+        "007": "sdubsmennmplu"
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "9": "(DLC)   93707283"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "906": {
+          "subfields": [
+            {
+              "a": "7"
+            },
+            {
+              "b": "cbc"
+            },
+            {
+              "c": "copycat"
+            },
+            {
+              "d": "4"
+            },
+            {
+              "e": "ncip"
+            },
+            {
+              "f": "19"
+            },
+            {
+              "g": "y-soundrec"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "010": {
+          "subfields": [
+            {
+              "a": "   93707283 "
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "028": {
+          "subfields": [
+            {
+              "a": "CS 8786"
+            },
+            {
+              "b": "Columbia"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "2"
+        }
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "a": "(OCoLC)13083787"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "040": {
+          "subfields": [
+            {
+              "a": "OClU"
+            },
+            {
+              "c": "DLC"
+            },
+            {
+              "d": "DLC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "041": {
+          "subfields": [
+            {
+              "a": "lccopycat"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "050": {
+          "subfields": [
+            {
+              "a": "Columbia CS 8786"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "0"
+        }
+      },
+      {
+        "100": {
+          "subfields": [
+            {
+              "a": "Dylan, Bob"
+            },
+            {
+              "d": "1941-"
+            }
+          ],
+          "ind1": "1",
+          "ind2": " "
+        }
+      },
+      {
+        "245": {
+          "subfields": [
+            {
+              "a": "The freewheelin&#39; Bob Dylan"
+            },
+            {
+              "h": "[sound recording]."
+            }
+          ],
+          "ind1": "1",
+          "ind2": "4"
+        }
+      },
+      {
+        "260": {
+          "subfields": [
+            {
+              "a": "New York, N.Y.:"
+            },
+            {
+              "b": "Columbia,"
+            },
+            {
+              "c": "[1963]"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "300": {
+          "subfields": [
+            {
+              "a": "1 sound disc :"
+            },
+            {
+              "b": "analog, 33 1 / 3 rpm, stereo.;"
+            },
+            {
+              "c": "12 in."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Songs."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "511": {
+          "subfields": [
+            {
+              "a": "The composer accompanying himself on the guitar ; in part with instrumental ensemble.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Program notes by Nat Hentoff on container."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "505": {
+          "subfields": [
+            {
+              "a": "Blowin&#39; in the wind -- Girl from the north country -- Masters of war -- Down on the highway -- Bob Dylan&#39;s blues -- A hard rain&#39;s a-gonna fall -- Don&#39;t think twice, it&#39;s all right -- Bob Dylan&#39;s dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Popular music"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Blues (Music)"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "856": {
+          "subfields": [
+            {
+              "3": "Preservation copy (limited access)"
+            },
+            {
+              "u": "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln"
+            }
+          ],
+          "ind1": "4",
+          "ind2": "1"
+        }
+      },
+      {
+        "952": {
+          "subfields": [
+            {
+              "a": "New"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "953": {
+          "subfields": [
+            {
+              "a": "TA28"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "991": {
+          "subfields": [
+            {
+              "b": "c-RecSound"
+            },
+            {
+              "h": "Columbia CS 8786"
+            },
+            {
+              "w": "MUSIC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      }
+    ]
+  },
+  "created": "2016-06-01T09:31:02-03:30",
+  "status": "out",
+  "barcode": "53620000000087",
+  "checkoutID": 11425543
+}</code></pre><pre><code>{
+  "marc": {
+    "leader": "01471cjm a2200349 a 4500",
+    "fields": [
+      {
+        "001": "5674874"
+      },
+      {
+        "005": "20030305110405.0"
+      },
+      {
+        "007": "sdubsmennmplu"
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "9": "(DLC)   93707283"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "906": {
+          "subfields": [
+            {
+              "a": "7"
+            },
+            {
+              "b": "cbc"
+            },
+            {
+              "c": "copycat"
+            },
+            {
+              "d": "4"
+            },
+            {
+              "e": "ncip"
+            },
+            {
+              "f": "19"
+            },
+            {
+              "g": "y-soundrec"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "010": {
+          "subfields": [
+            {
+              "a": "   93707283 "
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "028": {
+          "subfields": [
+            {
+              "a": "CS 8786"
+            },
+            {
+              "b": "Columbia"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "2"
+        }
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "a": "(OCoLC)13083787"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "040": {
+          "subfields": [
+            {
+              "a": "OClU"
+            },
+            {
+              "c": "DLC"
+            },
+            {
+              "d": "DLC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "041": {
+          "subfields": [
+            {
+              "a": "lccopycat"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "050": {
+          "subfields": [
+            {
+              "a": "Columbia CS 8786"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "0"
+        }
+      },
+      {
+        "100": {
+          "subfields": [
+            {
+              "a": "Dylan, Bob"
+            },
+            {
+              "d": "1941-"
+            }
+          ],
+          "ind1": "1",
+          "ind2": " "
+        }
+      },
+      {
+        "245": {
+          "subfields": [
+            {
+              "a": "The freewheelin&#39; Bob Dylan"
+            },
+            {
+              "h": "[sound recording]."
+            }
+          ],
+          "ind1": "1",
+          "ind2": "4"
+        }
+      },
+      {
+        "260": {
+          "subfields": [
+            {
+              "a": "New York, N.Y.:"
+            },
+            {
+              "b": "Columbia,"
+            },
+            {
+              "c": "[1963]"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "300": {
+          "subfields": [
+            {
+              "a": "1 sound disc :"
+            },
+            {
+              "b": "analog, 33 1 / 3 rpm, stereo.;"
+            },
+            {
+              "c": "12 in."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Songs."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "511": {
+          "subfields": [
+            {
+              "a": "The composer accompanying himself on the guitar ; in part with instrumental ensemble.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Program notes by Nat Hentoff on container."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "505": {
+          "subfields": [
+            {
+              "a": "Blowin&#39; in the wind -- Girl from the north country -- Masters of war -- Down on the highway -- Bob Dylan&#39;s blues -- A hard rain&#39;s a-gonna fall -- Don&#39;t think twice, it&#39;s all right -- Bob Dylan&#39;s dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Popular music"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Blues (Music)"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "856": {
+          "subfields": [
+            {
+              "3": "Preservation copy (limited access)"
+            },
+            {
+              "u": "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln"
+            }
+          ],
+          "ind1": "4",
+          "ind2": "1"
+        }
+      },
+      {
+        "952": {
+          "subfields": [
+            {
+              "a": "New"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "953": {
+          "subfields": [
+            {
+              "a": "TA28"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "991": {
+          "subfields": [
+            {
+              "b": "c-RecSound"
+            },
+            {
+              "h": "Columbia CS 8786"
+            },
+            {
+              "w": "MUSIC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      }
+    ]
+  },
+  "created": "2015-11-24T10:34:01-04:00",
+  "status": "lost",
+  "barcode": "76543200000246"
+}</code></pre></div><div class="tab-pane" id="items__id__get_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="items__id__put"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/items</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Update this item.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#items__id__put_request" data-toggle="tab">Request</a></li><li><a href="#items__id__put_response" data-toggle="tab">Response</a></li><li><a href="#items__id__put_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="items__id__put_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["item.write"]</code></pre></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em>(integer)</em><p>The item ID for this Item. Only present in GET responses.</p></li><li><strong>MARCRecord</strong>: <em>required (object)</em><p>A <em>MA</em>chine <em>R</em>eadable <em>C</em>ataloging record, a format for storing bibliographic information. More information about the MARC format can be found at <a href="http://www.loc.gov/marc/bibliographic">http://www.loc.gov/marc/bibliographic</a>. MARC is serialized in JSON here using a translation of the schema found at <a href="https://rossfsinger.com/blog/2010/09/a-proposal-to-serialize-marc-in-json">https://rossfsinger.com/blog/2010/09/a-proposal-to-serialize-marc-in-json</a>.</p><p><strong>Examples</strong>:</p><pre><code>{
+  "leader": "01471cjm a2200349 a 4500",
+  "fields": [
+    {
+      "001": "5674874"
+    },
+    {
+      "005": "20030305110405.0"
+    },
+    {
+      "007": "sdubsmennmplu"
+    },
+    {
+      "035": {
+        "subfields": [
+          {
+            "9": "(DLC)   93707283"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "906": {
+        "subfields": [
+          {
+            "a": "7"
+          },
+          {
+            "b": "cbc"
+          },
+          {
+            "c": "copycat"
+          },
+          {
+            "d": "4"
+          },
+          {
+            "e": "ncip"
+          },
+          {
+            "f": "19"
+          },
+          {
+            "g": "y-soundrec"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "010": {
+        "subfields": [
+          {
+            "a": "   93707283 "
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "028": {
+        "subfields": [
+          {
+            "a": "CS 8786"
+          },
+          {
+            "b": "Columbia"
+          }
+        ],
+        "ind1": "0",
+        "ind2": "2"
+      }
+    },
+    {
+      "035": {
+        "subfields": [
+          {
+            "a": "(OCoLC)13083787"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "040": {
+        "subfields": [
+          {
+            "a": "OClU"
+          },
+          {
+            "c": "DLC"
+          },
+          {
+            "d": "DLC"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "041": {
+        "subfields": [
+          {
+            "a": "lccopycat"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "050": {
+        "subfields": [
+          {
+            "a": "Columbia CS 8786"
+          }
+        ],
+        "ind1": "0",
+        "ind2": "0"
+      }
+    },
+    {
+      "100": {
+        "subfields": [
+          {
+            "a": "Dylan, Bob"
+          },
+          {
+            "d": "1941-"
+          }
+        ],
+        "ind1": "1",
+        "ind2": " "
+      }
+    },
+    {
+      "245": {
+        "subfields": [
+          {
+            "a": "The freewheelin&#39; Bob Dylan"
+          },
+          {
+            "h": "[sound recording]."
+          }
+        ],
+        "ind1": "1",
+        "ind2": "4"
+      }
+    },
+    {
+      "260": {
+        "subfields": [
+          {
+            "a": "New York, N.Y.:"
+          },
+          {
+            "b": "Columbia,"
+          },
+          {
+            "c": "[1963]"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "300": {
+        "subfields": [
+          {
+            "a": "1 sound disc :"
+          },
+          {
+            "b": "analog, 33 1 / 3 rpm, stereo.;"
+          },
+          {
+            "c": "12 in."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "500": {
+        "subfields": [
+          {
+            "a": "Songs."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "511": {
+        "subfields": [
+          {
+            "a": "The composer accompanying himself on the guitar ; in part with instrumental ensemble.\n"
+          }
+        ],
+        "ind1": "0",
+        "ind2": " "
+      }
+    },
+    {
+      "500": {
+        "subfields": [
+          {
+            "a": "Program notes by Nat Hentoff on container."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "505": {
+        "subfields": [
+          {
+            "a": "Blowin&#39; in the wind -- Girl from the north country -- Masters of war -- Down on the highway -- Bob Dylan&#39;s blues -- A hard rain&#39;s a-gonna fall -- Don&#39;t think twice, it&#39;s all right -- Bob Dylan&#39;s dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free.\n"
+          }
+        ],
+        "ind1": "0",
+        "ind2": " "
+      }
+    },
+    {
+      "650": {
+        "subfields": [
+          {
+            "a": "Popular music"
+          },
+          {
+            "y": "1961-1970."
+          }
+        ],
+        "ind1": " ",
+        "ind2": "0"
+      }
+    },
+    {
+      "650": {
+        "subfields": [
+          {
+            "a": "Blues (Music)"
+          },
+          {
+            "y": "1961-1970."
+          }
+        ],
+        "ind1": " ",
+        "ind2": "0"
+      }
+    },
+    {
+      "856": {
+        "subfields": [
+          {
+            "3": "Preservation copy (limited access)"
+          },
+          {
+            "u": "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln"
+          }
+        ],
+        "ind1": "4",
+        "ind2": "1"
+      }
+    },
+    {
+      "952": {
+        "subfields": [
+          {
+            "a": "New"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "953": {
+        "subfields": [
+          {
+            "a": "TA28"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "991": {
+        "subfields": [
+          {
+            "b": "c-RecSound"
+          },
+          {
+            "h": "Columbia CS 8786"
+          },
+          {
+            "w": "MUSIC"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    }
+  ]
+}</code></pre></li><li><strong>created</strong>: <em>(datetime)</em><p>The date and time this Item was created. Not present in a POST request body.</p><p><strong>Examples</strong>:</p><pre><code>2016-06-01T09:31:02-03:30</code></pre></li><li><strong>barcode</strong>: <em>required (string - pattern: ^\d+$)</em><p><strong>Examples</strong>:</p><pre>64020000035237</pre></li><li><strong>status</strong>: <em>required (one of in, out, missing, lost)</em></li><li><strong>checkoutID</strong>: <em>(integer)</em><p>The ID of this item&#39;s checkout, if it has one. Not present if a checkout is not applicable. Note that this property is forbidden if <code>status</code> is <code>in</code>, <code>lost</code>, or <code>missing</code>, and is required if <code>status</code> is <code>out</code>.</p></li></ul><p><strong>Examples</strong>:</p><pre><code>{
+  "marc": {
+    "leader": "01471cjm a2200349 a 4500",
+    "fields": [
+      {
+        "001": "5674874"
+      },
+      {
+        "005": "20030305110405.0"
+      },
+      {
+        "007": "sdubsmennmplu"
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "9": "(DLC)   93707283"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "906": {
+          "subfields": [
+            {
+              "a": "7"
+            },
+            {
+              "b": "cbc"
+            },
+            {
+              "c": "copycat"
+            },
+            {
+              "d": "4"
+            },
+            {
+              "e": "ncip"
+            },
+            {
+              "f": "19"
+            },
+            {
+              "g": "y-soundrec"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "010": {
+          "subfields": [
+            {
+              "a": "   93707283 "
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "028": {
+          "subfields": [
+            {
+              "a": "CS 8786"
+            },
+            {
+              "b": "Columbia"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "2"
+        }
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "a": "(OCoLC)13083787"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "040": {
+          "subfields": [
+            {
+              "a": "OClU"
+            },
+            {
+              "c": "DLC"
+            },
+            {
+              "d": "DLC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "041": {
+          "subfields": [
+            {
+              "a": "lccopycat"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "050": {
+          "subfields": [
+            {
+              "a": "Columbia CS 8786"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "0"
+        }
+      },
+      {
+        "100": {
+          "subfields": [
+            {
+              "a": "Dylan, Bob"
+            },
+            {
+              "d": "1941-"
+            }
+          ],
+          "ind1": "1",
+          "ind2": " "
+        }
+      },
+      {
+        "245": {
+          "subfields": [
+            {
+              "a": "The freewheelin&#39; Bob Dylan"
+            },
+            {
+              "h": "[sound recording]."
+            }
+          ],
+          "ind1": "1",
+          "ind2": "4"
+        }
+      },
+      {
+        "260": {
+          "subfields": [
+            {
+              "a": "New York, N.Y.:"
+            },
+            {
+              "b": "Columbia,"
+            },
+            {
+              "c": "[1963]"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "300": {
+          "subfields": [
+            {
+              "a": "1 sound disc :"
+            },
+            {
+              "b": "analog, 33 1 / 3 rpm, stereo.;"
+            },
+            {
+              "c": "12 in."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Songs."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "511": {
+          "subfields": [
+            {
+              "a": "The composer accompanying himself on the guitar ; in part with instrumental ensemble.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Program notes by Nat Hentoff on container."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "505": {
+          "subfields": [
+            {
+              "a": "Blowin&#39; in the wind -- Girl from the north country -- Masters of war -- Down on the highway -- Bob Dylan&#39;s blues -- A hard rain&#39;s a-gonna fall -- Don&#39;t think twice, it&#39;s all right -- Bob Dylan&#39;s dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Popular music"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Blues (Music)"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "856": {
+          "subfields": [
+            {
+              "3": "Preservation copy (limited access)"
+            },
+            {
+              "u": "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln"
+            }
+          ],
+          "ind1": "4",
+          "ind2": "1"
+        }
+      },
+      {
+        "952": {
+          "subfields": [
+            {
+              "a": "New"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "953": {
+          "subfields": [
+            {
+              "a": "TA28"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "991": {
+          "subfields": [
+            {
+              "b": "c-RecSound"
+            },
+            {
+              "h": "Columbia CS 8786"
+            },
+            {
+              "w": "MUSIC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      }
+    ]
+  },
+  "created": "2014-03-26T17:20:34-05:00",
+  "status": "in",
+  "barcode": "29563023651983"
+}</code></pre><pre><code>{
+  "marc": {
+    "leader": "01471cjm a2200349 a 4500",
+    "fields": [
+      {
+        "001": "5674874"
+      },
+      {
+        "005": "20030305110405.0"
+      },
+      {
+        "007": "sdubsmennmplu"
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "9": "(DLC)   93707283"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "906": {
+          "subfields": [
+            {
+              "a": "7"
+            },
+            {
+              "b": "cbc"
+            },
+            {
+              "c": "copycat"
+            },
+            {
+              "d": "4"
+            },
+            {
+              "e": "ncip"
+            },
+            {
+              "f": "19"
+            },
+            {
+              "g": "y-soundrec"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "010": {
+          "subfields": [
+            {
+              "a": "   93707283 "
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "028": {
+          "subfields": [
+            {
+              "a": "CS 8786"
+            },
+            {
+              "b": "Columbia"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "2"
+        }
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "a": "(OCoLC)13083787"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "040": {
+          "subfields": [
+            {
+              "a": "OClU"
+            },
+            {
+              "c": "DLC"
+            },
+            {
+              "d": "DLC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "041": {
+          "subfields": [
+            {
+              "a": "lccopycat"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "050": {
+          "subfields": [
+            {
+              "a": "Columbia CS 8786"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "0"
+        }
+      },
+      {
+        "100": {
+          "subfields": [
+            {
+              "a": "Dylan, Bob"
+            },
+            {
+              "d": "1941-"
+            }
+          ],
+          "ind1": "1",
+          "ind2": " "
+        }
+      },
+      {
+        "245": {
+          "subfields": [
+            {
+              "a": "The freewheelin&#39; Bob Dylan"
+            },
+            {
+              "h": "[sound recording]."
+            }
+          ],
+          "ind1": "1",
+          "ind2": "4"
+        }
+      },
+      {
+        "260": {
+          "subfields": [
+            {
+              "a": "New York, N.Y.:"
+            },
+            {
+              "b": "Columbia,"
+            },
+            {
+              "c": "[1963]"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "300": {
+          "subfields": [
+            {
+              "a": "1 sound disc :"
+            },
+            {
+              "b": "analog, 33 1 / 3 rpm, stereo.;"
+            },
+            {
+              "c": "12 in."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Songs."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "511": {
+          "subfields": [
+            {
+              "a": "The composer accompanying himself on the guitar ; in part with instrumental ensemble.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Program notes by Nat Hentoff on container."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "505": {
+          "subfields": [
+            {
+              "a": "Blowin&#39; in the wind -- Girl from the north country -- Masters of war -- Down on the highway -- Bob Dylan&#39;s blues -- A hard rain&#39;s a-gonna fall -- Don&#39;t think twice, it&#39;s all right -- Bob Dylan&#39;s dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Popular music"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Blues (Music)"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "856": {
+          "subfields": [
+            {
+              "3": "Preservation copy (limited access)"
+            },
+            {
+              "u": "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln"
+            }
+          ],
+          "ind1": "4",
+          "ind2": "1"
+        }
+      },
+      {
+        "952": {
+          "subfields": [
+            {
+              "a": "New"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "953": {
+          "subfields": [
+            {
+              "a": "TA28"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "991": {
+          "subfields": [
+            {
+              "b": "c-RecSound"
+            },
+            {
+              "h": "Columbia CS 8786"
+            },
+            {
+              "w": "MUSIC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      }
+    ]
+  },
+  "created": "2016-06-01T09:31:02-03:30",
+  "status": "out",
+  "barcode": "53620000000087",
+  "checkoutID": 11425543
+}</code></pre><pre><code>{
+  "marc": {
+    "leader": "01471cjm a2200349 a 4500",
+    "fields": [
+      {
+        "001": "5674874"
+      },
+      {
+        "005": "20030305110405.0"
+      },
+      {
+        "007": "sdubsmennmplu"
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "9": "(DLC)   93707283"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "906": {
+          "subfields": [
+            {
+              "a": "7"
+            },
+            {
+              "b": "cbc"
+            },
+            {
+              "c": "copycat"
+            },
+            {
+              "d": "4"
+            },
+            {
+              "e": "ncip"
+            },
+            {
+              "f": "19"
+            },
+            {
+              "g": "y-soundrec"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "010": {
+          "subfields": [
+            {
+              "a": "   93707283 "
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "028": {
+          "subfields": [
+            {
+              "a": "CS 8786"
+            },
+            {
+              "b": "Columbia"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "2"
+        }
+      },
+      {
+        "035": {
+          "subfields": [
+            {
+              "a": "(OCoLC)13083787"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "040": {
+          "subfields": [
+            {
+              "a": "OClU"
+            },
+            {
+              "c": "DLC"
+            },
+            {
+              "d": "DLC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "041": {
+          "subfields": [
+            {
+              "a": "lccopycat"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "050": {
+          "subfields": [
+            {
+              "a": "Columbia CS 8786"
+            }
+          ],
+          "ind1": "0",
+          "ind2": "0"
+        }
+      },
+      {
+        "100": {
+          "subfields": [
+            {
+              "a": "Dylan, Bob"
+            },
+            {
+              "d": "1941-"
+            }
+          ],
+          "ind1": "1",
+          "ind2": " "
+        }
+      },
+      {
+        "245": {
+          "subfields": [
+            {
+              "a": "The freewheelin&#39; Bob Dylan"
+            },
+            {
+              "h": "[sound recording]."
+            }
+          ],
+          "ind1": "1",
+          "ind2": "4"
+        }
+      },
+      {
+        "260": {
+          "subfields": [
+            {
+              "a": "New York, N.Y.:"
+            },
+            {
+              "b": "Columbia,"
+            },
+            {
+              "c": "[1963]"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "300": {
+          "subfields": [
+            {
+              "a": "1 sound disc :"
+            },
+            {
+              "b": "analog, 33 1 / 3 rpm, stereo.;"
+            },
+            {
+              "c": "12 in."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Songs."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "511": {
+          "subfields": [
+            {
+              "a": "The composer accompanying himself on the guitar ; in part with instrumental ensemble.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "500": {
+          "subfields": [
+            {
+              "a": "Program notes by Nat Hentoff on container."
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "505": {
+          "subfields": [
+            {
+              "a": "Blowin&#39; in the wind -- Girl from the north country -- Masters of war -- Down on the highway -- Bob Dylan&#39;s blues -- A hard rain&#39;s a-gonna fall -- Don&#39;t think twice, it&#39;s all right -- Bob Dylan&#39;s dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free.\n"
+            }
+          ],
+          "ind1": "0",
+          "ind2": " "
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Popular music"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "650": {
+          "subfields": [
+            {
+              "a": "Blues (Music)"
+            },
+            {
+              "y": "1961-1970."
+            }
+          ],
+          "ind1": " ",
+          "ind2": "0"
+        }
+      },
+      {
+        "856": {
+          "subfields": [
+            {
+              "3": "Preservation copy (limited access)"
+            },
+            {
+              "u": "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln"
+            }
+          ],
+          "ind1": "4",
+          "ind2": "1"
+        }
+      },
+      {
+        "952": {
+          "subfields": [
+            {
+              "a": "New"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "953": {
+          "subfields": [
+            {
+              "a": "TA28"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      },
+      {
+        "991": {
+          "subfields": [
+            {
+              "b": "c-RecSound"
+            },
+            {
+              "h": "Columbia CS 8786"
+            },
+            {
+              "w": "MUSIC"
+            }
+          ],
+          "ind1": " ",
+          "ind2": " "
+        }
+      }
+    ]
+  },
+  "created": "2015-11-24T10:34:01-04:00",
+  "status": "lost",
+  "barcode": "76543200000246"
+}</code></pre></div><div class="tab-pane" id="items__id__put_response"><h2>HTTP status code <a href="http://httpstatus.es/204" target="_blank">204</a></h2></div><div class="tab-pane" id="items__id__put_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="items__id__patch"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/items</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Partially update this item.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#items__id__patch_request" data-toggle="tab">Request</a></li><li><a href="#items__id__patch_response" data-toggle="tab">Response</a></li><li><a href="#items__id__patch_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="items__id__patch_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["item.write"]</code></pre></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/merge-patch+json</p><p><strong>Type</strong>: object</p></div><div class="tab-pane" id="items__id__patch_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: types.types.Item</p></div><div class="tab-pane" id="items__id__patch_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="items__id__delete"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/items</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Delete this item.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#items__id__delete_request" data-toggle="tab">Request</a></li><li><a href="#items__id__delete_response" data-toggle="tab">Response</a></li><li><a href="#items__id__delete_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="items__id__delete_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["item.write"]</code></pre></li></ul></div><div class="tab-pane" id="items__id__delete_response"><h2>HTTP status code <a href="http://httpstatus.es/204" target="_blank">204</a></h2></div><div class="tab-pane" id="items__id__delete_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div></div><div class="panel panel-white"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_items__id__marc"><span class="parent">/items/{id}</span>/marc</a> <span class="methods"><a href="#items__id__marc_get"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#items__id__marc_put"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#items__id__marc_patch"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#items__id__marc_delete"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a></span></h4></div><div id="panel_items__id__marc" class="panel-collapse collapse"><div class="panel-body"><div class="resource-description"><p>The MARC record of the item with this ID.</p></div><div class="list-group"><div onclick="window.location.href = '#items__id__marc_get'" class="list-group-item"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Get the contents of this MARC record.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#items__id__marc_put'" class="list-group-item"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Update this MARC record.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#items__id__marc_patch'" class="list-group-item"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Partially update this MARC record.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#items__id__marc_delete'" class="list-group-item"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Delete this MARC record.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="items__id__marc_get"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/items/{id}</span>/marc</h4></div><div class="modal-body"><div class="alert alert-info"><p>Get the contents of this MARC record.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#items__id__marc_get_request" data-toggle="tab">Request</a></li><li><a href="#items__id__marc_get_response" data-toggle="tab">Response</a></li><li><a href="#items__id__marc_get_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="items__id__marc_get_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["item.read"]</code></pre></li></ul></div><div class="tab-pane" id="items__id__marc_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/marc</p><p><strong>Type</strong>: string</p><p><strong>Media type</strong>: type</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>MARCLeader</strong>: <em>required (string - minLength: 24 - maxLength: 24)</em><p>The leader field of a MARC record. See <a href="https://www.loc.gov/marc/bibliographic/bdleader.html">https://www.loc.gov/marc/bibliographic/bdleader.html</a> for details.</p><p><strong>Examples</strong>:</p><pre>01471cjm a2200349 a 4500</pre><pre>01297nam a2200368 a 4500</pre></li><li><strong>fields</strong>: <em>required (array)</em></li></ul><p><strong>Examples</strong>:</p><pre><code>{
+  "leader": "01471cjm a2200349 a 4500",
+  "fields": [
+    {
+      "001": "5674874"
+    },
+    {
+      "005": "20030305110405.0"
+    },
+    {
+      "007": "sdubsmennmplu"
+    },
+    {
+      "035": {
+        "subfields": [
+          {
+            "9": "(DLC)   93707283"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "906": {
+        "subfields": [
+          {
+            "a": "7"
+          },
+          {
+            "b": "cbc"
+          },
+          {
+            "c": "copycat"
+          },
+          {
+            "d": "4"
+          },
+          {
+            "e": "ncip"
+          },
+          {
+            "f": "19"
+          },
+          {
+            "g": "y-soundrec"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "010": {
+        "subfields": [
+          {
+            "a": "   93707283 "
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "028": {
+        "subfields": [
+          {
+            "a": "CS 8786"
+          },
+          {
+            "b": "Columbia"
+          }
+        ],
+        "ind1": "0",
+        "ind2": "2"
+      }
+    },
+    {
+      "035": {
+        "subfields": [
+          {
+            "a": "(OCoLC)13083787"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "040": {
+        "subfields": [
+          {
+            "a": "OClU"
+          },
+          {
+            "c": "DLC"
+          },
+          {
+            "d": "DLC"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "041": {
+        "subfields": [
+          {
+            "a": "lccopycat"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "050": {
+        "subfields": [
+          {
+            "a": "Columbia CS 8786"
+          }
+        ],
+        "ind1": "0",
+        "ind2": "0"
+      }
+    },
+    {
+      "100": {
+        "subfields": [
+          {
+            "a": "Dylan, Bob"
+          },
+          {
+            "d": "1941-"
+          }
+        ],
+        "ind1": "1",
+        "ind2": " "
+      }
+    },
+    {
+      "245": {
+        "subfields": [
+          {
+            "a": "The freewheelin&#39; Bob Dylan"
+          },
+          {
+            "h": "[sound recording]."
+          }
+        ],
+        "ind1": "1",
+        "ind2": "4"
+      }
+    },
+    {
+      "260": {
+        "subfields": [
+          {
+            "a": "New York, N.Y.:"
+          },
+          {
+            "b": "Columbia,"
+          },
+          {
+            "c": "[1963]"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "300": {
+        "subfields": [
+          {
+            "a": "1 sound disc :"
+          },
+          {
+            "b": "analog, 33 1 / 3 rpm, stereo.;"
+          },
+          {
+            "c": "12 in."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "500": {
+        "subfields": [
+          {
+            "a": "Songs."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "511": {
+        "subfields": [
+          {
+            "a": "The composer accompanying himself on the guitar ; in part with instrumental ensemble.\n"
+          }
+        ],
+        "ind1": "0",
+        "ind2": " "
+      }
+    },
+    {
+      "500": {
+        "subfields": [
+          {
+            "a": "Program notes by Nat Hentoff on container."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "505": {
+        "subfields": [
+          {
+            "a": "Blowin&#39; in the wind -- Girl from the north country -- Masters of war -- Down on the highway -- Bob Dylan&#39;s blues -- A hard rain&#39;s a-gonna fall -- Don&#39;t think twice, it&#39;s all right -- Bob Dylan&#39;s dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free.\n"
+          }
+        ],
+        "ind1": "0",
+        "ind2": " "
+      }
+    },
+    {
+      "650": {
+        "subfields": [
+          {
+            "a": "Popular music"
+          },
+          {
+            "y": "1961-1970."
+          }
+        ],
+        "ind1": " ",
+        "ind2": "0"
+      }
+    },
+    {
+      "650": {
+        "subfields": [
+          {
+            "a": "Blues (Music)"
+          },
+          {
+            "y": "1961-1970."
+          }
+        ],
+        "ind1": " ",
+        "ind2": "0"
+      }
+    },
+    {
+      "856": {
+        "subfields": [
+          {
+            "3": "Preservation copy (limited access)"
+          },
+          {
+            "u": "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln"
+          }
+        ],
+        "ind1": "4",
+        "ind2": "1"
+      }
+    },
+    {
+      "952": {
+        "subfields": [
+          {
+            "a": "New"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "953": {
+        "subfields": [
+          {
+            "a": "TA28"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "991": {
+        "subfields": [
+          {
+            "b": "c-RecSound"
+          },
+          {
+            "h": "Columbia CS 8786"
+          },
+          {
+            "w": "MUSIC"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    }
+  ]
+}</code></pre></div><div class="tab-pane" id="items__id__marc_get_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="items__id__marc_put"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/items/{id}</span>/marc</h4></div><div class="modal-body"><div class="alert alert-info"><p>Update this MARC record.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#items__id__marc_put_request" data-toggle="tab">Request</a></li><li><a href="#items__id__marc_put_response" data-toggle="tab">Response</a></li><li><a href="#items__id__marc_put_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="items__id__marc_put_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["item.write"]</code></pre></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/marc</p><p><strong>Type</strong>: string</p><p><strong>Media type</strong>: type</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>MARCLeader</strong>: <em>required (string - minLength: 24 - maxLength: 24)</em><p>The leader field of a MARC record. See <a href="https://www.loc.gov/marc/bibliographic/bdleader.html">https://www.loc.gov/marc/bibliographic/bdleader.html</a> for details.</p><p><strong>Examples</strong>:</p><pre>01471cjm a2200349 a 4500</pre><pre>01297nam a2200368 a 4500</pre></li><li><strong>fields</strong>: <em>required (array)</em></li></ul><p><strong>Examples</strong>:</p><pre><code>{
+  "leader": "01471cjm a2200349 a 4500",
+  "fields": [
+    {
+      "001": "5674874"
+    },
+    {
+      "005": "20030305110405.0"
+    },
+    {
+      "007": "sdubsmennmplu"
+    },
+    {
+      "035": {
+        "subfields": [
+          {
+            "9": "(DLC)   93707283"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "906": {
+        "subfields": [
+          {
+            "a": "7"
+          },
+          {
+            "b": "cbc"
+          },
+          {
+            "c": "copycat"
+          },
+          {
+            "d": "4"
+          },
+          {
+            "e": "ncip"
+          },
+          {
+            "f": "19"
+          },
+          {
+            "g": "y-soundrec"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "010": {
+        "subfields": [
+          {
+            "a": "   93707283 "
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "028": {
+        "subfields": [
+          {
+            "a": "CS 8786"
+          },
+          {
+            "b": "Columbia"
+          }
+        ],
+        "ind1": "0",
+        "ind2": "2"
+      }
+    },
+    {
+      "035": {
+        "subfields": [
+          {
+            "a": "(OCoLC)13083787"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "040": {
+        "subfields": [
+          {
+            "a": "OClU"
+          },
+          {
+            "c": "DLC"
+          },
+          {
+            "d": "DLC"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "041": {
+        "subfields": [
+          {
+            "a": "lccopycat"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "050": {
+        "subfields": [
+          {
+            "a": "Columbia CS 8786"
+          }
+        ],
+        "ind1": "0",
+        "ind2": "0"
+      }
+    },
+    {
+      "100": {
+        "subfields": [
+          {
+            "a": "Dylan, Bob"
+          },
+          {
+            "d": "1941-"
+          }
+        ],
+        "ind1": "1",
+        "ind2": " "
+      }
+    },
+    {
+      "245": {
+        "subfields": [
+          {
+            "a": "The freewheelin&#39; Bob Dylan"
+          },
+          {
+            "h": "[sound recording]."
+          }
+        ],
+        "ind1": "1",
+        "ind2": "4"
+      }
+    },
+    {
+      "260": {
+        "subfields": [
+          {
+            "a": "New York, N.Y.:"
+          },
+          {
+            "b": "Columbia,"
+          },
+          {
+            "c": "[1963]"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "300": {
+        "subfields": [
+          {
+            "a": "1 sound disc :"
+          },
+          {
+            "b": "analog, 33 1 / 3 rpm, stereo.;"
+          },
+          {
+            "c": "12 in."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "500": {
+        "subfields": [
+          {
+            "a": "Songs."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "511": {
+        "subfields": [
+          {
+            "a": "The composer accompanying himself on the guitar ; in part with instrumental ensemble.\n"
+          }
+        ],
+        "ind1": "0",
+        "ind2": " "
+      }
+    },
+    {
+      "500": {
+        "subfields": [
+          {
+            "a": "Program notes by Nat Hentoff on container."
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "505": {
+        "subfields": [
+          {
+            "a": "Blowin&#39; in the wind -- Girl from the north country -- Masters of war -- Down on the highway -- Bob Dylan&#39;s blues -- A hard rain&#39;s a-gonna fall -- Don&#39;t think twice, it&#39;s all right -- Bob Dylan&#39;s dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free.\n"
+          }
+        ],
+        "ind1": "0",
+        "ind2": " "
+      }
+    },
+    {
+      "650": {
+        "subfields": [
+          {
+            "a": "Popular music"
+          },
+          {
+            "y": "1961-1970."
+          }
+        ],
+        "ind1": " ",
+        "ind2": "0"
+      }
+    },
+    {
+      "650": {
+        "subfields": [
+          {
+            "a": "Blues (Music)"
+          },
+          {
+            "y": "1961-1970."
+          }
+        ],
+        "ind1": " ",
+        "ind2": "0"
+      }
+    },
+    {
+      "856": {
+        "subfields": [
+          {
+            "3": "Preservation copy (limited access)"
+          },
+          {
+            "u": "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln"
+          }
+        ],
+        "ind1": "4",
+        "ind2": "1"
+      }
+    },
+    {
+      "952": {
+        "subfields": [
+          {
+            "a": "New"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "953": {
+        "subfields": [
+          {
+            "a": "TA28"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "991": {
+        "subfields": [
+          {
+            "b": "c-RecSound"
+          },
+          {
+            "h": "Columbia CS 8786"
+          },
+          {
+            "w": "MUSIC"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    }
+  ]
+}</code></pre></div><div class="tab-pane" id="items__id__marc_put_response"><h2>HTTP status code <a href="http://httpstatus.es/204" target="_blank">204</a></h2></div><div class="tab-pane" id="items__id__marc_put_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="items__id__marc_patch"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/items/{id}</span>/marc</h4></div><div class="modal-body"><div class="alert alert-info"><p>Partially update this MARC record.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#items__id__marc_patch_request" data-toggle="tab">Request</a></li><li><a href="#items__id__marc_patch_response" data-toggle="tab">Response</a></li><li><a href="#items__id__marc_patch_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="items__id__marc_patch_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["item.write"]</code></pre></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/marc</p><p><strong>Type</strong>: string</p><p><strong>Media type</strong>: application/merge-patch+json</p><p><strong>Type</strong>: object</p></div><div class="tab-pane" id="items__id__marc_patch_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: types.marc.MARCRecord</p></div><div class="tab-pane" id="items__id__marc_patch_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="items__id__marc_delete"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/items/{id}</span>/marc</h4></div><div class="modal-body"><div class="alert alert-info"><p>Delete this MARC record.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#items__id__marc_delete_request" data-toggle="tab">Request</a></li><li><a href="#items__id__marc_delete_response" data-toggle="tab">Response</a></li><li><a href="#items__id__marc_delete_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="items__id__marc_delete_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul></div><div class="tab-pane" id="items__id__marc_delete_response"><h2>HTTP status code <a href="http://httpstatus.es/204" target="_blank">204</a></h2></div><div class="tab-pane" id="items__id__marc_delete_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="checkouts" class="panel-title">/checkouts</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_checkouts"><span class="parent"></span>/checkouts</a> <span class="methods"><a href="#checkouts_get"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#checkouts_post"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a></span></h4></div><div id="panel_checkouts" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#checkouts_get'" class="list-group-item"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Get a list of all checkouts. Can be sorted and supports pagination.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#checkouts_post'" class="list-group-item"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Create a new checkout.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="checkouts_get"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent"></span>/checkouts</h4></div><div class="modal-body"><div class="alert alert-info"><p>Get a list of all checkouts. Can be sorted and supports pagination.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#checkouts_get_request" data-toggle="tab">Request</a></li><li><a href="#checkouts_get_response" data-toggle="tab">Response</a></li><li><a href="#checkouts_get_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="checkouts_get_request"><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["checkout.read"]</code></pre></li></ul><h3>Query Parameters</h3><ul><li><strong>natural</strong>: <em>required (integer - default: 0 - minimum: 0)</em><p>A natural number (integer &gt;= 0).</p><p><strong>Examples</strong>:</p><pre><code>0</code></pre><pre><code>1402</code></pre><pre><code>3</code></pre></li><li><strong>per_page</strong>: <em>required (integer - default: 30 - minimum: 1 - maximum: 200)</em><p>How many checkouts to include in the list in the response.</p><p><strong>Examples</strong>:</p><pre><code>50</code></pre></li><li><strong>sort_by</strong>: <em>required (one of created, name - default: created)</em><p>What to sort the returned checkouts list by.</p></li><li><strong>direction</strong>: <em>required (one of asc, desc - default: asc)</em><p>The order in which to sort the checkouts -- either ascending or descending.</p></li></ul></div><div class="tab-pane" id="checkouts_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>items</strong>: <em>required (array)</em></li><li><strong>hasMore</strong>: <em>required (boolean)</em></li><li><strong>maxItems</strong>: <em>required (integer)</em></li><li><strong>remainingItems</strong>: <em>required (integer)</em></li></ul><h2>HTTP status code <a href="http://httpstatus.es/422" target="_blank">422</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>msg</strong>: <em>required (string)</em></li></ul></div><div class="tab-pane" id="checkouts_get_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="checkouts_post"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent"></span>/checkouts</h4></div><div class="modal-body"><div class="alert alert-info"><p>Create a new checkout.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#checkouts_post_request" data-toggle="tab">Request</a></li><li><a href="#checkouts_post_response" data-toggle="tab">Response</a></li><li><a href="#checkouts_post_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="checkouts_post_request"><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["signOut"]</code></pre></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em>(integer)</em><p>The checkout ID for this Checkout. Only present in GET responses.</p></li><li><strong>itemID</strong>: <em>required (integer)</em><p>The ID of the Item associated with this Checkout.</p></li><li><strong>patronID</strong>: <em>required (integer)</em><p>The ID of the Patron associated with this Checkout.</p></li><li><strong>outDate</strong>: <em>(date-only)</em><p>The time the item was checked out; i.e. the time the Checkout was created. Not present in a POST request body.</p></li><li><strong>dueDate</strong>: <em>required (date-only)</em></li><li><strong>natural</strong>: <em>required (integer - minimum: 0)</em><p>A natural number (integer &gt;= 0).</p><p><strong>Examples</strong>:</p><pre><code>0</code></pre><pre><code>1402</code></pre></li><li><strong>status</strong>: <em>required (one of onTime, late, returned, lost)</em></li></ul><p><strong>Examples</strong>:</p><pre><code>{
+  "itemID": 54336,
+  "patronID": 102411,
+  "outDate": "2016-07-30",
+  "dueDate": "2016-09-13",
+  "numRenewals": 2,
+  "status": "onTime"
+}</code></pre></div><div class="tab-pane" id="checkouts_post_response"><h2>HTTP status code <a href="http://httpstatus.es/201" target="_blank">201</a></h2><h3>Headers</h3><ul><li><strong>Location</strong>: <em>required (string)</em></li></ul><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>msg</strong>: <em>required (string)</em></li></ul></div><div class="tab-pane" id="checkouts_post_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div></div><div class="panel panel-white"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_checkouts__id_"><span class="parent">/checkouts</span>/{id}</a> <span class="methods"><a href="#checkouts__id__get"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#checkouts__id__put"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#checkouts__id__patch"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a> <a href="#checkouts__id__delete"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a></span></h4></div><div id="panel_checkouts__id_" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#checkouts__id__get'" class="list-group-item"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Get the contents of this checkout.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#checkouts__id__put'" class="list-group-item"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Update this checkout.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#checkouts__id__patch'" class="list-group-item"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Partially update this checkout. Note that if the PATCH body contains only <code>status: returned</code> the permission required is <code>signIn</code>; otherwise, it&#39;s <code>checkout.write</code>.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#checkouts__id__delete'" class="list-group-item"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Delete this checkout.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="checkouts__id__get"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/checkouts</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Get the contents of this checkout.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#checkouts__id__get_request" data-toggle="tab">Request</a></li><li><a href="#checkouts__id__get_response" data-toggle="tab">Response</a></li><li><a href="#checkouts__id__get_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="checkouts__id__get_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["checkout.read"]</code></pre></li></ul></div><div class="tab-pane" id="checkouts__id__get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em>(integer)</em><p>The checkout ID for this Checkout. Only present in GET responses.</p></li><li><strong>itemID</strong>: <em>required (integer)</em><p>The ID of the Item associated with this Checkout.</p></li><li><strong>patronID</strong>: <em>required (integer)</em><p>The ID of the Patron associated with this Checkout.</p></li><li><strong>outDate</strong>: <em>(date-only)</em><p>The time the item was checked out; i.e. the time the Checkout was created. Not present in a POST request body.</p></li><li><strong>dueDate</strong>: <em>required (date-only)</em></li><li><strong>natural</strong>: <em>required (integer - minimum: 0)</em><p>A natural number (integer &gt;= 0).</p><p><strong>Examples</strong>:</p><pre><code>0</code></pre><pre><code>1402</code></pre></li><li><strong>status</strong>: <em>required (one of onTime, late, returned, lost)</em></li></ul><p><strong>Examples</strong>:</p><pre><code>{
+  "itemID": 54336,
+  "patronID": 102411,
+  "outDate": "2016-07-30",
+  "dueDate": "2016-09-13",
+  "numRenewals": 2,
+  "status": "onTime"
+}</code></pre></div><div class="tab-pane" id="checkouts__id__get_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="checkouts__id__put"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_put">put <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/checkouts</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Update this checkout.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#checkouts__id__put_request" data-toggle="tab">Request</a></li><li><a href="#checkouts__id__put_response" data-toggle="tab">Response</a></li><li><a href="#checkouts__id__put_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="checkouts__id__put_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["checkout.write"]</code></pre></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em>(integer)</em><p>The checkout ID for this Checkout. Only present in GET responses.</p></li><li><strong>itemID</strong>: <em>required (integer)</em><p>The ID of the Item associated with this Checkout.</p></li><li><strong>patronID</strong>: <em>required (integer)</em><p>The ID of the Patron associated with this Checkout.</p></li><li><strong>outDate</strong>: <em>(date-only)</em><p>The time the item was checked out; i.e. the time the Checkout was created. Not present in a POST request body.</p></li><li><strong>dueDate</strong>: <em>required (date-only)</em></li><li><strong>natural</strong>: <em>required (integer - minimum: 0)</em><p>A natural number (integer &gt;= 0).</p><p><strong>Examples</strong>:</p><pre><code>0</code></pre><pre><code>1402</code></pre></li><li><strong>status</strong>: <em>required (one of onTime, late, returned, lost)</em></li></ul><p><strong>Examples</strong>:</p><pre><code>{
+  "itemID": 54336,
+  "patronID": 102411,
+  "outDate": "2016-07-30",
+  "dueDate": "2016-09-13",
+  "numRenewals": 2,
+  "status": "onTime"
+}</code></pre></div><div class="tab-pane" id="checkouts__id__put_response"><h2>HTTP status code <a href="http://httpstatus.es/204" target="_blank">204</a></h2></div><div class="tab-pane" id="checkouts__id__put_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="checkouts__id__patch"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_patch">patch <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/checkouts</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Partially update this checkout. Note that if the PATCH body contains only <code>status: returned</code> the permission required is <code>signIn</code>; otherwise, it&#39;s <code>checkout.write</code>.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#checkouts__id__patch_request" data-toggle="tab">Request</a></li><li><a href="#checkouts__id__patch_response" data-toggle="tab">Response</a></li><li><a href="#checkouts__id__patch_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="checkouts__id__patch_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["checkout.write","signOut"]</code></pre></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/merge-patch+json</p><p><strong>Type</strong>: object</p></div><div class="tab-pane" id="checkouts__id__patch_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: types.types.Checkout</p></div><div class="tab-pane" id="checkouts__id__patch_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="checkouts__id__delete"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_delete">delete <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/checkouts</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Delete this checkout.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b>oauth2</b><p>OAuth 2.0 is used for all requests that require authentication.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#checkouts__id__delete_request" data-toggle="tab">Request</a></li><li><a href="#checkouts__id__delete_response" data-toggle="tab">Response</a></li><li><a href="#checkouts__id__delete_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="checkouts__id__delete_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em></li></ul><h3>Annotations</h3><ul><li><strong>permissions</strong>:<pre><code>["checkout.write"]</code></pre></li></ul></div><div class="tab-pane" id="checkouts__id__delete_response"><h2>HTTP status code <a href="http://httpstatus.es/204" target="_blank">204</a></h2></div><div class="tab-pane" id="checkouts__id__delete_securedby"><h1>Secured by oauth2</h1><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2.0 access token. Incompatible with the "access_token" query parameter.</p><p><strong>Examples</strong>:</p><pre>Bearer cn389ncoiwuencr</pre></li></ul></div></div></div></div></div></div></div></div></div></div></div><div class="col-md-3"><div id="sidebar" class="hidden-print affix" role="complementary"><ul class="nav nav-pills nav-stacked"><li><a href="#admins">/admins</a></li><li><a href="#patrons">/patrons</a></li><li><a href="#items">/items</a></li><li><a href="#checkouts">/checkouts</a></li></ul></div></div></div></div></body></html>
