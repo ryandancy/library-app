@@ -24,7 +24,8 @@ describedBy:
         The client is not authorized to perform the request (i.e., not
         logged in). Perform authentication, then try again.
       body:
-        msg: string
+        properties:
+          msg: string
         example:
           msg: Unauthorized request. Perform authentication, then try again.
     403:
@@ -32,7 +33,8 @@ describedBy:
         The client is logged in, but does not have the requisite permissions
         to perform the request.
       body:
-        msg: string
+        properties:
+          msg: string
         example:
           msg: >
             The client does not have the requisite permissions to perform the
