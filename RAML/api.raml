@@ -182,27 +182,43 @@ resourceTypes:
     delete:
       (permissions): [item.write]
     /marc:
+      # We're not using collectionItem here because it acts really weird when
+      # trying to use another media type, like application/marc. Sigh.
       description: The MARC record of the item with this ID.
-      type:
-        collectionItem:
-          name: MARC record
-          itemType: marc.MARCRecord
-      get: # XXX this might not work (does RAML do media type extensions?)
+      get:
+        description: Get the MARC record of the item with this ID.
         responses:
           200:
             body:
+              application/json:
+                type: marc.MARCRecord
               application/marc:
                 type: string
         (permissions): [item.read]
       put:
+        description: Update the MARC record of the item with this ID.
         body:
+          application/json:
+            type: marc.MARCRecord
           application/marc:
             type: string
+        responses:
+          204:
         (permissions): [item.write]
       patch:
+        description: Partially update the MARC record of the item with this ID.
         body:
+          application/json:
+            type: marc.MARCRecord
           application/marc:
             type: string
+        responses:
+          200:
+            body:
+              application/json:
+                type: marc.MARCRecord
+              application/marc:
+                type: string
         (permissions): [item.write]
 /checkouts:
   type:
