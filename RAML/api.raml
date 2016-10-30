@@ -26,8 +26,8 @@ annotationTypes:
 traits:
   sortable:
     usage: >
-      Apply on a collection GET method for standard `sort_by` and `direction`
-      query parameters.
+      Apply on a collection GET method for standard sort_by and direction query
+      parameters.
     queryParameters:
       sort_by:
         description: >
@@ -47,7 +47,7 @@ traits:
         default: asc
   pageable:
     usage: >
-      Apply on a collection GET method for standard `page` and `per_page` query
+      Apply on a collection GET method for standard page and per_page query
       parameters, as well as some extra pagination properties.
     queryParameters:
       page:
@@ -78,7 +78,7 @@ traits:
             msg: string
 resourceTypes:
   collection:
-    usage: Apply on a collection for standard `GET` and `POST` methods.
+    usage: Apply on a collection for standard GET, POST, and DELETE methods.
     get:
       description: >
         Get a list of all <<name | !pluralize>>.
@@ -98,10 +98,14 @@ resourceTypes:
           body:
             properties:
               msg: string
+    delete:
+      description: Delete all <<name | !pluralize>>.
+      responses:
+        204:
   collectionItem:
     usage: >
       Apply to a subresource of a collection (i.e. an individual item) for
-      standard `GET`, `PUT`, `PATCH`, and `DELETE` methods.
+      standard GET, PUT, PATCH, and DELETE methods.
     get:
       description: Get the contents of this <<name>>.
       responses:
@@ -140,6 +144,9 @@ resourceTypes:
     (permissions): [admin.read]
   post:
     (permissions): [admin.write]
+  delete:
+    description: Delete all admins, except for the one making the request.
+    (permissions): [admin.write]
   /{id}:
     type:
       collectionItem:
@@ -160,10 +167,12 @@ resourceTypes:
       itemType: types.Patron
   get:
     is:
-    - sortable
-    - pageable
+      - sortable
+      - pageable
     (permissions): [patron.read]
   post:
+    (permissions): [patron.write]
+  delete:
     (permissions): [patron.write]
   /{id}:
     type:
@@ -189,6 +198,8 @@ resourceTypes:
       - pageable
     (permissions): [item.read]
   post:
+    (permissions): [item.write]
+  delete:
     (permissions): [item.write]
   /{id}:
     type:
@@ -254,6 +265,8 @@ resourceTypes:
     (permissions): [checkout.read]
   post:
     (permissions): [signOut]
+  delete:
+    (permissions): [checkout.write]
   /{id}:
     type:
       collectionItem:
