@@ -1,0 +1,10 @@
+#%RAML 1.0 AnnotationType
+
+usage: Used to indicate that a property is unmodifiable.
+description: >
+  Indicates that this property is unmodifiable. Unmodifiable properties are
+  optional and must not be included in POST, PUT or PATCH request bodies, but
+  must be included in all responses bodies.
+type: nil
+allowedTargets:
+  - TypeDeclaration

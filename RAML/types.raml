@@ -5,6 +5,8 @@ usage: |
 uses:
   marc: marc.raml
   basic: basic.raml
+annotationTypes:
+  unmodifiable: !include unmodifiable.raml
 types:
   Item:
     type: object
@@ -18,14 +20,11 @@ types:
     properties:
       id?:
         type: integer
-        description: >
-          The item ID for this Item. Only present in GET responses.
+        (unmodifiable):
       marc: marc.MARCRecord
       created?:
         type: datetime
-        description: >
-          The date and time this Item was created. Not present in a POST request
-          body.
+        (unmodifiable):
         example: 2016-06-01T09:31:02-03:30
       barcode:
         type: string
@@ -72,8 +71,7 @@ types:
     properties:
       id?:
         type: integer
-        description: >
-          The checkout ID for this Checkout. Only present in GET responses.
+        (unmodifiable):
       itemID:
         type: integer
         description: >
@@ -84,9 +82,10 @@ types:
           The ID of the Patron associated with this Checkout.
       created?:
         type: date-time
+        (unmodifiable):
         description: >
           The time the Checkout was created; i.e. the time the item was checked
-          out. Not present in a POST request body.
+          out.
       dueDate: date-only
       numRenewals: basic.natural
       status:
@@ -112,13 +111,11 @@ types:
     properties:
       id?:
         type: integer
-        description: >
-          The patron ID for this Patron. Only present in GET responses.
+        (unmodifiable):
       name: string
       created?:
         type: date-time
-        description: >
-          The time this Patron was created. Not present in a POST request body.
+        (unmodifiable):
       pic?:
         # TODO Can the media type of image/whatever be noted?
         type: basic.uri
@@ -164,13 +161,11 @@ types:
     properties:
       id?:
         type: integer
-        description: >
-          The admin ID for this Admin. Only present in GET responses.
+        (unmodifiable):
       name: string
       created?:
         type: date-time
-        description: >
-          The time this Admin was created. Not present in a POST request body.
+        (unmodifiable):
       item: ReadWritePermission
       patron: ReadWritePermission
       checkout: ReadWritePermission
