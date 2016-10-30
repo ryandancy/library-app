@@ -4,6 +4,7 @@
 # TODO: use something other than localhost?
 # TODO: HTTPS
 # TODO: more responses (4xx, 5xx)
+# TODO: fix the bug where type names appear as the key in the HTML
 
 title: Library App
 description: >
@@ -22,56 +23,68 @@ securedBy:
   - oauth2
 annotationTypes:
   permissions: !include permissions.raml
+traits:
+  sortable:
+    usage: >
+      Apply on a collection GET method for standard `sort_by` and `direction`
+      query parameters.
+    queryParameters:
+      sort_by:
+        description: >
+          What to sort the returned <<resourcePathName | !pluralize>> list by.
+        enum: # TODO any more sort_by values?
+          - created
+          - name
+        default: created
+      direction:
+        description: >
+          The order in which to sort the <<resourcePathName | !pluralize>> --
+          either ascending or descending.
+        enum:
+          - asc
+          - desc
+        default: asc
+  pageable:
+    usage: >
+      Apply on a collection GET method for standard `page` and `per_page` query
+      parameters, as well as some extra pagination properties.
+    queryParameters:
+      page:
+        description: The page to retrieve, zero-indexed.
+        type: basic.natural
+        default: 0
+        example: 3
+      per_page:
+        description: >
+          How many <<resourcePathName | !pluralize>> to include in the list in
+          the response.
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 30
+        example: 50
+    responses:
+      200:
+        body:
+          properties:
+            itemType: <<itemType>>[]
+            hasMore: boolean
+            maxItems: integer
+            remainingItems: integer
+      422:
+        body:
+          properties:
+            msg: string
 resourceTypes:
   collection:
     usage: Apply on a collection for standard `GET` and `POST` methods.
     get:
       description: >
-        Get a list of all <<name | !pluralize>>. Can be sorted and supports
-        pagination.
-      queryParameters:
-        # TODO extract sortable (?), pageable trait(s)?
-        page:
-          description: The page to retrieve, zero-indexed.
-          type: basic.natural
-          default: 0
-          example: 3
-        per_page:
-          description: >
-            How many <<name | !pluralize>> to include in the list in the
-            response.
-          type: integer
-          minimum: 1
-          maximum: 200
-          default: 30
-          example: 50
-        sort_by:
-          description: >
-            What to sort the returned <<name | !pluralize>> list by.
-          enum: # TODO any more sort_by values?
-            - created
-            - name
-          default: created
-        direction:
-          description: >
-            The order in which to sort the <<name | !pluralize>> -- either
-            ascending or descending.
-          enum:
-            - asc
-            - desc
-          default: asc
+        Get a list of all <<name | !pluralize>>.
       responses:
         200:
           body:
-            properties:
-              items: <<itemType>>[]
-              hasMore: boolean
-              maxItems: integer
-              remainingItems: integer
-        422: # Unprocessable Entity - semantic error
-          body:
-            properties:
-              msg: string
+            type: <<itemType>>[]
     post:
       description: Create a new <<name>>.
       body:
@@ -121,6 +134,8 @@ resourceTypes:
       name: admin
       itemType: types.Admin
   get:
+    is:
+      - sortable
     (permissions): [admin.read]
   post:
     (permissions): [admin.write]
@@ -143,6 +158,9 @@ resourceTypes:
       name: patron
       itemType: types.Patron
   get:
+    is:
+    - sortable
+    - pageable
     (permissions): [patron.read]
   post:
     (permissions): [patron.write]
@@ -165,6 +183,9 @@ resourceTypes:
       name: item
       itemType: types.Item
   get:
+    is:
+      - sortable
+      - pageable
     (permissions): [item.read]
   post:
     (permissions): [item.write]
@@ -226,6 +247,9 @@ resourceTypes:
       name: checkout
       itemType: types.Checkout
   get:
+    is:
+      - sortable
+      - pageable
     (permissions): [checkout.read]
   post:
     (permissions): [signOut]
