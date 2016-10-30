@@ -82,11 +82,11 @@ types:
         type: integer
         description: >
           The ID of the Patron associated with this Checkout.
-      outDate?:
-        type: date-only
+      created?:
+        type: date-time
         description: >
-          The time the item was checked out; i.e. the time the Checkout was
-          created. Not present in a POST request body.
+          The time the Checkout was created; i.e. the time the item was checked
+          out. Not present in a POST request body.
       dueDate: date-only
       numRenewals: basic.natural
       status:
@@ -100,7 +100,7 @@ types:
     example:
       itemID: 54336
       patronID: 102411
-      outDate: 2016-07-30
+      outDate: 2016-07-30T11:34:02-03:00
       dueDate: 2016-09-13
       numRenewals: 2
       status: onTime
@@ -115,6 +115,10 @@ types:
         description: >
           The patron ID for this Patron. Only present in GET responses.
       name: string
+      created?:
+        type: date-time
+        description: >
+          The time this Patron was created. Not present in a POST request body.
       pic?:
         # TODO Can the media type of image/whatever be noted?
         type: basic.uri
@@ -126,9 +130,11 @@ types:
     examples:
       simple:
         name: Pewdiepie
+        created: 2016-02-23T14:25:06Z
         checkoutIDs: []
       complex:
         name: Ima Nexamplé
+        created: 2015-12-03T11:54:55-00:30
         pic: http://some.where/a/path/to/a/picture/ima-nexample.jpg
         checkoutIDs:
           - 102441
@@ -161,6 +167,10 @@ types:
         description: >
           The admin ID for this Admin. Only present in GET responses.
       name: string
+      created?:
+        type: date-time
+        description: >
+          The time this Admin was created. Not present in a POST request body.
       item: ReadWritePermission
       patron: ReadWritePermission
       checkout: ReadWritePermission
@@ -182,6 +192,7 @@ types:
     additionalProperties: false
     example:
       name: Lieb Rarian
+      created: 2017-08-12T00:05:21-05:00
       item:
         read: true
         write: true
