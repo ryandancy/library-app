@@ -248,3 +248,11 @@ resourceTypes:
         - signOut
     delete:
       (permissions): [checkout.write]
+/me:
+  get:
+    description: Get the contents of the admin currently logged in.
+    responses:
+      200:
+        body:
+          type: types.Admin
+    (permissions): [] # You can always read yourself
