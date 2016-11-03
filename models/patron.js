@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var ObjectId = mongoose.Types.ObjectId;
 var isUri = require('valid-url').isUri;
 
 module.exports = mongoose.model('Patron', {
@@ -13,5 +14,5 @@ module.exports = mongoose.model('Patron', {
     },
     lowercase: true
   },
-  checkouts: [mongoose.Types.ObjectId]
+  checkouts: [ObjectId]
 });

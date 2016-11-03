@@ -1,11 +1,12 @@
 var mongoose = require('mongoose');
+var ObjectId = mongoose.Types.ObjectId;
 
 module.exports = mongoose.model('Checkout', {
   created: Date,
   updated: Date,
   dueDate: Date,
-  item: mongoose.Types.ObjectId,
-  patron: mongoose.Types.ObjectId,
+  item: ObjectId,
+  patron: ObjectId,
   renewals: Number,
   status: {
     type: String,

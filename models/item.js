@@ -1,14 +1,16 @@
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+var ObjectId = mongoose.Types.ObjectId;
 
 // Helper schema to avoid repetition
-var Character = new mongoose.Schema({
+var Character = new Schema({
   type: String,
   minlength: 1,
   maxlength: 1
 });
 
 // Control fields -- 00X
-var marcControlField = new mongoose.Schema({
+var marcControlField = new Schema({
   tag: {
     type: Number,
     min: 0,
@@ -18,13 +20,13 @@ var marcControlField = new mongoose.Schema({
 });
 
 // Subfields
-var marcSubfield = new mongoose.Schema({
+var marcSubfield = new Schema({
   tag: Character,
   value: String
 });
 
 // Variable fields
-var marcVariableField = new mongoose.Schema({
+var marcVariableField = new Schema({
   tag: {
     type: Number,
     min: 10,
@@ -54,5 +56,5 @@ module.exports = mongoose.model('Item', {
     type: String,
     enum: ["in", "out", "missing", "lost"]
   },
-  checkout: mongoose.Types.ObjectId
+  checkout: ObjectId
 });
