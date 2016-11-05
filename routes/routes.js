@@ -107,5 +107,11 @@ module.exports = function(router, baseUri) {
         }
       });
     });
+    
+    // add middleware to validate the :id
+    router.use('/${name}/:id', function(req, res, next) {
+      req.checkParams('id', 'Invalid ID').isInt();
+      next();
+    });
   }
 };
