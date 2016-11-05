@@ -94,5 +94,18 @@ module.exports = function(router, baseUri) {
         }
       });
     });
+    
+    // delete all things
+    // TODO admin will need to override this so as not to delete self
+    // REVIEW should this even be a thing?
+    router.delete(`/${name}`, function(req, res) {
+      model.remove({}, function(err) {
+        if (err) {
+          res.status(500).send(err); // REVIEW will this work?
+        } else {
+          res.status(204).send();
+        }
+      });
+    });
   }
 };
