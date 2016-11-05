@@ -6,6 +6,8 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var expressValidator = require('express-validator');
 
+var baseUri = '/v0';
+
 // TODO have separate production, test dbs and change on ARGV
 mongoose.connect('mongodb://localhost/library');
 
@@ -23,8 +25,12 @@ app.use(expressValidator({
 }));
 app.use(methodOverride());
 
+var router = express.Router();
+
 // routes
-require('routes/routes.js')(app);
+require('routes/routes.js')(router, baseUri);
+
+app.use(baseUri, router);
 
 // start the app
 app.listen(8080);

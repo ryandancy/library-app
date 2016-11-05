@@ -3,7 +3,7 @@ var checkout = require('../models/checkout.js');
 var item = require('../models/item.js');
 var patron = require('../models/patron.js');
 
-module.exports = function(app) {
+module.exports = function(router, baseUri) {
   function addCollection(
       model, name, toInputConverter, toDBConverter, pageable = true) {
     // toInputConverter, toDBConverter default to the identity function
@@ -11,7 +11,7 @@ module.exports = function(app) {
     toDBConverter = toDBConverter || x => x;
     
     // get a list of all things
-    app.get('/v0/' + name, function(req, res) {
+    router.get(`/${name}`, function(req, res) {
       // create objs of query params to internal representations to keep it DRY
       var sortByObj = {'created': 'created', 'name': 'name', 'id': '_id'};
       var sortDirObj = {'asc': 1, 'desc': -1};
@@ -66,7 +66,7 @@ module.exports = function(app) {
     });
     
     // create a new thing
-    app.post('/v0/' + name, function(req, res) {
+    router.post(`/${name}`, function(req, res) {
       // created, updated, and id can't be present in the request body
       // TODO are there any more unmodifiables? Use on per-model basis?
       var unmodifiables = ['created', 'updated', 'id'];
@@ -89,7 +89,7 @@ module.exports = function(app) {
           res.status(500).send(err); // REVIEW will this work?
         } else {
           res.status(201)
-             .set('Location', '/v0/' + name + '/' + doc._id)
+             .set('Location', `/${baseUri}/${name}/${doc._id}`)
              .send();
         }
       });
