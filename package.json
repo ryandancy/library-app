@@ -6,12 +6,20 @@
   "private": true,
   "license": "UNLICENSED",
   "main": "server.js",
+  "scripts": {
+    "test": "mocha"
+  },
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
+    "express-validator": "^2.21.0",
     "method-override": "^2.3.6",
     "mongoose": "^4.6.5",
     "morgan": "^1.7.0",
     "valid-url": "^1.0.9"
+  },
+  "devDependencies": {
+    "better-assert": "^1.0.2",
+    "mocha": "^3.1.2"
   }
 }
