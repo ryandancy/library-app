@@ -4,6 +4,15 @@ var item = require('../models/item.js');
 var patron = require('../models/patron.js');
 
 module.exports = function(router, baseUri) {
+  // helper function for error validation, returns true if validation passed
+  function validate(req, res, code = 422) {
+    var errors = req.validationErrors();
+    if (errors) {
+      res.status(code).json(errors);
+    }
+    return !errors;
+  }
+  
   function addCollection(
       model, name, toInputConverter, toDBConverter, pageable = true) {
     // toInputConverter, toDBConverter default to the identity function
@@ -35,12 +44,7 @@ module.exports = function(router, baseUri) {
            .isInt({min: 10, max: 200});
       }
       
-      // respond with a 422 error if there are any errors
-      var errors = req.validationErrors();
-      if (errors) {
-        res.status(422).json(errors);
-        return;
-      }
+      if (!validate(req, res)) return;
       
       // map params to internal representations
       var sortBy = sortByObj[req.query.sort_by];
@@ -76,12 +80,7 @@ module.exports = function(router, baseUri) {
            .equals('undefined');
       }
       
-      // respond with a 422 error if there are any errors
-      var errors = req.validationErrors();
-      if (errors) {
-        res.status(422).json(errors);
-        return;
-      }
+      if (!validate(req, res)) return;
       
       // make the new thing
       model.create(toDBConverter(req.body), function(err, doc) {
