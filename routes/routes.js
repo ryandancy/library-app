@@ -4,10 +4,13 @@ var item = require('../models/item.js');
 var patron = require('../models/patron.js');
 
 module.exports = function(app) {
-  function addCollection(model, name, modelConverter, pageable = true) {
-    // modelConverter defaults to the identity function
-    modelConverter = modelConverter || x => x;
+  function addCollection(
+      model, name, toInputConverter, toDBConverter, pageable = true) {
+    // toInputConverter, toDBConverter default to the identity function
+    toInputConverter = toInputConverter || x => x;
+    toDBConverter = toDBConverter || x => x;
     
+    // get a list of all things
     app.get('/v0/' + name, function(req, res) {
       // create objs of query params to internal representations to keep it DRY
       var sortByObj = {'created': 'created', 'name': 'name', 'id': '_id'};
@@ -57,7 +60,37 @@ module.exports = function(app) {
         if (err) {
           res.status(500).send(err); // REVIEW will this work? Format of errors?
         } else {
-          res.json(docs.map(modelConverter));
+          res.json(docs.map(toInputConverter));
+        }
+      });
+    });
+    
+    // create a new thing
+    app.post('/v0/' + name, function(req, res) {
+      // created, updated, and id can't be present in the request body
+      // TODO are there any more unmodifiables? Use on per-model basis?
+      var unmodifiables = ['created', 'updated', 'id'];
+      for (unmod of unmodifiables) {
+        // TODO is there a better way than this?
+        req.checkBody(unmod, '%0 is unmodifiable and cannot be present')
+           .equals('undefined');
+      }
+      
+      // respond with a 422 error if there are any errors
+      var errors = req.validationErrors();
+      if (errors) {
+        res.status(422).json(errors);
+        return;
+      }
+      
+      // make the new thing
+      model.create(toDBConverter(req.body), function(err, doc) {
+        if (err) {
+          res.status(500).send(err); // REVIEW will this work?
+        } else {
+          res.status(201)
+             .set('Location', '/v0/' + name + '/' + doc._id)
+             .send();
         }
       });
     });
