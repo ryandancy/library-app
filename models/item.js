@@ -49,7 +49,10 @@ module.exports = mongoose.model('Item', {
       variable: [marcVariableField]
     }
   },
-  created: Date,
+  created: {
+    type: Date,
+    default: Date.now
+  },
   updated: Date,
   barcode: Number,
   status: {

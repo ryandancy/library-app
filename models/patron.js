@@ -4,7 +4,10 @@ var isUri = require('valid-url').isUri;
 
 module.exports = mongoose.model('Patron', {
   name: String,
-  created: Date,
+  created: {
+    type: Date,
+    default: Date.now
+  },
   updated: Date,
   pic: {
     type: String,

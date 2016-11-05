@@ -2,7 +2,10 @@ var mongoose = require('mongoose');
 
 module.exports = mongoose.model('Admin', {
   name: String,
-  created: Date,
+  created: {
+    type: Date,
+    default: Date.now
+  },
   updated: Date,
   item: {
     read: Boolean,

@@ -2,7 +2,10 @@ var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 
 module.exports = mongoose.model('Checkout', {
-  created: Date,
+  created: {
+    type: Date,
+    default: Date.now
+  },
   updated: Date,
   dueDate: Date,
   item: ObjectId,
