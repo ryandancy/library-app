@@ -25,13 +25,13 @@ module.exports = function(router, baseUri) {
       }
       
       // validate query params
-      req.checkParams('sort_by', 'Invalid sort_by value: %0 not one of %1')
+      req.checkQuery('sort_by', 'Invalid sort_by value: %0 not one of %1')
          .isIn(sortByObj.keys());
-      req.checkParams('direction', 'Invalid direction value: %0 not one of %1')
+      req.checkQuery('direction', 'Invalid direction value: %0 not one of %1')
          .isIn(sortDirObj.keys());
       if (pageable) {
-        req.checkParams('page', 'Invalid page %0').isInt({min: 0});
-        req.checkParams('per_page', 'Invalid per_page %0 (min=10, max=200)')
+        req.checkQuery('page', 'Invalid page %0').isInt({min: 0});
+        req.checkQuery('per_page', 'Invalid per_page %0 (min=10, max=200)')
            .isInt({min: 10, max: 200});
       }
       
