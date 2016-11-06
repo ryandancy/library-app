@@ -19,6 +19,28 @@ module.exports = function(router, baseUri) {
     toInputConverter = toInputConverter || x => x;
     toDBConverter = toDBConverter || x => x;
     
+    // MIDDLEWARE
+    
+    // make sure unmodifiables aren't present in a POST/PUT/PATCH request
+    router.use(function(req, res, next) {
+      if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+        var unmodifiables = ['created', 'updated', 'id'];
+        for (var unmod of unmodifiables) {
+          req.checkBody(unmod, '%0 is unmodifiable and cannot be present')
+             .equals('undefined');
+        }
+      }
+      next();
+    });
+    
+    // validate the :id
+    router.use(`/${name}/:id`, function(req, res, next) {
+      req.checkParams('id', 'Invalid ID').isInt();
+      next();
+    });
+    
+    // ROUTES
+    
     // get a list of all things
     router.get(`/${name}`, function(req, res) {
       // create objs of query params to internal representations to keep it DRY
@@ -71,15 +93,6 @@ module.exports = function(router, baseUri) {
     
     // create a new thing
     router.post(`/${name}`, function(req, res) {
-      // created, updated, and id can't be present in the request body
-      // TODO are there any more unmodifiables? Use on per-model basis?
-      var unmodifiables = ['created', 'updated', 'id'];
-      for (unmod of unmodifiables) {
-        // TODO is there a better way than this?
-        req.checkBody(unmod, '%0 is unmodifiable and cannot be present')
-           .equals('undefined');
-      }
-      
       if (!validate(req, res)) return;
       
       // make the new thing
@@ -98,6 +111,8 @@ module.exports = function(router, baseUri) {
     // TODO admin will need to override this so as not to delete self
     // REVIEW should this even be a thing?
     router.delete(`/${name}`, function(req, res) {
+      if (!validate(req, res)) return;
+      
       model.remove({}, function(err) {
         if (err) {
           res.status(500).send(err); // REVIEW will this work?
@@ -105,12 +120,6 @@ module.exports = function(router, baseUri) {
           res.status(204).send();
         }
       });
-    });
-    
-    // add middleware to validate the :id
-    router.use(`/${name}/:id`, function(req, res, next) {
-      req.checkParams('id', 'Invalid ID').isInt();
-      next();
     });
     
     // get a thing
@@ -125,6 +134,11 @@ module.exports = function(router, baseUri) {
           res.status(200).json(toInputConverter(doc));
         }
       });
+    });
+    
+    // update a thing
+    router.put(`/${name}/:id`, function(req, res) {
+      
     });
   }
 };
