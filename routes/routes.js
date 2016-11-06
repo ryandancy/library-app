@@ -1,3 +1,5 @@
+var mergePatch = require('json-merge-patch');
+
 var admin = require('../models/admin.js');
 var checkout = require('../models/checkout.js');
 var item = require('../models/item.js');
@@ -151,6 +153,23 @@ module.exports = function(router, baseUri) {
         } else {
           res.status(204).send();
         }
+      });
+    });
+    
+    // partially update a thing
+    router.patch(`/${name}/:id`, function(req, res) {
+      if (!validate(req, res)) return;
+      
+      var id = req.params.id;
+      model.findById(id, function(err, doc) {
+        if (err) {
+          res.status(500).send(err); // REVIEW will this work?
+          return;
+        }
+        mergePatch.apply(doc, toDBConverter(req.body)); // hopefully this works
+        doc.save(function(err) {
+          res.status(500).send(err); // REVIEW will this work?
+        });
       });
     });
   }
