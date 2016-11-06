@@ -7,7 +7,10 @@ module.exports = mongoose.model('Admin', {
     type: reqt.Date,
     default: Date.now
   },
-  updated: reqt.Date,
+  updated: {
+    type: reqt.Date,
+    default: Date.now
+  },
   item: {
     read: reqt.Boolean,
     write: reqt.Boolean

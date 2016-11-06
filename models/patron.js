@@ -10,7 +10,10 @@ module.exports = mongoose.model('Patron', {
     type: reqt.Date,
     default: Date.now
   },
-  updated: reqt.Date,
+  updated: {
+    type: reqt.Date,
+    default: Date.now
+  },
   pic: {
     type: reqt.String,
     validate: {

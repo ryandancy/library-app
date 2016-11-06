@@ -58,7 +58,10 @@ module.exports = mongoose.model('Item', {
     type: reqt.Date,
     default: Date.now
   },
-  updated: reqt.Date,
+  updated: {
+    type: reqt.Date,
+    default: Date.now
+  },
   barcode: reqt.Number,
   status: {
     type: reqt.String,

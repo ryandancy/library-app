@@ -7,7 +7,10 @@ module.exports = mongoose.model('Checkout', {
     type: reqt.Date,
     default: Date.now
   },
-  updated: reqt.Date,
+  updated: {
+    type: reqt.Date,
+    default: Date.now
+  },
   dueDate: reqt.Date,
   item: reqt.ObjectId,
   patron: reqt.ObjectId,
