@@ -14,15 +14,18 @@ var marcControlField = new Schema({
   tag: {
     type: Number,
     min: 0,
-    max: 9
+    max: 9,
+    required: true
   },
-  value: String
+  value: {type: String, required: true},
+  required: true
 });
 
 // Subfields
 var marcSubfield = new Schema({
-  tag: Character,
-  value: String
+  tag: {type: Character, required: true},
+  value: {type: String, required: true},
+  required: true
 });
 
 // Variable fields
@@ -30,11 +33,13 @@ var marcVariableField = new Schema({
   tag: {
     type: Number,
     min: 10,
-    max: 999
+    max: 999,
+    required: true
   },
   subfields: [marcSubfield],
-  ind1: Character,
-  ind2: Character
+  ind1: {type: Character, required: true},
+  ind2: {type: Character, required: true},
+  required: true
 });
 
 module.exports = mongoose.model('Item', {
@@ -42,7 +47,8 @@ module.exports = mongoose.model('Item', {
     leader: {
       type: String,
       minlength: 24,
-      maxlength: 24
+      maxlength: 24,
+      required: true
     },
     fields: {
       control: [marcControlField],
@@ -51,13 +57,15 @@ module.exports = mongoose.model('Item', {
   },
   created: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    required: true
   },
-  updated: Date,
-  barcode: Number,
+  updated: {type: Date, required: true},
+  barcode: {type: Number, required: true},
   status: {
     type: String,
-    enum: ["in", "out", "missing", "lost"]
+    enum: ["in", "out", "missing", "lost"],
+    required: true
   },
-  checkout: ObjectId
+  checkout: {type: ObjectId, required: true}
 });

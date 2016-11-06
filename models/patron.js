@@ -1,21 +1,26 @@
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
+var Schema = mongoose.Schema;
 var isUri = require('valid-url').isUri;
 
+var reqObjectId = new Schema({type: ObjectId, required: true});
+
 module.exports = mongoose.model('Patron', {
-  name: String,
+  name: {type: String, required: true},
   created: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    required: true
   },
-  updated: Date,
+  updated: {type: Date, required: true},
   pic: {
     type: String,
     validate: {
       validator: isUri,
       message: '{VALUE} is not a URI.'
     },
-    lowercase: true
+    lowercase: true,
+    required: true
   },
-  checkouts: [ObjectId]
+  checkouts: [reqObjectId]
 });

@@ -4,15 +4,17 @@ var ObjectId = mongoose.Types.ObjectId;
 module.exports = mongoose.model('Checkout', {
   created: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    required: true
   },
-  updated: Date,
-  dueDate: Date,
-  item: ObjectId,
-  patron: ObjectId,
-  renewals: Number,
+  updated: {type: Date, required: true},
+  dueDate: {type: Date, required: true},
+  item: {type: ObjectId, required: true},
+  patron: {type: ObjectId, required: true},
+  renewals: {type: Number, required: true},
   status: {
     type: String,
-    enum: ['onTime', 'late', 'returned', 'lost']
+    enum: ['onTime', 'late', 'returned', 'lost'],
+    required: true
   }
 });

@@ -138,7 +138,20 @@ module.exports = function(router, baseUri) {
     
     // update a thing
     router.put(`/${name}/:id`, function(req, res) {
+      if (!validate(req, res)) return;
       
+      var id = req.params.id;
+      model.findByIdAndUpdate(id, toDBConverter(req.body), function(err, doc) {
+        if (err) {
+          if (err.name === 'ValidationError') {
+            res.status(422).send(err); // REVIEW this too *down arrow*
+          } else {
+            res.status(500).send(err); // REVIEW will this work?
+          }
+        } else {
+          res.status(204).send();
+        }
+      });
     });
   }
 };

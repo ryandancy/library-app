@@ -1,24 +1,25 @@
 var mongoose = require('mongoose');
 
 module.exports = mongoose.model('Admin', {
-  name: String,
+  name: {type: String, required: true},
   created: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    required: true
   },
-  updated: Date,
+  updated: {type: Date, required: true},
   item: {
-    read: Boolean,
-    write: Boolean
+    read: {type: Boolean, required: true},
+    write: {type: Boolean, required: true}
   },
   patron: {
-    read: Boolean,
-    write: Boolean
+    read: {type: Boolean, required: true},
+    write: {type: Boolean, required: true}
   },
   checkout: {
-    read: Boolean,
-    write: Boolean
+    read: {type: Boolean, required: true},
+    write: {type: Boolean, required: true}
   },
-  signIn: Boolean,
-  signOut: Boolean
+  signIn: {type: Boolean, required: true},
+  signOut: {type: Boolean, required: true}
 });
