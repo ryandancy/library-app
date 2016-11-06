@@ -1,54 +1,53 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = mongoose.Types.ObjectId;
+var reqt = require('./util/req-types.js');
 
 // Helper schema to avoid repetition
 var Character = new Schema({
-  type: String,
+  type: reqt.String,
   minlength: 1,
-  maxlength: 1
+  maxlength: 1,
+  required: true
 });
 
 // Control fields -- 00X
 var marcControlField = new Schema({
   tag: {
-    type: Number,
+    type: reqt.Number,
     min: 0,
-    max: 9,
-    required: true
+    max: 9
   },
-  value: {type: String, required: true},
+  value: reqt.String,
   required: true
 });
 
 // Subfields
 var marcSubfield = new Schema({
-  tag: {type: Character, required: true},
-  value: {type: String, required: true},
+  tag: Character,
+  value: reqt.String,
   required: true
 });
 
 // Variable fields
 var marcVariableField = new Schema({
   tag: {
-    type: Number,
+    type: reqt.Number,
     min: 10,
-    max: 999,
-    required: true
+    max: 999
   },
   subfields: [marcSubfield],
-  ind1: {type: Character, required: true},
-  ind2: {type: Character, required: true},
+  ind1: Character,
+  ind2: Character,
   required: true
 });
 
 module.exports = mongoose.model('Item', {
   marc: {
     leader: {
-      type: String,
+      type: reqt.String,
       minlength: 24,
-      maxlength: 24,
-      required: true
+      maxlength: 24
     },
     fields: {
       control: [marcControlField],
@@ -56,16 +55,14 @@ module.exports = mongoose.model('Item', {
     }
   },
   created: {
-    type: Date,
-    default: Date.now,
-    required: true
+    type: reqt.Date,
+    default: Date.now
   },
-  updated: {type: Date, required: true},
-  barcode: {type: Number, required: true},
+  updated: reqt.Date,
+  barcode: reqt.Number,
   status: {
-    type: String,
-    enum: ["in", "out", "missing", "lost"],
-    required: true
+    type: reqt.String,
+    enum: ["in", "out", "missing", "lost"]
   },
-  checkout: {type: ObjectId, required: true}
+  checkout: reqt.ObjectId
 });

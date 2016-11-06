@@ -1,25 +1,25 @@
 var mongoose = require('mongoose');
+var reqt = require('./util/req-types.js');
 
 module.exports = mongoose.model('Admin', {
-  name: {type: String, required: true},
+  name: reqt.String,
   created: {
-    type: Date,
-    default: Date.now,
-    required: true
+    type: reqt.Date,
+    default: Date.now
   },
-  updated: {type: Date, required: true},
+  updated: reqt.Date,
   item: {
-    read: {type: Boolean, required: true},
-    write: {type: Boolean, required: true}
+    read: reqt.Boolean,
+    write: reqt.Boolean
   },
   patron: {
-    read: {type: Boolean, required: true},
-    write: {type: Boolean, required: true}
+    read: reqt.Boolean,
+    write: reqt.Boolean
   },
   checkout: {
-    read: {type: Boolean, required: true},
-    write: {type: Boolean, required: true}
+    read: reqt.Boolean,
+    write: reqt.Boolean
   },
-  signIn: {type: Boolean, required: true},
-  signOut: {type: Boolean, required: true}
+  signIn: reqt.Boolean,
+  signOut: reqt.Boolean
 });

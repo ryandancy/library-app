@@ -1,20 +1,19 @@
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
+var reqt = require('./util/req-types.js');
 
 module.exports = mongoose.model('Checkout', {
   created: {
-    type: Date,
-    default: Date.now,
-    required: true
+    type: reqt.Date,
+    default: Date.now
   },
-  updated: {type: Date, required: true},
-  dueDate: {type: Date, required: true},
-  item: {type: ObjectId, required: true},
-  patron: {type: ObjectId, required: true},
-  renewals: {type: Number, required: true},
+  updated: reqt.Date,
+  dueDate: reqt.Date,
+  item: reqt.ObjectId,
+  patron: reqt.ObjectId,
+  renewals: reqt.Number,
   status: {
-    type: String,
-    enum: ['onTime', 'late', 'returned', 'lost'],
-    required: true
+    type: reqt.String,
+    enum: ['onTime', 'late', 'returned', 'lost']
   }
 });
