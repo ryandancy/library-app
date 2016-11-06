@@ -112,5 +112,19 @@ module.exports = function(router, baseUri) {
       req.checkParams('id', 'Invalid ID').isInt();
       next();
     });
+    
+    // get a thing
+    router.get('/${name}/:id', function(req, res) {
+      if (!validate(req, res)) return;
+      
+      var id = req.params.id;
+      model.findById(id, function(err, doc) {
+        if (err) {
+          res.status(500).send(err); // REVIEW will this work?
+        } else {
+          res.status(200).json(toInputConverter(doc));
+        }
+      });
+    });
   }
 };
