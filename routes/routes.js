@@ -172,5 +172,15 @@ module.exports = function(router, baseUri) {
         });
       });
     });
+    
+    // delete a thing
+    router.delete(`/${name}/:id`, function(req, res) {
+      if (!validate(req, res)) return;
+      
+      var id = req.params.id;
+      model.findById(id).remove(function(err) {
+        if (err) res.status(500).send(err); // REVIEW will this work?
+      });
+    });
   }
 };
