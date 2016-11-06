@@ -26,6 +26,10 @@ types:
         type: datetime
         (unmodifiable):
         example: 2016-06-01T09:31:02-03:30
+      updated?:
+        type: datetime
+        (unmodifiable):
+        example: 2010-12-14T21:22:05Z
       barcode:
         type: string
         pattern: ^\d+$
@@ -49,17 +53,20 @@ types:
       in:
         marc: !include marc-example.raml
         created: 2014-03-26T17:20:34-05:00
+        updated: 2014-03-26T17:20:34-05:00
         status: in
         barcode: '29563023651983'
       out:
         marc: !include marc-example.raml
         created: 2016-06-01T09:31:02-03:30
+        updated: 2014-03-26T17:20:34-05:00
         status: out
         barcode: '53620000000087'
         checkoutID: 11425543
       lost:
         marc: !include marc-example.raml
         created: 2015-11-24T10:34:01-04:00
+        updated: 2014-03-26T17:20:34-05:00
         status: lost
         barcode: '76543200000246'
   Checkout:
@@ -86,6 +93,10 @@ types:
         description: >
           The time the Checkout was created; i.e. the time the item was checked
           out.
+      updated?:
+        type: datetime
+        (unmodifiable):
+        example: 2010-12-14T21:22:05Z
       dueDate: date-only
       numRenewals: basic.natural
       status:
@@ -99,7 +110,8 @@ types:
     example:
       itemID: 54336
       patronID: 102411
-      outDate: 2016-07-30T11:34:02-03:00
+      created: 2016-07-30T11:34:02-03:00
+      updated: 2016-07-30T11:34:02-03:00
       dueDate: 2016-09-13
       numRenewals: 2
       status: onTime
@@ -116,6 +128,10 @@ types:
       created?:
         type: date-time
         (unmodifiable):
+      updated?:
+        type: datetime
+        (unmodifiable):
+        example: 2010-12-14T21:22:05Z
       pic?:
         # TODO Can the media type of image/whatever be noted?
         type: basic.uri
@@ -128,10 +144,12 @@ types:
       simple:
         name: Pewdiepie
         created: 2016-02-23T14:25:06Z
+        updated: 2016-02-23T14:25:12Z
         checkoutIDs: []
       complex:
         name: Ima Nexamplé
         created: 2015-12-03T11:54:55-00:30
+        updated: 2016-02-23T14:25:06Z
         pic: http://some.where/a/path/to/a/picture/ima-nexample.jpg
         checkoutIDs:
           - 102441
@@ -166,6 +184,10 @@ types:
       created?:
         type: date-time
         (unmodifiable):
+      updated?:
+        type: datetime
+        (unmodifiable):
+        example: 2010-12-14T21:22:05Z
       item: ReadWritePermission
       patron: ReadWritePermission
       checkout: ReadWritePermission
@@ -188,6 +210,7 @@ types:
     example:
       name: Lieb Rarian
       created: 2017-08-12T00:05:21-05:00
+      updated: 2017-08-12T00:05:21-05:03
       item:
         read: true
         write: true
