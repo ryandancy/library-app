@@ -15,6 +15,10 @@ module.exports = function(router, baseUri) {
     return !errors;
   }
   
+  function handleDBError(err, code = 500) {
+    res.status(code).send(err); // REVIEW will this work?
+  }
+  
   function addCollection(
       model, name, toInputConverter, toDBConverter, pageable = true) {
     // toInputConverter, toDBConverter default to the identity function
@@ -85,11 +89,8 @@ module.exports = function(router, baseUri) {
       
       // execute the query
       query.exec(function(err, docs) {
-        if (err) {
-          res.status(500).send(err); // REVIEW will this work? Format of errors?
-        } else {
-          res.json(docs.map(toInputConverter));
-        }
+        if (err) return handleDBError(err);
+        res.json(docs.map(toInputConverter));
       });
     });
     
@@ -99,13 +100,10 @@ module.exports = function(router, baseUri) {
       
       // make the new thing
       model.create(toDBConverter(req.body), function(err, doc) {
-        if (err) {
-          res.status(500).send(err); // REVIEW will this work?
-        } else {
-          res.status(201)
-             .set('Location', `/${baseUri}/${name}/${doc._id}`)
-             .send();
-        }
+        if (err) return handleDBError(err);
+        res.status(201)
+           .set('Location', `/${baseUri}/${name}/${doc._id}`)
+           .send();
       });
     });
     
@@ -116,11 +114,8 @@ module.exports = function(router, baseUri) {
       if (!validate(req, res)) return;
       
       model.remove({}, function(err) {
-        if (err) {
-          res.status(500).send(err); // REVIEW will this work?
-        } else {
-          res.status(204).send();
-        }
+        if (err) return handleDBError(err);
+        res.status(204).send();
       });
     });
     
@@ -130,11 +125,8 @@ module.exports = function(router, baseUri) {
       
       var id = req.params.id;
       model.findById(id, function(err, doc) {
-        if (err) {
-          res.status(500).send(err); // REVIEW will this work?
-        } else {
-          res.status(200).json(toInputConverter(doc));
-        }
+        if (err) return handleDBError(err);
+        res.status(200).json(toInputConverter(doc));
       });
     });
     
@@ -145,14 +137,9 @@ module.exports = function(router, baseUri) {
       var id = req.params.id;
       model.findByIdAndUpdate(id, toDBConverter(req.body), function(err, doc) {
         if (err) {
-          if (err.name === 'ValidationError') {
-            res.status(422).send(err); // REVIEW this too *down arrow*
-          } else {
-            res.status(500).send(err); // REVIEW will this work?
-          }
-        } else {
-          res.status(204).send();
+          return handleDBError(err, err.name === 'ValidationError' ? 422 : 500);
         }
+        res.status(204).send();
       });
     });
     
@@ -162,14 +149,9 @@ module.exports = function(router, baseUri) {
       
       var id = req.params.id;
       model.findById(id, function(err, doc) {
-        if (err) {
-          res.status(500).send(err); // REVIEW will this work?
-          return;
-        }
+        if (err) return handleDBError(err);
         mergePatch.apply(doc, toDBConverter(req.body)); // hopefully this works
-        doc.save(function(err) {
-          res.status(500).send(err); // REVIEW will this work?
-        });
+        doc.save(handleDBError);
       });
     });
     
@@ -179,7 +161,7 @@ module.exports = function(router, baseUri) {
       
       var id = req.params.id;
       model.findById(id).remove(function(err) {
-        if (err) res.status(500).send(err); // REVIEW will this work?
+        if (err) return handleDBError(err);
       });
     });
   }
