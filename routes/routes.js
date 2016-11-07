@@ -21,9 +21,20 @@ module.exports = function(router, baseUri) {
   
   function addCollection(
       model, name, toInputConverter, toDBConverter, pageable = true) {
-    // toInputConverter, toDBConverter default to the identity function
-    toInputConverter = toInputConverter || x => x;
-    toDBConverter = toDBConverter || x => x;
+    // toInputConverter, toDBConverter default to converting _id <=> id
+    // NOTE hopefully this works and doesn't require copying the object
+    if (!toInputConverter) {
+      toInputConverter = function(doc) {
+        doc.id = doc._id;
+        delete doc._id;
+      };
+    }
+    if (!toDBConverter) {
+      toDBConverter = function(doc) {
+        doc._id = doc.id;
+        delete doc.id;
+      }
+    }
     
     // MIDDLEWARE
     
