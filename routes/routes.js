@@ -20,7 +20,17 @@ module.exports = function(router, baseUri) {
   }
   
   function addCollection(
-      model, name, toInputConverter, toDBConverter, pageable = true) {
+      model, name, hooks, toInputConverter, toDBConverter, pageable = true) {
+    // make sure hooks is initialized correctly
+    if (typeof hooks !== 'object') {
+      hooks = {
+        collection: {},
+        resource: {}
+      };
+    }
+    hooks.collection = hooks.collection || {};
+    hooks.resource = hooks.resource || {};
+    
     // toInputConverter, toDBConverter default to converting _id <=> id
     // NOTE hopefully this works and doesn't require copying the object
     if (!toInputConverter) {
@@ -55,6 +65,19 @@ module.exports = function(router, baseUri) {
       req.checkParams('id', 'Invalid ID').isInt();
       next();
     });
+    
+    // do the hooks
+    function getHookMiddleware(pathType) {
+      return (req, res, next) => {
+        var hook = hooks[pathType][req.method];
+        if (typeof hook === 'function') {
+          hook(req, res);
+        }
+        next();
+      };
+    }
+    router.use(`/${name}`, getHookMiddleware('collection'));
+    router.use(`/${name}/:id`, getHookMiddleware('resource'));
     
     // ROUTES
     
