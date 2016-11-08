@@ -176,4 +176,9 @@ module.exports = function(router, baseUri) {
       });
     });
   }
+  
+  addCollection(Admin, 'admins');
+  addCollection(Checkout, 'checkouts');
+  addCollection(Item, 'items');
+  addCollection(Patron, 'patrons');
 };
