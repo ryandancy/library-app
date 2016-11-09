@@ -73,10 +73,11 @@ module.exports = function(router, baseUri) {
     function getHookMiddleware(pathType) {
       return (req, res, next) => {
         var hook = hooks[pathType][req.method];
+        var cont = true;
         if (typeof hook === 'function') {
-          hook(req, res);
+          cont = hook(req, res);
         }
-        next();
+        if (cont) next();
       };
     }
     router.use(collectionPath, getHookMiddleware('collection'));
