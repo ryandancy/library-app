@@ -46,6 +46,9 @@ module.exports = function(router, baseUri) {
       }
     }
     
+    var collectionPath = `/${name}`;
+    var resourcePath = `${collectionPath}/:id`;
+    
     // MIDDLEWARE
     
     // make sure unmodifiables aren't present in a POST/PUT/PATCH request
@@ -61,7 +64,7 @@ module.exports = function(router, baseUri) {
     });
     
     // validate the :id
-    router.use(`/${name}/:id`, function(req, res, next) {
+    router.use(resourcePath, function(req, res, next) {
       req.checkParams('id', 'Invalid ID').isInt();
       next();
     });
@@ -76,13 +79,13 @@ module.exports = function(router, baseUri) {
         next();
       };
     }
-    router.use(`/${name}`, getHookMiddleware('collection'));
-    router.use(`/${name}/:id`, getHookMiddleware('resource'));
+    router.use(collectionPath, getHookMiddleware('collection'));
+    router.use(resourcePath, getHookMiddleware('resource'));
     
     // ROUTES
     
     // get a list of all things
-    router.get(`/${name}`, function(req, res) {
+    router.get(collectionPath, function(req, res) {
       // create objs of query params to internal representations to keep it DRY
       var sortByObj = {'created': 'created', 'name': 'name', 'id': '_id'};
       var sortDirObj = {'asc': 1, 'desc': -1};
@@ -129,7 +132,7 @@ module.exports = function(router, baseUri) {
     });
     
     // create a new thing
-    router.post(`/${name}`, function(req, res) {
+    router.post(collectionPath, function(req, res) {
       if (!validate(req, res)) return;
       
       // make the new thing
@@ -144,7 +147,7 @@ module.exports = function(router, baseUri) {
     // delete all things
     // TODO admin will need to override this so as not to delete self
     // REVIEW should this even be a thing?
-    router.delete(`/${name}`, function(req, res) {
+    router.delete(collectionPath, function(req, res) {
       if (!validate(req, res)) return;
       
       model.remove({}, function(err) {
@@ -154,7 +157,7 @@ module.exports = function(router, baseUri) {
     });
     
     // get a thing
-    router.get(`/${name}/:id`, function(req, res) {
+    router.get(resourcePath, function(req, res) {
       if (!validate(req, res)) return;
       
       var id = req.params.id;
@@ -165,7 +168,7 @@ module.exports = function(router, baseUri) {
     });
     
     // update a thing
-    router.put(`/${name}/:id`, function(req, res) {
+    router.put(resourcePath, function(req, res) {
       if (!validate(req, res)) return;
       
       var id = req.params.id;
@@ -178,7 +181,7 @@ module.exports = function(router, baseUri) {
     });
     
     // partially update a thing
-    router.patch(`/${name}/:id`, function(req, res) {
+    router.patch(resourcePath, function(req, res) {
       if (!validate(req, res)) return;
       
       var id = req.params.id;
@@ -190,7 +193,7 @@ module.exports = function(router, baseUri) {
     });
     
     // delete a thing
-    router.delete(`/${name}/:id`, function(req, res) {
+    router.delete(resourcePath, function(req, res) {
       if (!validate(req, res)) return;
       
       var id = req.params.id;
