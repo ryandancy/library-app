@@ -74,7 +74,7 @@ module.exports = function(router, baseUri) {
       return (req, res, next) => {
         var hook = hooks[pathType][req.method];
         if (typeof hook === 'function') {
-          hook(req, res, next);
+          hook(req, res, next, toDBConverter, toInputConverter);
         } else {
           next();
         }
