@@ -205,7 +205,40 @@ module.exports = function(router, baseUri) {
   }
   
   addCollection(Admin, 'admins');
-  addCollection(Checkout, 'checkouts');
+  
+  addCollection(Checkout, 'checkouts', {
+    collection: {
+      POST: function(req, res, next, toDBConverter, toInputConverter) {
+        // update item status, make sure item's not checked out already
+        // CALLBACK HELL
+        var itemID = req.body.itemID;
+        Item.findById(itemID, function(err, item) {
+          if (err) return handleDBError(err);
+          
+          if (item.status !== 'in') {
+            res.json({msg: 'Cannot create checkout: item not in'});
+            return;
+          }
+          
+          item.status = 'out';
+          item.save(function(err) {
+            if (err) return handleDBError(err);
+            
+            // update patron checkouts
+            var patronID = req.body.patronID;
+            var checkout = toDBConverter(req.body);
+            Item.update(
+                {_id: patronID}, {$push: {checkouts: checkout}}, function(err) {
+              if (err) return handleDBError(err);
+              next();
+            });
+          });
+        });
+      }
+    }
+  });
+  
   addCollection(Item, 'items');
+  
   addCollection(Patron, 'patrons');
 };
