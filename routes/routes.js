@@ -278,7 +278,7 @@ module.exports = function(router, baseUri) {
     create: function(req, res, checkout, next) {
       // update item status, make sure item's not checked out already
       // CALLBACK HELL
-      var itemID = req.body.itemID;
+      var itemID = checkout.itemID;
       Item.findById(itemID, function(err, item) {
         if (err) return handleDBError(err);
         
@@ -292,7 +292,7 @@ module.exports = function(router, baseUri) {
           if (err) return handleDBError(err);
           
           // update patron checkouts
-          var patronID = req.body.patronID;
+          var patronID = checkout.patronID;
           Item.update(
               {_id: patronID}, {$push: {checkouts: checkout}}, function(err) {
             if (err) return handleDBError(err);
