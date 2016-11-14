@@ -301,7 +301,7 @@ module.exports = function(router, baseUri) {
         });
       });
     },
-    remove: function(req, res, checkout, next) {
+    delete: function(req, res, checkout, next) {
       // update item status, remove from patron checkouts
       Item.findById(checkout.itemID, function(err, item) {
         if (err) return handleDBError(err);
