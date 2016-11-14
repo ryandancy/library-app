@@ -21,15 +21,18 @@ module.exports = function(router, baseUri) {
   
   function addCollection(
       model, name, hooks, toInputConverter, toDBConverter, pageable = true) {
-    // make sure hooks is initialized correctly
-    if (typeof hooks !== 'object') {
-      hooks = {
-        collection: {},
-        resource: {}
-      };
-    }
-    hooks.collection = hooks.collection || {};
-    hooks.resource = hooks.resource || {};
+    /*
+      There are 4 hooks: create, retrieve, update, and delete.
+      ALL take req, res, next.
+      Extras:
+      - create takes doc, the new document.
+      - retrieve takes doc, the retrieved document.
+      - update takes oldDoc and newDoc.
+      - delete takes doc, the document to be deleted.
+      req and res are ALWAYS first 2 params, next is ALWAYS last param.
+    */
+    // make sure hooks is an object
+    if (typeof hooks !== 'object') hooks = {};
     
     // toInputConverter, toDBConverter default to converting _id <=> id
     // NOTE hopefully this works and doesn't require copying the object
@@ -70,18 +73,39 @@ module.exports = function(router, baseUri) {
     });
     
     // do the hooks
-    function getHookMiddleware(pathType) {
-      return (req, res, next) => {
-        var hook = hooks[pathType][req.method];
-        if (typeof hook === 'function') {
-          hook(req, res, next, toDBConverter, toInputConverter);
-        } else {
-          next();
-        }
+    methodToCRUD = {
+      POST: 'create',
+      GET: 'retrieve',
+      POST: 'update',
+      PATCH: 'update',
+      DELETE: 'delete'
+    };
+    app.use(function(req, res, next) {
+      var crud = methodToCRUD[req.method];
+      var hook = hooks[crud];
+      req.hook = hook || () => {
+        // next is always last arg, call it
+        arguments[arguments.length - 1]();
       };
+    });
+    
+    // here's a monstrosity of a function to handle mapping a hook over an array
+    function handleBatchHook(array, hookCaller, callback) {
+      if (!array) {
+        callback();
+        return;
+      }
+      function handleSingleHook(index, hookCaller) {
+        hookCaller(array[index], function() {
+          if (index < array.length - 1) {
+            handleSingleHook(index + 1, hookCaller);
+          } else {
+            callback();
+          }
+        });
+      }
+      handleSingleHook(0);
     }
-    router.use(collectionPath, getHookMiddleware('collection'));
-    router.use(resourcePath, getHookMiddleware('resource'));
     
     // ROUTES
     
@@ -128,7 +152,11 @@ module.exports = function(router, baseUri) {
       // execute the query
       query.exec(function(err, docs) {
         if (err) return handleDBError(err);
-        res.json(docs.map(toInputConverter));
+        handleBatchHook(
+          docs,
+          (doc, next) => req.hook(req, res, doc, next),
+          () => res.json(docs.map(toInputConverter))
+        );
       });
     });
     
@@ -137,11 +165,14 @@ module.exports = function(router, baseUri) {
       if (!validate(req, res)) return;
       
       // make the new thing
-      model.create(toDBConverter(req.body), function(err, doc) {
-        if (err) return handleDBError(err);
-        res.status(201)
-           .set('Location', `/${baseUri}/${name}/${doc._id}`)
-           .send();
+      var newDoc = toDBConverter(req.body);
+      req.hook(req, res, newDoc, () => {
+        model.create(newDoc, function(err, doc) {
+          if (err) return handleDBError(err);
+          res.status(201)
+             .set('Location', `/${baseUri}/${name}/${doc._id}`)
+             .send();
+        });
       });
     });
     
@@ -151,9 +182,18 @@ module.exports = function(router, baseUri) {
     router.delete(collectionPath, function(req, res) {
       if (!validate(req, res)) return;
       
-      model.remove({}, function(err) {
+      // find all things, pass to hook before deleting
+      model.find({}, function(err, docs) {
         if (err) return handleDBError(err);
-        res.status(204).send();
+        handleBatchHook(
+          docs,
+          (doc, next) => req.hook(req, res, doc, next),
+          () => {
+            model.remove({}, function(err) {
+              if (err) return handleDBError(err);
+              res.status(204).send();
+            })
+          });
       });
     });
     
@@ -164,7 +204,9 @@ module.exports = function(router, baseUri) {
       var id = req.params.id;
       model.findById(id, function(err, doc) {
         if (err) return handleDBError(err);
-        res.status(200).json(toInputConverter(doc));
+        req.hook(req, res, doc, () => {
+          res.status(200).json(toInputConverter(doc));
+        });
       });
     });
     
@@ -173,11 +215,31 @@ module.exports = function(router, baseUri) {
       if (!validate(req, res)) return;
       
       var id = req.params.id;
-      model.findByIdAndUpdate(id, toDBConverter(req.body), function(err, doc) {
-        if (err) {
-          return handleDBError(err, err.name === 'ValidationError' ? 422 : 500);
+      var mask = toDBConverter(req.body);
+      
+      // find old doc, pass to hook before updating
+      model.findById(id, function(err, oldDoc) {
+        if (err) return handleDBError(err);
+        
+        var newDoc = {};
+        for (var prop in oldDoc) {
+          if (!oldDoc.hasOwnProperty(prop)) continue;
+          newDoc[prop] = mask.hasOwnProperty(prop) ? mask[prop] : oldDoc[prop];
         }
-        res.status(204).send();
+        
+        req.hook(req, res, oldDoc, newDoc, () => {
+          for (var prop in newDoc) {
+            if (!newDoc.hasOwnProperty(prop)) continue;
+            oldDoc[prop] = newDoc[prop];
+          }
+          oldDoc.save(function(err, doc) {
+            if (err) {
+              return handleDBError(
+                err, err.name === 'ValidationError' ? 422 : 500);
+            }
+            res.status(204).send();
+          });
+        });
       });
     });
     
@@ -186,10 +248,13 @@ module.exports = function(router, baseUri) {
       if (!validate(req, res)) return;
       
       var id = req.params.id;
-      model.findById(id, function(err, doc) {
+      model.findById(id, function(err, oldDoc) {
         if (err) return handleDBError(err);
-        mergePatch.apply(doc, toDBConverter(req.body)); // hopefully this works
-        doc.save(handleDBError);
+        // hopefully this works
+        var newDoc = mergePatch.apply(oldDoc, toDBConverter(req.body));
+        req.hook(req, res, oldDoc, newDoc, () => doc.save(function(err) {
+          if (err) return handleDBError(err);
+        }));
       });
     });
     
@@ -198,8 +263,11 @@ module.exports = function(router, baseUri) {
       if (!validate(req, res)) return;
       
       var id = req.params.id;
-      model.findById(id).remove(function(err) {
+      model.findById(id, function(err, doc) {
         if (err) return handleDBError(err);
+        req.hook(req, res, doc, () => doc.remove(function(err) {
+          if (err) return handleDBError(err);
+        }));
       });
     });
   }
@@ -207,34 +275,31 @@ module.exports = function(router, baseUri) {
   addCollection(Admin, 'admins');
   
   addCollection(Checkout, 'checkouts', {
-    collection: {
-      POST: function(req, res, next, toDBConverter, toInputConverter) {
-        // update item status, make sure item's not checked out already
-        // CALLBACK HELL
-        var itemID = req.body.itemID;
-        Item.findById(itemID, function(err, item) {
+    create: function(req, res, checkout, next) {
+      // update item status, make sure item's not checked out already
+      // CALLBACK HELL
+      var itemID = req.body.itemID;
+      Item.findById(itemID, function(err, item) {
+        if (err) return handleDBError(err);
+        
+        if (item.status !== 'in') {
+          res.json({msg: 'Cannot create checkout: item not in'});
+          return;
+        }
+        
+        item.status = 'out';
+        item.save(function(err) {
           if (err) return handleDBError(err);
           
-          if (item.status !== 'in') {
-            res.json({msg: 'Cannot create checkout: item not in'});
-            return;
-          }
-          
-          item.status = 'out';
-          item.save(function(err) {
+          // update patron checkouts
+          var patronID = req.body.patronID;
+          Item.update(
+              {_id: patronID}, {$push: {checkouts: checkout}}, function(err) {
             if (err) return handleDBError(err);
-            
-            // update patron checkouts
-            var patronID = req.body.patronID;
-            var checkout = toDBConverter(req.body);
-            Item.update(
-                {_id: patronID}, {$push: {checkouts: checkout}}, function(err) {
-              if (err) return handleDBError(err);
-              next();
-            });
+            next();
           });
         });
-      }
+      });
     }
   });
   
