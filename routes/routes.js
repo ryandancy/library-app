@@ -294,7 +294,7 @@ module.exports = function(router, baseUri) {
           // update patron checkouts
           var patronID = checkout.patronID;
           Item.update(
-              {_id: patronID}, {$push: {checkouts: checkout}}, function(err) {
+              {_id: patronID}, {$push: {checkoutIDs: checkout}}, function(err) {
             if (err) return handleDBError(err);
             next();
           });
