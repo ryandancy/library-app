@@ -300,6 +300,32 @@ module.exports = function(router, baseUri) {
           });
         });
       });
+    },
+    remove: function(req, res, checkout, next) {
+      // update item status, remove from patron checkouts
+      Item.findById(checkout.itemID, function(err, item) {
+        if (err) return handleDBError(err);
+        
+        // if an item is lost we might just be cleaning up
+        // missing is more short-term so it doesn't count
+        if (item.status !== 'lost') {
+          item.status = 'in';
+        }
+        
+        item.save(function(err) {
+          if (err) return handleDBError(err);
+          
+          // silently ignore if the checkout's not in the patron's checkouts
+          Patron.findByIdAndUpdate(
+            checkout.patronID,
+            {$pull: {checkoutIDs: checkout._id}},
+            function(err) {
+              if (err) return handleDBError(err);
+              next();
+            }
+          );
+        });
+      });
     }
   });
   
