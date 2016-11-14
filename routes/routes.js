@@ -1,9 +1,9 @@
 var mergePatch = require('json-merge-patch');
 
-var admin = require('../models/admin.js');
-var checkout = require('../models/checkout.js');
-var item = require('../models/item.js');
-var patron = require('../models/patron.js');
+var Admin = require('../models/admin.js');
+var Checkout = require('../models/checkout.js');
+var Item = require('../models/item.js');
+var Patron = require('../models/patron.js');
 
 module.exports = function(router, baseUri) {
   // helper function for error validation, returns true if validation passed
