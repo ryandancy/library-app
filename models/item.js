@@ -54,14 +54,6 @@ module.exports = mongoose.model('Item', {
       variable: [marcVariableField]
     }
   },
-  created: {
-    type: reqt.Date,
-    default: Date.now
-  },
-  updated: {
-    type: reqt.Date,
-    default: Date.now
-  },
   barcode: reqt.Number,
   status: {
     type: reqt.String,

@@ -11,6 +11,11 @@ var baseUri = '/v0';
 // TODO have separate production, test dbs and change on ARGV
 mongoose.connect('mongodb://localhost/library');
 
+app.plugin(require('mongoose-timestamp'), {
+  createdAt: 'created',
+  updatedAt: 'updated'
+});
+
 // the static directory is /public
 app.use(express.static(__dirname + '/public'));
 

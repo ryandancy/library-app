@@ -318,12 +318,11 @@ module.exports = function(router, baseUri) {
           // silently ignore if the checkout's not in the patron's checkouts
           Patron.findByIdAndUpdate(
             checkout.patronID,
-            {$pull: {checkoutIDs: checkout._id}},
-            function(err) {
-              if (err) return handleDBError(err);
-              next();
-            }
-          );
+            {$pull: {checkoutIDs: checkout._id}}
+          ).exec(function(err) {
+            if (err) return handleDBError(err);
+            next();
+          });
         });
       });
     }

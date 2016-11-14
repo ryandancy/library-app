@@ -3,14 +3,6 @@ var ObjectId = mongoose.Types.ObjectId;
 var reqt = require('./util/req-types.js');
 
 module.exports = mongoose.model('Checkout', {
-  created: {
-    type: reqt.Date,
-    default: Date.now
-  },
-  updated: {
-    type: reqt.Date,
-    default: Date.now
-  },
   dueDate: reqt.Date,
   item: reqt.ObjectId,
   patron: reqt.ObjectId,
