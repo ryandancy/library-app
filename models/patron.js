@@ -1,6 +1,4 @@
 var mongoose = require('mongoose');
-var ObjectId = mongoose.Types.ObjectId;
-var Schema = mongoose.Schema;
 var isUri = require('valid-url').isUri;
 var reqt = require('./util/req-types.js');
 

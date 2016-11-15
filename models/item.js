@@ -59,5 +59,5 @@ module.exports = mongoose.model('Item', {
     type: reqt.String,
     enum: ["in", "out", "missing", "lost"]
   },
-  checkout: reqt.ObjectId
+  checkoutID: ObjectId
 });

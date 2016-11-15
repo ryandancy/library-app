@@ -4,8 +4,8 @@ var reqt = require('./util/req-types.js');
 
 module.exports = mongoose.model('Checkout', {
   dueDate: reqt.Date,
-  item: reqt.ObjectId,
-  patron: reqt.ObjectId,
+  itemID: ObjectId,
+  patronID: ObjectId,
   renewals: reqt.Number,
   status: {
     type: reqt.String,
