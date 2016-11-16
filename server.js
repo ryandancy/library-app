@@ -8,6 +8,9 @@ var expressValidator = require('express-validator');
 
 var baseUri = '/v0';
 
+// use native ES6 promises
+mongoose.Promise = global.Promise;
+
 // TODO have separate production, test dbs and change on ARGV
 mongoose.connect('mongodb://localhost/library');
 

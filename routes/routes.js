@@ -39,6 +39,43 @@ module.exports = function(router, baseUri) {
         });
       });
     },
+    update: function(req, res, oldCheckout, newCheckout, next) {
+      var promises = [];
+      
+      // handle changed item ID
+      if (oldCheckout.itemID !== newCheckout.itemID) {
+        // change old item to in
+        promises.push(Item.findByIdAndUpdate(
+          oldCheckout.itemID,
+          {$set: {status: 'in'}, $unset: {checkoutID: ''}}
+        ).exec());
+        
+        // change new item to out
+        promises.push(Item.findByIdAndUpdate(
+          newCheckout.itemID,
+          {$set: {status: 'out', checkoutID: newCheckout._id}}
+        ).exec());
+      }
+      
+      // handle changed patron ID
+      if (oldCheckout.patronID !== newCheckout.patronID) {
+        // remove checkout from old patron
+        promises.push(Patron.findByIdAndUpdate(
+          oldCheckout.patronID,
+          {$pull: {checkoutIDs: oldCheckout._id}}
+        ).exec());
+        
+        // add checkout to new patron
+        promises.push(Patron.findByIdAndUpdate(
+          newCheckout.patronID,
+          {$push: {checkoutIDs: newCheckout._id}}
+        ).exec());
+      }
+      
+      Promise.all(promises).then(next, function(err) {
+        if (err) return util.handleDBError(err);
+      });
+    },
     delete: function(req, res, checkout, next) {
       // update item status, remove from patron checkouts
       Item.findById(checkout.itemID, function(err, item) {
