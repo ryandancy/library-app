@@ -1,7 +1,9 @@
 var util = require('./util.js');
 
+// TODO clean up the parameters on addCollection
 module.exports = (router, baseUri) => function(
-    model, name, hooks, toInputConverter, toDBConverter, pageable = true) {
+    model, name, hooks = {}, unmodifiables = [], toInputConverter,
+    toDBConverter, pageable = true) {
   /*
     There are 4 hooks: create, retrieve, update, and delete.
     ALL take req, res, next.
@@ -12,8 +14,12 @@ module.exports = (router, baseUri) => function(
     - delete takes doc, the document to be deleted.
     req and res are ALWAYS first 2 params, next is ALWAYS last param.
   */
-  // make sure hooks is an object
-  if (typeof hooks !== 'object') hooks = {};
+  // make sure default unmodifiables are present
+  for (defaultUnmod of ['created', 'updated', 'id']) {
+    if (!unmodifiables.includes(defaultUnmod)) {
+      unmodifiables.push(defaultUnmod);
+    }
+  }
   
   // toInputConverter, toDBConverter default to converting _id <=> id
   // NOTE hopefully this works and doesn't require copying the object
@@ -36,9 +42,8 @@ module.exports = (router, baseUri) => function(
   // MIDDLEWARE
   
   // make sure unmodifiables aren't present in a POST/PUT/PATCH request
-  router.use(function(req, res, next) {
+  router.use(collectionPath, function(req, res, next) {
     if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
-      var unmodifiables = ['created', 'updated', 'id'];
       for (var unmod of unmodifiables) {
         req.checkBody(unmod, '%0 is unmodifiable and cannot be present')
            .equals('undefined');
