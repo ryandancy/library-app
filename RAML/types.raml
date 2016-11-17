@@ -48,6 +48,7 @@ types:
           checkout is not applicable. Note that this property is forbidden if
           `status` is `in`, `lost`, or `missing`, and is required if `status` is
           `out`.
+        (unmodifiable):
     additionalProperties: false
     examples:
       in:
@@ -139,6 +140,7 @@ types:
       checkoutIDs:
         type: integer[]
         description: A list of checkouts this Patron has.
+        (unmodifiable):
     additionalProperties: false
     examples:
       simple:

@@ -109,7 +109,7 @@ module.exports = function(router, baseUri) {
     }
   });
   
-  addCollection(Item, 'items');
+  addCollection(Item, 'items', {}, ['checkoutID']);
   
-  addCollection(Patron, 'patrons');
+  addCollection(Patron, 'patrons', {}, ['checkoutIDs']);
 };
