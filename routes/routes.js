@@ -14,29 +14,34 @@ module.exports = function(router, baseUri) {
   
   addCollection(Checkout, 'checkouts', {
     create: function(req, res, checkout, next) {
+      var promises = [];
+      
       // update item status, make sure item's not checked out already
-      // CALLBACK HELL
-      var itemID = checkout.itemID;
-      Item.findById(itemID, function(err, item) {
-        if (err) return util.handleDBError(err);
-        
-        if (item.status !== 'in') {
-          res.json({msg: 'Cannot create checkout: item not in'});
-          return;
-        }
-        
-        item.status = 'out';
-        item.save(function(err) {
-          if (err) return util.handleDBError(err);
+      promises.push(new Promise(function(resolve, reject) {
+        Item.findById(checkout.itemID, function(err, item) {
+          if (err) return reject(err);
           
-          // update patron checkouts
-          var patronID = checkout.patronID;
-          Item.update(
-              {_id: patronID}, {$push: {checkoutIDs: checkout}}, function(err) {
-            if (err) return util.handleDBError(err);
-            next();
+          if (item.status !== 'in') {
+            res.json({msg: 'Cannot create checkout: item not in'});
+            return resolve(item.status);
+          }
+          
+          item.status = 'out';
+          item.save(function(err) {
+            if (err) return reject(err);
+            resolve();
           });
         });
+      }));
+      
+      // update patron checkouts
+      promises.push(Item.findByIdAndUpdate(
+        checkout.patronID,
+        {$push: {checkoutIDs: checkout}}
+      ).exec());
+      
+      Promise.all(promises).then(next, function(err) {
+        if (err) return util.handleDBError(err);
       });
     },
     update: function(req, res, oldCheckout, newCheckout, next) {
@@ -77,28 +82,35 @@ module.exports = function(router, baseUri) {
       });
     },
     delete: function(req, res, checkout, next) {
+      var promises = [];
+      
       // update item status, remove from patron checkouts
-      Item.findById(checkout.itemID, function(err, item) {
-        if (err) return util.handleDBError(err);
-        
-        // if an item is lost we might just be cleaning up
-        // missing is more short-term so it doesn't count
-        if (item.status !== 'lost') {
-          item.status = 'in';
-        }
-        
-        item.save(function(err) {
-          if (err) return util.handleDBError(err);
+      promises.push(new Promise(function(resolve, reject) {
+        Item.findById(checkout.itemID, function(err, item) {
+          if (err) return reject(err);
           
-          // silently ignore if the checkout's not in the patron's checkouts
-          Patron.findByIdAndUpdate(
-            checkout.patronID,
-            {$pull: {checkoutIDs: checkout._id}}
-          ).exec(function(err) {
-            if (err) return util.handleDBError(err);
-            next();
+          // if an item is lost we might just be cleaning up
+          // missing is more short-term so it doesn't count
+          if (item.status !== 'lost') {
+            item.status = 'in';
+          }
+          
+          item.save(function(err) {
+            if (err) return reject(err);
+            resolve();
           });
         });
+      });
+      
+      // update the patron's checkouts
+      // silently ignore if the checkout's not in the patron's checkouts
+      promises.push(Patron.findByIdAndUpdate(
+        checkout.patronID,
+        {$pull: {checkoutIDs: checkout._id}}
+      ).exec());
+      
+      Promise.all(promises).then(next, function(err) {
+        return util.handleDBError(err);
       });
     }
   });
