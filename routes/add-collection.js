@@ -230,9 +230,7 @@ module.exports = (router, baseUri) => function(
       if (err) return util.handleDBError(err);
       // hopefully this works
       var newDoc = mergePatch.apply(oldDoc, toDBConverter(req.body));
-      req.hook(req, res, oldDoc, newDoc, () => doc.save(function(err) {
-        if (err) return util.handleDBError(err);
-      }));
+      req.hook(req, res, oldDoc, newDoc, () => doc.save(util.handleDBError));
     });
   });
   
@@ -243,9 +241,7 @@ module.exports = (router, baseUri) => function(
     var id = req.params.id;
     model.findById(id, function(err, doc) {
       if (err) return util.handleDBError(err);
-      req.hook(req, res, doc, () => doc.remove(function(err) {
-        if (err) return util.handleDBError(err);
-      }));
+      req.hook(req, res, doc, () => doc.remove(util.handleDBError));
     });
   });
 }

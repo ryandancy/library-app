@@ -40,9 +40,7 @@ module.exports = function(router, baseUri) {
         {$push: {checkoutIDs: checkout}}
       ).exec());
       
-      Promise.all(promises).then(next, function(err) {
-        if (err) return util.handleDBError(err);
-      });
+      Promise.all(promises).then(next, util.handleDBError);
     },
     update: function(req, res, oldCheckout, newCheckout, next) {
       var promises = [];
@@ -77,9 +75,7 @@ module.exports = function(router, baseUri) {
         ).exec());
       }
       
-      Promise.all(promises).then(next, function(err) {
-        if (err) return util.handleDBError(err);
-      });
+      Promise.all(promises).then(next, util.handleDBError);
     },
     delete: function(req, res, checkout, next) {
       var promises = [];
@@ -109,9 +105,7 @@ module.exports = function(router, baseUri) {
         {$pull: {checkoutIDs: checkout._id}}
       ).exec());
       
-      Promise.all(promises).then(next, function(err) {
-        return util.handleDBError(err);
-      });
+      Promise.all(promises).then(next, util.handleDBError);
     }
   });
   

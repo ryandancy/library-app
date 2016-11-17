@@ -10,5 +10,6 @@ function validate(req, res, code = 422) {
 }
 
 function handleDBError(err, code = 500) {
-  res.status(code).send(err); // REVIEW will this work?
+  if (err) res.status(code).send(err); // REVIEW will this work?
+  return !err;
 }
