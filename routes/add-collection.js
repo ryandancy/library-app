@@ -70,22 +70,19 @@ module.exports = (router, baseUri) => function(
     };
   });
   
-  // here's a monstrosity of a function to handle mapping a hook over an array
-  function handleBatchHook(array, hookCaller, callback) {
+  // handle mapping a hook over an array of params
+  function handleBatchHook(paramArray, hookCaller, callback) {
     if (!array) {
       callback();
       return;
     }
-    function handleSingleHook(index, hookCaller) {
-      hookCaller(array[index], function() {
-        if (index < array.length - 1) {
-          handleSingleHook(index + 1, hookCaller);
-        } else {
-          callback();
-        }
-      });
+    var promises = [];
+    for (param of paramArray) {
+      promises.push(new Promise(function(resolve, reject) {
+        hookCaller(param, resolve);
+      }));
     }
-    handleSingleHook(0);
+    Promise.all(promises).then(callback, callback);
   }
   
   // ROUTES
