@@ -1,4 +1,3 @@
-var mergePatch = require('json-merge-patch');
 var util = require('./util.js');
 var addCollectionFunc = require('./add-collection.js');
 

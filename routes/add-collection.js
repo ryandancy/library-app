@@ -1,3 +1,4 @@
+var mergePatch = require('json-merge-patch');
 var util = require('./util.js');
 
 // TODO clean up the parameters on addCollection
