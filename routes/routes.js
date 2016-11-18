@@ -1,5 +1,6 @@
 var util = require('./util.js');
 var addCollectionFunc = require('./add-collection.js');
+var marcConvert = require('./marc-convert.js');
 
 var Admin = require('../models/admin.js');
 var Checkout = require('../models/checkout.js');
@@ -136,11 +137,29 @@ module.exports = function(router, baseUri) {
     }
   }, ['checkoutID']);
   
+  var marcPath = '/items/:id/marc';
+  
+  router.get(marcPath, function(req, res) {
+    Item.findById(req.params.id, function(err, item) {
+      if (err) return util.handleDBError(err);
+      
+      var marc = item.marc;
+      
+      if (req.accepts('application/marc')) {
+        res.status(200).send(marcConvert.jsonToMarc(marc));
+      } else if (req.accepts('json')) {
+        res.status(200).json(marc);
+      } else {
+        res.status(406).json(['application/marc', 'application/json']);
+      }
+    });
+  });
+  
   addCollection(Patron, 'patrons', {
     delete: function(req, res, patron, next) {
       var promises = [];
       
-      for (checkoutID of patron.checkoutIDs) {
+      for (var checkoutID of patron.checkoutIDs) {
         // remove checkout's item's checkoutID
         promises.push(new Promise(function(resolve, reject) {
           Checkout.findById(checkoutID, function(err, checkout) {
