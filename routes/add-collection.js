@@ -140,7 +140,7 @@ module.exports = (router, baseUri) => {
         handleBatchHook(
           docs,
           (doc, next) => req.hook(req, res, doc, next),
-          () => res.json(docs.map(toInputConverter))
+          () => res.status(200).json(docs.map(toInputConverter))
         );
       });
     });
@@ -237,8 +237,13 @@ module.exports = (router, baseUri) => {
         if (err) return util.handleDBError(err, res);
         // hopefully this works
         var newDoc = mergePatch.apply(oldDoc, toDBConverter(req.body));
-        req.hook(req, res, oldDoc, newDoc,
-          () => doc.save(err => util.handleDBError(err, res)));
+        req.hook(req, res, oldDoc, newDoc, () => doc.save(function(err, doc) {
+          if (err) {
+            return util.handleDBError(
+              err, res, err.name === 'ValidationError' ? 422 : 500);
+          }
+          res.status(200).json(doc);
+        }));
       });
     });
     
@@ -249,8 +254,10 @@ module.exports = (router, baseUri) => {
       var id = req.params.id;
       model.findById(id, function(err, doc) {
         if (err) return util.handleDBError(err, res);
-        req.hook(req, res, doc,
-          () => doc.remove(err => util.handleDBError(err, res)));
+        req.hook(req, res, doc, () => doc.remove(function(err) {
+          if (err) return util.handleDBError(err, res);
+          res.status(204).send();
+        }));
       });
     });
   }
