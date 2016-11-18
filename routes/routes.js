@@ -109,7 +109,33 @@ module.exports = function(router, baseUri) {
     }
   });
   
-  addCollection(Item, 'items', {}, ['checkoutID']);
+  addCollection(Item, 'items', {
+    delete: function(req, res, item, next) {
+      var promises = [];
+      
+      if (item.checkoutID !== undefined) {
+        // remove checkout from checkout's patron's checkoutIDs
+        promises.push(new Promise(function(resolve, reject) {
+          Checkout.findById(item.checkoutID, function(err, checkout) {
+            if (err) return reject(err);
+            
+            Patron.findByIdAndUpdate(
+              checkout.patronID,
+              {$pull: {checkoutIDs: item.checkoutID}}
+            ).exec(function(err) {
+              if (err) return reject(err);
+              resolve();
+            });
+          });
+        }));
+        
+        // delete checkout
+        promises.push(Checkout.findByIdAndRemove(item.checkoutID).exec());
+      }
+      
+      Promise.all(promises).then(next, util.handleDBError);
+    }
+  }, ['checkoutID']);
   
   addCollection(Patron, 'patrons', {}, ['checkoutIDs']);
 };
