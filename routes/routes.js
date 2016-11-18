@@ -40,7 +40,7 @@ module.exports = function(router, baseUri) {
         {$push: {checkoutIDs: checkout}}
       ).exec());
       
-      Promise.all(promises).then(next, util.handleDBError);
+      Promise.all(promises).then(next, err => util.handleDBError(err, res));
     },
     update: function(req, res, oldCheckout, newCheckout, next) {
       var promises = [];
@@ -75,7 +75,7 @@ module.exports = function(router, baseUri) {
         ).exec());
       }
       
-      Promise.all(promises).then(next, util.handleDBError);
+      Promise.all(promises).then(next, err => util.handleDBError(err, res));
     },
     delete: function(req, res, checkout, next) {
       var promises = [];
@@ -105,7 +105,7 @@ module.exports = function(router, baseUri) {
         {$pull: {checkoutIDs: checkout._id}}
       ).exec());
       
-      Promise.all(promises).then(next, util.handleDBError);
+      Promise.all(promises).then(next, err => util.handleDBError(err, res));
     }
   });
   
@@ -133,7 +133,7 @@ module.exports = function(router, baseUri) {
         promises.push(Checkout.findByIdAndRemove(item.checkoutID).exec());
       }
       
-      Promise.all(promises).then(next, util.handleDBError);
+      Promise.all(promises).then(next, err => util.handleDBError(err, res));
     }
   }, ['checkoutID']);
   
@@ -141,7 +141,7 @@ module.exports = function(router, baseUri) {
   
   router.get(marcPath, function(req, res) {
     Item.findById(req.params.id, function(err, item) {
-      if (err) return util.handleDBError(err);
+      if (err) return util.handleDBError(err, res);
       
       var marc = item.marc;
       
@@ -179,7 +179,7 @@ module.exports = function(router, baseUri) {
         promises.push(Checkout.findByIdAndRemove(checkoutID).exec());
       }
       
-      Promise.all(promises).then(next, util.handleDBError);
+      Promise.all(promises).then(next, err => util.handleDBError(err, res));
     }
   }, ['checkoutIDs']);
 };

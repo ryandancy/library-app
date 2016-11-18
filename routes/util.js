@@ -9,7 +9,7 @@ function validate(req, res, code = 422) {
   return !errors;
 }
 
-function handleDBError(err, code = 500) {
+function handleDBError(err, res, code = 500) {
   if (err) res.status(code).send(err); // REVIEW will this work?
   return !err;
 }

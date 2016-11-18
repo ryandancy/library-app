@@ -136,7 +136,7 @@ module.exports = (router, baseUri) => {
       
       // execute the query
       query.exec(function(err, docs) {
-        if (err) return util.handleDBError(err);
+        if (err) return util.handleDBError(err, res);
         handleBatchHook(
           docs,
           (doc, next) => req.hook(req, res, doc, next),
@@ -153,7 +153,7 @@ module.exports = (router, baseUri) => {
       var newDoc = toDBConverter(req.body);
       req.hook(req, res, newDoc, () => {
         model.create(newDoc, function(err, doc) {
-          if (err) return util.handleDBError(err);
+          if (err) return util.handleDBError(err, res);
           res.status(201)
              .set('Location', `/${baseUri}/${name}/${doc._id}`)
              .send();
@@ -169,13 +169,13 @@ module.exports = (router, baseUri) => {
       
       // find all things, pass to hook before deleting
       model.find({}, function(err, docs) {
-        if (err) return util.handleDBError(err);
+        if (err) return util.handleDBError(err, res);
         handleBatchHook(
           docs,
           (doc, next) => req.hook(req, res, doc, next),
           () => {
             model.remove({}, function(err) {
-              if (err) return util.handleDBError(err);
+              if (err) return util.handleDBError(err, res);
               res.status(204).send();
             })
           });
@@ -188,7 +188,7 @@ module.exports = (router, baseUri) => {
       
       var id = req.params.id;
       model.findById(id, function(err, doc) {
-        if (err) return util.handleDBError(err);
+        if (err) return util.handleDBError(err, res);
         req.hook(req, res, doc, () => {
           res.status(200).json(toInputConverter(doc));
         });
@@ -204,7 +204,7 @@ module.exports = (router, baseUri) => {
       
       // find old doc, pass to hook before updating
       model.findById(id, function(err, oldDoc) {
-        if (err) return util.handleDBError(err);
+        if (err) return util.handleDBError(err, res);
         
         var newDoc = {};
         for (var prop in oldDoc) {
@@ -220,7 +220,7 @@ module.exports = (router, baseUri) => {
           oldDoc.save(function(err, doc) {
             if (err) {
               return util.handleDBError(
-                err, err.name === 'ValidationError' ? 422 : 500);
+                err, res, err.name === 'ValidationError' ? 422 : 500);
             }
             res.status(204).send();
           });
@@ -234,10 +234,11 @@ module.exports = (router, baseUri) => {
       
       var id = req.params.id;
       model.findById(id, function(err, oldDoc) {
-        if (err) return util.handleDBError(err);
+        if (err) return util.handleDBError(err, res);
         // hopefully this works
         var newDoc = mergePatch.apply(oldDoc, toDBConverter(req.body));
-        req.hook(req, res, oldDoc, newDoc, () => doc.save(util.handleDBError));
+        req.hook(req, res, oldDoc, newDoc,
+          () => doc.save(err => util.handleDBError(err, res)));
       });
     });
     
@@ -247,8 +248,9 @@ module.exports = (router, baseUri) => {
       
       var id = req.params.id;
       model.findById(id, function(err, doc) {
-        if (err) return util.handleDBError(err);
-        req.hook(req, res, doc, () => doc.remove(util.handleDBError));
+        if (err) return util.handleDBError(err, res);
+        req.hook(req, res, doc,
+          () => doc.remove(err => util.handleDBError(err, res)));
       });
     });
   }
