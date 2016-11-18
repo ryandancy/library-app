@@ -1,3 +1,5 @@
+var mergePatch = require('json-merge-patch');
+
 var util = require('./util.js');
 var addCollectionFunc = require('./add-collection.js');
 var marcConvert = require('./marc-convert.js');
@@ -182,6 +184,23 @@ module.exports = function(router, baseUri) {
           err, res, err.name === 'ValidationError' ? 422 : 500);
       }
       res.status(204).send();
+    });
+  });
+  
+  router.patch(marcPath, function(req, res) {
+    if (!util.validate(req, res)) return;
+    
+    Item.findById(req.params.id, function(err, item) {
+      if (err) return util.handleDBError(err, res);
+      
+      item.marc = mergePatch.apply(item.marc, req.body);
+      item.save(function(err, item) {
+        if (err) {
+          return util.handleDBError(
+            err, res, err.name === 'ValidationError' ? 422 : 500);
+        }
+        res.status(200).json(item);
+      });
     });
   });
   
