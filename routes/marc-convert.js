@@ -1,7 +1,7 @@
 // conversion to and from MARC and its JSON representation
 // NOTE: assumes a space after the field name, and fields newline-separated
 
-function jsonToMarc(json) {
+exports.jsonToMarc = function(json) {
   var marc = [json.leader];
   
   for (var name in json.fields) {
@@ -25,9 +25,9 @@ function jsonToMarc(json) {
   }
   
   return marc.join('\n');
-}
+};
 
-function marcToJson(marc) {
+exports.marcToJson = function(marc) {
   marc = marc.split('\n');
   
   var leader = marc[0];
@@ -55,6 +55,4 @@ function marcToJson(marc) {
   }
   
   return {leader: leader, fields: fields};
-}
-
-module.exports = {jsonToMarc: jsonToMarc, marcToJson: marcToJson};
+};
