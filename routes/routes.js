@@ -140,6 +140,8 @@ module.exports = function(router, baseUri) {
   var marcPath = '/items/:id/marc';
   
   router.get(marcPath, function(req, res) {
+    if (!util.validate(req, res)) return;
+    
     Item.findById(req.params.id, function(err, item) {
       if (err) return util.handleDBError(err, res);
       
@@ -152,6 +154,34 @@ module.exports = function(router, baseUri) {
       } else {
         res.status(406).json(['application/marc', 'application/json']);
       }
+    });
+  });
+  
+  router.put(marcPath, function(req, res) {
+    if (!util.validate(req, res)) return;
+    
+    var marc;
+    switch (req.get('Content-Type')) {
+      case 'application/json':
+        marc = req.body;
+        break;
+      case 'application/marc':
+        marc = marcConvert.marcToJson(marc);
+        break;
+      default:
+        res.status(415).send(['application/marc', 'application/json']);
+        return;
+    }
+    
+    Item.findByIdAndUpdate(
+      req.params.id,
+      {$set: {marc: marc}}
+    ).exec(function(err) {
+      if (err) {
+        return util.handleDBError(
+          err, res, err.name === 'ValidationError' ? 422 : 500);
+      }
+      res.status(204).send();
     });
   });
   
