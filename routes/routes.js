@@ -137,5 +137,31 @@ module.exports = function(router, baseUri) {
     }
   }, ['checkoutID']);
   
-  addCollection(Patron, 'patrons', {}, ['checkoutIDs']);
+  addCollection(Patron, 'patrons', {
+    delete: function(req, res, patron, next) {
+      var promises = [];
+      
+      for (checkoutID of patron.checkoutIDs) {
+        // remove checkout's item's checkoutID
+        promises.push(new Promise(function(resolve, reject) {
+          Checkout.findById(checkoutID, function(err, checkout) {
+            if (err) return reject(err);
+            
+            Item.findByIdAndUpdate(
+              checkout.patronID,
+              {$unset: {checkoutID: ''}}
+            ).exec(function(err) {
+              if (err) return reject(err);
+              resolve();
+            });
+          });
+        }));
+        
+        // delete checkout
+        promises.push(Checkout.findByIdAndRemove(checkoutID).exec());
+      }
+      
+      Promise.all(promises).then(next, util.handleDBError);
+    }
+  }, ['checkoutIDs']);
 };
