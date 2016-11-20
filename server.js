@@ -28,13 +28,7 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 app.use(bodyParser.json());
-app.use(expressValidator({
-  customSanitizers: {
-    setDefault: function(value, defaultValue) {
-      return value === undefined ? defaultValue : value;
-    }
-  }
-}));
+app.use(expressValidator());
 app.use(methodOverride());
 
 var router = express.Router();

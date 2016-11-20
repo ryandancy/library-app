@@ -102,11 +102,11 @@ module.exports = (router, baseUri) => {
       var sortDirObj = {'asc': 1, 'desc': -1};
       
       // set defaults
-      req.sanitizeParams('sort_by').setDefault('created');
-      req.sanitizeParams('direction').setDefault('asc'); // FIXME violating DRY?
+      if (req.query.sort_by === undefined) req.query.sort_by = 'created';
+      if (req.query.direction === undefined) req.query.direction = 'asc';
       if (pageable) {
-        req.sanitizeParams('page').setDefault(0);
-        req.sanitizeParams('per_page').setDefault(30);
+        if (req.query.page === undefined) req.query.page = 0;
+        if (req.query.per_page === undefined) req.query.per_page = 30;
       }
       
       // validate query params
