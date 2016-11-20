@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var ObjectId = mongoose.Types.ObjectId;
+var ObjectId = mongoose.Schema.Types.ObjectId;
 var reqt = require('./util/req-types.js');
 
 module.exports = mongoose.model('Checkout', {
