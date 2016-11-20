@@ -80,7 +80,7 @@ module.exports = (router, baseUri) => {
     
     // handle mapping a hook over an array of params
     function handleBatchHook(paramArray, hookCaller, callback) {
-      if (!array) {
+      if (!paramArray) {
         callback();
         return;
       }
@@ -128,7 +128,7 @@ module.exports = (router, baseUri) => {
       
       // set up the query
       // IDEA use mongoose-paginate or mongoose-range-paginate to paginate?
-      var query = model.find().sort([sortBy, sortDir]);
+      var query = model.find().sort([[sortBy, sortDir]]);
       if (pageable) {
         var page = req.query.page;
         var perPage = req.query.per_page;
