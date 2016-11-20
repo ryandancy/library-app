@@ -75,6 +75,7 @@ module.exports = (router, baseUri) => {
         // next is always last arg, call it
         arguments[arguments.length - 1]();
       });
+      next();
     });
     
     // handle mapping a hook over an array of params
