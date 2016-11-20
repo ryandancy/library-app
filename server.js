@@ -37,7 +37,7 @@ app.use(methodOverride());
 var router = express.Router();
 
 // routes
-require('routes/routes.js')(router, baseUri);
+require('./routes/routes.js')(router, baseUri);
 
 app.use(baseUri, router);
 

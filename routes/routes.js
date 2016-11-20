@@ -98,7 +98,7 @@ module.exports = function(router, baseUri) {
             resolve();
           });
         });
-      });
+      }));
       
       // update the patron's checkouts
       // silently ignore if the checkout's not in the patron's checkouts
