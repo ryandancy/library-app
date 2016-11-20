@@ -111,9 +111,9 @@ module.exports = (router, baseUri) => {
       
       // validate query params
       req.checkQuery('sort_by', 'Invalid sort_by value: %0 not one of %1')
-         .isIn(sortByObj.keys());
+         .isIn(Object.keys(sortByObj));
       req.checkQuery('direction', 'Invalid direction value: %0 not one of %1')
-         .isIn(sortDirObj.keys());
+         .isIn(Object.keys(sortDirObj));
       if (pageable) {
         req.checkQuery('page', 'Invalid page %0').isInt({min: 0});
         req.checkQuery('per_page', 'Invalid per_page %0 (min=10, max=200)')
