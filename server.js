@@ -23,7 +23,10 @@ mongoose.plugin(require('mongoose-timestamp'), {
 // the static directory is /public
 app.use(express.static(__dirname + '/public'));
 
-app.use(morgan('dev'));
+if (process.env.NODE_ENV !== 'test') {
+  app.use(morgan('dev'));
+}
+
 app.use(bodyParser.json());
 app.use(expressValidator({
   customSanitizers: {
@@ -43,3 +46,6 @@ app.use(baseUri, router);
 
 // start the app
 app.listen(8080);
+console.log('Listening on port 8080');
+
+module.exports = app;
