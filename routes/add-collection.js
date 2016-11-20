@@ -68,7 +68,7 @@ module.exports = (router, baseUri) => {
       PATCH: 'update',
       DELETE: 'delete'
     };
-    app.use(collectionPath, function(req, res, next) {
+    router.use(collectionPath, function(req, res, next) {
       var crud = methodToCRUD[req.method];
       var hook = hooks[crud];
       req.hook = hook || (() => {
