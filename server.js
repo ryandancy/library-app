@@ -15,7 +15,7 @@ mongoose.Promise = global.Promise;
 
 mongoose.connect(`mongodb://localhost/${config.db}`);
 
-app.plugin(require('mongoose-timestamp'), {
+mongoose.plugin(require('mongoose-timestamp'), {
   createdAt: 'created',
   updatedAt: 'updated'
 });
