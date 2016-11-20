@@ -5,7 +5,7 @@ var reqt = require('./util/req-types.js');
 
 // Helper schema to avoid repetition
 var Character = {
-  type: reqt.String,
+  type: String,
   minlength: 1,
   maxlength: 1,
   required: true
@@ -14,40 +14,40 @@ var Character = {
 // Control fields -- 00X
 var marcControlField = {
   tag: {
-    type: reqt.Number,
+    type: String,
     min: 0,
-    max: 9
+    max: 9,
+    required: true
   },
-  value: reqt.String,
-  required: true
+  value: String
 };
 
 // Subfields
 var marcSubfield = {
   tag: Character,
-  value: reqt.String,
-  required: true
+  value: String
 };
 
 // Variable fields
 var marcVariableField = {
   tag: {
-    type: reqt.Number,
+    type: Number,
     min: 10,
-    max: 999
+    max: 999,
+    required: true
   },
   subfields: [marcSubfield],
   ind1: Character,
-  ind2: Character,
-  required: true
+  ind2: Character
 };
 
 module.exports = mongoose.model('Item', {
   marc: {
     leader: {
-      type: reqt.String,
+      type: String,
       minlength: 24,
-      maxlength: 24
+      maxlength: 24,
+      required: true
     },
     fields: {
       control: [marcControlField],
@@ -56,8 +56,9 @@ module.exports = mongoose.model('Item', {
   },
   barcode: reqt.Number,
   status: {
-    type: reqt.String,
-    enum: ["in", "out", "missing", "lost"]
+    type: String,
+    enum: ["in", "out", "missing", "lost"],
+    required: true
   },
   checkoutID: ObjectId
 });

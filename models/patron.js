@@ -5,12 +5,13 @@ var reqt = require('./util/req-types.js');
 module.exports = mongoose.model('Patron', {
   name: reqt.String,
   pic: {
-    type: reqt.String,
+    type: String,
     validate: {
       validator: isUri,
       message: '{VALUE} is not a URI.'
     },
-    lowercase: true
+    lowercase: true,
+    required: true
   },
   checkouts: [reqt.ObjectId]
 });

@@ -8,7 +8,8 @@ module.exports = mongoose.model('Checkout', {
   patronID: ObjectId,
   renewals: reqt.Number,
   status: {
-    type: reqt.String,
-    enum: ['onTime', 'late', 'returned', 'lost']
+    type: String,
+    enum: ['onTime', 'late', 'returned', 'lost'],
+    required: true
   }
 });
