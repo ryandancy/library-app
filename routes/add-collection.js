@@ -27,15 +27,19 @@ module.exports = (router, baseUri) => {
     // NOTE hopefully this works and doesn't require copying the object
     if (!toInputConverter) {
       toInputConverter = function(doc) {
-        doc.id = doc._id;
-        delete doc._id;
+        obj = doc.toObject();
+        obj.id = obj._id;
+        delete obj._id;
+        if (obj.hasOwnProperty('__v')) delete obj.__v;
+        return obj;
       };
     }
     if (!toDBConverter) {
       toDBConverter = function(doc) {
         doc._id = doc.id;
         delete doc.id;
-      }
+        return doc;
+      };
     }
     
     var collectionPath = `/${name}`;

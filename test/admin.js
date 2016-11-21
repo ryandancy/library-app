@@ -52,12 +52,12 @@ describe('Admins', () => {
           chai.request(server)
             .get('/v0/admins')
             .end((err, res) => {
-              console.log(`res = ${JSON.stringify(res)}`);
               res.should.have.status(200);
               res.body.should.be.an('array');
               res.body.length.should.be.equal(admins.length);
               for (var admin of res.body) {
                 should.exist(admin.id);
+                should.not.exist(admin._id);
                 delete admin.id;
                 admins.should.include(admin);
               }
