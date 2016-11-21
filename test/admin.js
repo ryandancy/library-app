@@ -11,20 +11,13 @@ var jsv = require('jsverify');
 var should = chai.should();
 chai.use(chaiHttp);
 
+var arbReadWritePermission = jsv.record({read: jsv.bool, write: jsv.bool});
+
 var arbAdmin = jsv.record({
   name: jsv.string,
-  item: {
-    read: jsv.bool,
-    write: jsv.bool
-  },
-  checkout: {
-    read: jsv.bool,
-    write: jsv.bool
-  },
-  patron: {
-    read: jsv.bool,
-    write: jsv.bool
-  },
+  item: arbReadWritePermission,
+  checkout: arbReadWritePermission,
+  patron: arbReadWritePermission,
   signIn: jsv.bool,
   signOut: jsv.bool
 });
