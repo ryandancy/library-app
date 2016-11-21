@@ -45,13 +45,14 @@ describe('Admins', () => {
           done();
         });
     });
-    jsv.property('can retrieve some data', jsv.array(arbAdmin),
+    jsv.property('can retrieve some data', jsv.nearray(arbAdmin),
       admins => new Promise(function(resolve, reject) {
         populateDB(admins, () => {
           // try to GET the data back
           chai.request(server)
             .get('/v0/admins')
             .end((err, res) => {
+              console.log(`res = ${JSON.stringify(res)}`);
               res.should.have.status(200);
               res.body.should.be.an('array');
               res.body.length.should.be.equal(admins.length);

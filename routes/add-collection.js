@@ -71,10 +71,10 @@ module.exports = (router, baseUri) => {
     router.use(collectionPath, function(req, res, next) {
       var crud = methodToCRUD[req.method];
       var hook = hooks[crud];
-      req.hook = hook || (() => {
+      req.hook = hook || function() {
         // next is always last arg, call it
         arguments[arguments.length - 1]();
-      });
+      };
       next();
     });
     
