@@ -6,21 +6,97 @@ var Admin = require('../models/admin.js');
 
 var chai = require('chai');
 var chaiHttp = require('chai-http');
-var jsv = require('jsverify');
 
 var should = chai.should();
 chai.use(chaiHttp);
 
-var arbReadWritePermission = jsv.record({read: jsv.bool, write: jsv.bool});
-
-var arbAdmin = jsv.record({
-  name: jsv.string,
-  item: arbReadWritePermission,
-  checkout: arbReadWritePermission,
-  patron: arbReadWritePermission,
-  signIn: jsv.bool,
-  signOut: jsv.bool
-});
+var testAdmins = {
+  simple1: {
+    name: 'Testy McTestface',
+    item: {
+      read: true,
+      write: false,
+    },
+    checkout: {
+      read: false,
+      write: false
+    },
+    patron: {
+      read: false,
+      write: true
+    },
+    signIn: true,
+    signOut: true
+  },
+  simple2: {
+    name: 'Another Name',
+    item: {
+      read: false,
+      write: false,
+    },
+    checkout: {
+      read: false,
+      write: true
+    },
+    patron: {
+      read: true,
+      write: false
+    },
+    signIn: false,
+    signOut: false
+  },
+  unicode: {
+    name: 'Úñí¢öðè ïß ©öół 😃😃😃',
+    item: {
+      read: true,
+      write: false,
+    },
+    checkout: {
+      read: false,
+      write: false
+    },
+    patron: {
+      read: false,
+      write: true
+    },
+    signIn: true,
+    signOut: true
+  },
+  empty: {
+    name: '',
+    item: {
+      read: false,
+      write: false,
+    },
+    checkout: {
+      read: false,
+      write: false
+    },
+    patron: {
+      read: false,
+      write: false
+    },
+    signIn: false,
+    signOut: false
+  },
+  whitespace: {
+    name: '             \t\t    \n\t       ',
+    item: {
+      read: true,
+      write: true,
+    },
+    checkout: {
+      read: true,
+      write: true
+    },
+    patron: {
+      read: true,
+      write: true
+    },
+    signIn: true,
+    signOut: true
+  },
+};
 
 function populateDB(admins, callbackSuccess, callbackErr) {
   var promises = [];
@@ -28,6 +104,20 @@ function populateDB(admins, callbackSuccess, callbackErr) {
     promises.push(new Admin(admin).save());
   }
   Promise.all(promises).then(callbackSuccess, callbackErr);
+}
+
+function checkAndSanitizeResponseDoc(doc) {
+  doc.should.have.property('id');
+  doc.should.not.have.property('_id');
+  delete doc.id;
+
+  doc.should.have.property('created');
+  doc.should.have.property('updated');
+  new Date(doc.updated).should.be.at.most(new Date(doc.created));
+  delete doc.updated;
+  delete doc.created;
+  
+  return doc;
 }
 
 describe('Admins', () => {
@@ -41,29 +131,26 @@ describe('Admins', () => {
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.an('array');
-          res.body.length.should.be.equal(0);
+          res.body.should.have.lengthOf(0);
           done();
         });
     });
-    jsv.property('can retrieve some data', jsv.nearray(arbAdmin),
-      admins => new Promise(function(resolve, reject) {
-        populateDB(admins, () => {
-          // try to GET the data back
-          chai.request(server)
-            .get('/v0/admins')
-            .end((err, res) => {
-              res.should.have.status(200);
-              res.body.should.be.an('array');
-              res.body.length.should.be.equal(admins.length);
-              for (var admin of res.body) {
-                should.exist(admin.id);
-                should.not.exist(admin._id);
-                delete admin.id;
-                admins.should.include(admin);
-              }
-              resolve();
-            });
-        }, err => reject(err));
-      }));
+    it('can retrieve a single admin', done => {
+      populateDB([testAdmins.simple1], () => {
+        // try to GET the data back
+        chai.request(server)
+          .get('/v0/admins')
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.an('array');
+            res.body.should.have.lengthOf(1);
+            
+            var admin = checkAndSanitizeResponseDoc(res.body[0]);
+            admin.should.deep.equal(testAdmins.simple1);
+            
+            done();
+          });
+      });
+    });
   });
 });
