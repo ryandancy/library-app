@@ -98,12 +98,17 @@ var testAdmins = {
   },
 };
 
-function populateDB(admins, callbackSuccess, callbackErr) {
+function populateDB(docs, callbackSuccess, callbackErr) {
+  var docArr = Array.isArray(docs) ? docs : [docs];
+  
   var promises = [];
-  for (var admin of admins) {
-    promises.push(new Admin(admin).save());
+  for (var doc of docArr) {
+    promises.push(new Admin(doc).save());
   }
-  Promise.all(promises).then(callbackSuccess, callbackErr);
+  
+  Promise.all(promises).then(function() {
+    callbackSuccess(docs, ...arguments);
+  }, callbackErr);
 }
 
 function checkAndSanitizeResponseDoc(doc) {
@@ -136,7 +141,7 @@ describe('Admins', () => {
         });
     });
     it('can retrieve a single admin', done => {
-      populateDB([testAdmins.simple1], () => {
+      populateDB(testAdmins.simple1, admin => {
         // try to GET the data back
         chai.request(server)
           .get('/v0/admins')
@@ -145,12 +150,12 @@ describe('Admins', () => {
             res.body.should.be.an('array');
             res.body.should.have.lengthOf(1);
             
-            var admin = checkAndSanitizeResponseDoc(res.body[0]);
-            admin.should.deep.equal(testAdmins.simple1);
+            var resAdmin = checkAndSanitizeResponseDoc(res.body[0]);
+            resAdmin.should.deep.equal(admin);
             
             done();
           });
-      });
+      }, done);
     });
   });
 });
