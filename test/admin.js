@@ -108,105 +108,50 @@ function checkAndSanitizeResponseDoc(doc) {
   return doc;
 }
 
+function testGet(testDocs, done) {
+  testDocs = Array.isArray(testDocs) ? testDocs : [testDocs];
+  
+  function after() {
+    // try to GET the data back
+    chai.request(server)
+    .get('/v0/admins')
+    .end((err, res) => {
+      res.should.have.status(200);
+      res.body.should.be.an('array');
+      res.body.should.have.lengthOf(testDocs.length);
+      
+      for (var resDoc of res.body) {
+        var doc = checkAndSanitizeResponseDoc(resDoc);
+        testDocs.should.deep.include(doc);
+      }
+      
+      done();
+    });
+  }
+  
+  if (testDocs === []) {
+    after();
+  } else {
+    populateDB(testDocs, after, done);
+  }
+}
+
+function getGetTester(testDocs) {
+  return done => testGet(testDocs, done);
+}
+
 describe('Admins', () => {
   beforeEach(done => {
     Admin.remove({}, err => done());
   });
   describe('GET /v0/admins', () => {
-    it('should initially get an empty array', done => {
-      chai.request(server)
-        .get('/v0/admins')
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.an('array');
-          res.body.should.have.lengthOf(0);
-          done();
-        });
-    });
-    it('can retrieve a single admin', done => {
-      populateDB(testAdmins.simple1, admin => {
-        // try to GET the data back
-        chai.request(server)
-          .get('/v0/admins')
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.body.should.be.an('array');
-            res.body.should.have.lengthOf(1);
-            
-            var resAdmin = checkAndSanitizeResponseDoc(res.body[0]);
-            resAdmin.should.deep.equal(admin);
-            
-            done();
-          });
-      }, done);
-    });
-    it('can retrieve multiple admins', done => {
-      populateDB([testAdmins.simple1, testAdmins.simple2], admins => {
-        chai.request(server)
-          .get('/v0/admins')
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.body.should.be.an('array');
-            res.body.should.have.lengthOf(admins.length);
-            
-            for (var resAdmin of res.body) {
-              var admin = checkAndSanitizeResponseDoc(resAdmin);
-              admins.should.deep.include(admin);
-            }
-            
-            done();
-          });
-      }, done);
-    });
-    it('accepts unicode in admin names', done => {
-      populateDB(testAdmins.unicode, admin => {
-        chai.request(server)
-          .get('/v0/admins')
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.body.should.be.an('array');
-            res.body.should.have.lengthOf(1);
-            
-            var resAdmin = checkAndSanitizeResponseDoc(res.body[0]);
-            resAdmin.should.deep.equal(admin);
-            
-            done();
-          });
-      }, done);
-    });
-    it('accepts whitespace in admin names', done => {
-      populateDB(testAdmins.whitespace, admin => {
-        chai.request(server)
-          .get('/v0/admins')
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.body.should.be.an('array');
-            res.body.should.have.lengthOf(1);
-            
-            var resAdmin = checkAndSanitizeResponseDoc(res.body[0]);
-            resAdmin.should.deep.equal(admin);
-            
-            done();
-          });
-      }, done);
-    });
-    it('can retrieve all of them at once', done => {
-      populateDB(Object.values(testAdmins), admins => {
-        chai.request(server)
-          .get('/v0/admins')
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.body.should.be.an('array');
-            res.body.should.have.lengthOf(admins.length);
-            
-            for (var resAdmin of res.body) {
-              var admin = checkAndSanitizeResponseDoc(resAdmin);
-              admins.should.deep.include(admin);
-            }
-            
-            done();
-          });
-      }, done);
-    });
+    it('should initially get an empty array', getGetTester([]));
+    it('can retrieve a single admin', getGetTester(testAdmins.simple1));
+    it('can retrieve multiple admins',
+      getGetTester([testAdmins.simple1, testAdmins.simple2]));
+    it('accepts unicode in admin names', getGetTester(testAdmins.unicode));
+    it('accepts whitespace in admin names', getGetTester(testAdmins.whitespace));
+    it('can retrieve all of them at once',
+      getGetTester(Object.values(testAdmins)));
   });
 });
