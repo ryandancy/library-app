@@ -62,23 +62,6 @@ var testAdmins = {
     signIn: true,
     signOut: true
   },
-  empty: {
-    name: '',
-    item: {
-      read: false,
-      write: false,
-    },
-    checkout: {
-      read: false,
-      write: false
-    },
-    patron: {
-      read: false,
-      write: false
-    },
-    signIn: false,
-    signOut: false
-  },
   whitespace: {
     name: '             \t\t    \n\t       ',
     item: {
@@ -152,6 +135,74 @@ describe('Admins', () => {
             
             var resAdmin = checkAndSanitizeResponseDoc(res.body[0]);
             resAdmin.should.deep.equal(admin);
+            
+            done();
+          });
+      }, done);
+    });
+    it('can retrieve multiple admins', done => {
+      populateDB([testAdmins.simple1, testAdmins.simple2], admins => {
+        chai.request(server)
+          .get('/v0/admins')
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.an('array');
+            res.body.should.have.lengthOf(admins.length);
+            
+            for (var resAdmin of res.body) {
+              var admin = checkAndSanitizeResponseDoc(resAdmin);
+              admins.should.deep.include(admin);
+            }
+            
+            done();
+          });
+      }, done);
+    });
+    it('accepts unicode in admin names', done => {
+      populateDB(testAdmins.unicode, admin => {
+        chai.request(server)
+          .get('/v0/admins')
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.an('array');
+            res.body.should.have.lengthOf(1);
+            
+            var resAdmin = checkAndSanitizeResponseDoc(res.body[0]);
+            resAdmin.should.deep.equal(admin);
+            
+            done();
+          });
+      }, done);
+    });
+    it('accepts whitespace in admin names', done => {
+      populateDB(testAdmins.whitespace, admin => {
+        chai.request(server)
+          .get('/v0/admins')
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.an('array');
+            res.body.should.have.lengthOf(1);
+            
+            var resAdmin = checkAndSanitizeResponseDoc(res.body[0]);
+            resAdmin.should.deep.equal(admin);
+            
+            done();
+          });
+      }, done);
+    });
+    it('can retrieve all of them at once', done => {
+      populateDB(Object.values(testAdmins), admins => {
+        chai.request(server)
+          .get('/v0/admins')
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.an('array');
+            res.body.should.have.lengthOf(admins.length);
+            
+            for (var resAdmin of res.body) {
+              var admin = checkAndSanitizeResponseDoc(resAdmin);
+              admins.should.deep.include(admin);
+            }
             
             done();
           });
