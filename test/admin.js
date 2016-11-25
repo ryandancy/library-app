@@ -108,13 +108,13 @@ function checkAndSanitizeResponseDoc(doc) {
   return doc;
 }
 
-function testGet(testDocs, done) {
+function testGet(path, testDocs, done) {
   testDocs = Array.isArray(testDocs) ? testDocs : [testDocs];
   
   function after() {
     // try to GET the data back
     chai.request(server)
-    .get('/v0/admins')
+    .get(path)
     .end((err, res) => {
       res.should.have.status(200);
       res.body.should.be.an('array');
@@ -136,8 +136,8 @@ function testGet(testDocs, done) {
   }
 }
 
-function getGetTester(testDocs) {
-  return done => testGet(testDocs, done);
+function getGetTester(path, testDocs) {
+  return done => testGet(path, testDocs, done);
 }
 
 describe('Admins', () => {
@@ -145,13 +145,16 @@ describe('Admins', () => {
     Admin.remove({}, err => done());
   });
   describe('GET /v0/admins', () => {
-    it('should initially get an empty array', getGetTester([]));
-    it('can retrieve a single admin', getGetTester(testAdmins.simple1));
+    var path = '/v0/admins';
+    it('should initially get an empty array', getGetTester(path, []));
+    it('can retrieve a single admin', getGetTester(path, testAdmins.simple1));
     it('can retrieve multiple admins',
-      getGetTester([testAdmins.simple1, testAdmins.simple2]));
-    it('accepts unicode in admin names', getGetTester(testAdmins.unicode));
-    it('accepts whitespace in admin names', getGetTester(testAdmins.whitespace));
+      getGetTester(path, [testAdmins.simple1, testAdmins.simple2]));
+    it('accepts unicode in admin names',
+      getGetTester(path, testAdmins.unicode));
+    it('accepts whitespace in admin names',
+      getGetTester(path, testAdmins.whitespace));
     it('can retrieve all of them at once',
-      getGetTester(Object.values(testAdmins)));
+      getGetTester(path, Object.values(testAdmins)));
   });
 });
