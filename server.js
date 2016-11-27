@@ -28,7 +28,13 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 app.use(bodyParser.json());
-app.use(expressValidator());
+app.use(expressValidator({
+  customValidators: {
+    notPresent: value => {
+      return value === undefined;
+    }
+  }
+}));
 app.use(methodOverride());
 
 var router = express.Router();

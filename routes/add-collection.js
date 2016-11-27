@@ -1,3 +1,4 @@
+var mongoose = require('mongoose');
 var mergePatch = require('json-merge-patch');
 var util = require('./util.js');
 
@@ -36,8 +37,12 @@ module.exports = (router, baseUri) => {
     }
     if (!toDBConverter) {
       toDBConverter = function(doc) {
-        doc._id = doc.id;
-        delete doc.id;
+        if (doc.hasOwnProperty('id')) {
+          doc._id = doc.id;
+          delete doc.id;
+        } else {
+          doc._id = mongoose.Types.ObjectId();
+        }
         return doc;
       };
     }
@@ -52,7 +57,7 @@ module.exports = (router, baseUri) => {
       if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
         for (var unmod of unmodifiables) {
           req.checkBody(unmod, '%0 is unmodifiable and cannot be present')
-             .equals('undefined');
+             .notPresent();
         }
       }
       next();

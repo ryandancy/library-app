@@ -10,6 +10,11 @@ exports.validate = function(req, res, code = 422) {
 };
 
 exports.handleDBError = function(err, res, code = 500) {
-  if (err) res.status(code).send(err); // REVIEW will this work?
+  if (err) {
+    if (err instanceof Error) {
+      err = err.toString();
+    }
+    res.status(code).send(err);
+  }
   return !err;
 };

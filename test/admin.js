@@ -144,8 +144,8 @@ describe('Admins', () => {
   beforeEach(done => {
     Admin.remove({}, err => done());
   });
+  var path = '/v0/admins';
   describe('GET /v0/admins', () => {
-    var path = '/v0/admins';
     it('should initially get an empty array', getGetTester(path, []));
     it('can retrieve a single admin', getGetTester(path, testAdmins.simple1));
     it('can retrieve multiple admins',
@@ -156,5 +156,30 @@ describe('Admins', () => {
       getGetTester(path, testAdmins.whitespace));
     it('can retrieve all of them at once',
       getGetTester(path, Object.values(testAdmins)));
+  });
+  describe('POST /v0/admins', () => {
+    it('creates a valid admin', done => {
+      chai.request(server)
+      .post(path)
+      .send(testAdmins.simple1)
+      .end((err, res) => {
+        res.should.have.status(201);
+        res.body.should.deep.equal({});
+        res.should.have.property('text').that.is.equal('');
+        res.header.should.have.property('location')
+          .that.match(/\/v0\/admins\/[\w\d]+/);
+        
+        var location = res.header.location;
+        var id = location.slice(location.lastIndexOf('/') + 1);
+        
+        // see if it was set in the database
+        Admin.findOne(testAdmins.simple1, (err, admin) => {
+          should.not.exist(err);
+          should.exist(admin);
+          admin._id.toString().should.equal(id);
+          done();
+        });
+      });
+    });
   });
 });
