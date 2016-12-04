@@ -172,6 +172,18 @@ function getSortTester(path, testDocs, checker) {
   return done => testSortableGet(path, testDocs, checker, done);
 }
 
+function testStatusReturned(path, status, done, method = 'get') {
+  // call the relevant HTTP method name function
+  chai.request(server)[method](path).end((err, res) => {
+    res.should.have.status(status);
+    done();
+  });
+}
+
+function getStatusTester(path, status, method = 'get') {
+  return done => testStatusReturned(path, status, done, method);
+}
+
 describe('Admins', () => {
   beforeEach(done => {
     Admin.remove({}, err => done());
@@ -233,6 +245,19 @@ describe('Admins', () => {
     it('can sort descending by ID',
       getSortTester(path + '?sort_by=id&direction=desc', allTestAdmins,
         idDescSort));
+    
+    it('gives a 422 on an invalid sort_by value',
+      getStatusTester(path + '?sort_by=INVALID', 422));
+    it('gives a 422 on an empty sort_by value',
+      getStatusTester(path + '?sort_by=', 422));
+    it('gives a 422 on an invalid direction value',
+      getStatusTester(path + '?direction=INVALID', 422));
+    it('gives a 422 on an empty direction value',
+      getStatusTester(path + '?direction=', 422));
+    it('gives a 422 on invalid both sort_by and direction',
+      getStatusTester(path + '?sort_by=foo&direction=bar', 422));
+    it('gives a 422 on empty both sort_by and direction',
+      getStatusTester(path + '?sort_by=&direction=', 422));
   });
   describe('POST /v0/admins', () => {
     it('creates a valid admin', done => {
