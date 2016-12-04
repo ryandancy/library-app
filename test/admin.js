@@ -81,6 +81,10 @@ var testAdmins = {
   },
 };
 
+function coerceToArray(value) {
+  return Array.isArray(value) ? value : [value];
+}
+
 function populateDB(docs, callbackSuccess, callbackErr) {
   var docArr = Array.isArray(docs) ? docs : [docs];
   
@@ -107,7 +111,7 @@ function checkAndSanitizeResponseDoc(doc) {
 }
 
 function testGet(path, testDocs, done) {
-  testDocs = Array.isArray(testDocs) ? testDocs : [testDocs];
+  testDocs = coerceToArray(testDocs);
   
   function after() {
     // try to GET the data back
@@ -140,11 +144,42 @@ function getGetTester(path, testDocs) {
   return done => testGet(path, testDocs, done);
 }
 
+function testSortableGet(path, testDocs, checker, done) {
+  testDocs = coerceToArray(testDocs);
+  
+  populateDB(testDocs, testDocs => {
+    chai.request(server)
+    .get(path)
+    .end((err, res) => {
+      res.should.have.status(200);
+      res.body.should.be.an('array');
+      res.body.should.have.lengthOf(testDocs.length);
+      
+      var prevDoc = null;
+      for (var doc of res.body) {
+        if (prevDoc !== null) {
+          checker(prevDoc, doc);
+        }
+        prevDoc = doc;
+      }
+      
+      done();
+    });
+  }, done);
+}
+
+function getSortTester(path, testDocs, checker) {
+  return done => testSortableGet(path, testDocs, checker, done);
+}
+
 describe('Admins', () => {
   beforeEach(done => {
     Admin.remove({}, err => done());
   });
+  
   var path = '/v0/admins';
+  var allTestAdmins = Object.values(testAdmins);
+  
   describe('GET /v0/admins', () => {
     it('should initially get an empty array', getGetTester(path, []));
     it('can retrieve a single admin', getGetTester(path, testAdmins.simple1));
@@ -154,245 +189,50 @@ describe('Admins', () => {
       getGetTester(path, testAdmins.unicode));
     it('accepts whitespace in admin names',
       getGetTester(path, testAdmins.whitespace));
-    it('can retrieve all of them at once',
-      getGetTester(path, Object.values(testAdmins)));
-    // TODO cleanup all the copy + pasting
-    it('defaults to sorting ascending by created date', done => {
-      populateDB(Object.values(testAdmins), testAdmins => {
-        chai.request(server)
-        .get(path)
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.an('array');
-          res.body.should.have.lengthOf(testAdmins.length);
-          
-          var prevAdmin = null;
-          for (var admin of res.body) {
-            if (prevAdmin !== null) {
-              new Date(prevAdmin.created).should.be
-                .at.most(new Date(admin.created));
-            }
-            prevAdmin = admin;
-          }
-          
-          done();
-        });
-      }, done);
-    });
-    it('can sort descending by created date', done => {
-      populateDB(Object.values(testAdmins), testAdmins => {
-        chai.request(server)
-        .get(path + '?direction=desc')
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.an('array');
-          res.body.should.have.lengthOf(testAdmins.length);
-          
-          var prevAdmin = null;
-          for (var admin of res.body) {
-            if (prevAdmin !== null) {
-              new Date(prevAdmin.created).should.be
-                .at.least(new Date(admin.created));
-            }
-            prevAdmin = admin;
-          }
-          
-          done();
-        });
-      }, done);
-    });
-    it('can explicitly sort by created date, defaulting to ascending', done => {
-      populateDB(Object.values(testAdmins), testAdmins => {
-        chai.request(server)
-        .get(path + '?sort_by=created')
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.an('array');
-          res.body.should.have.lengthOf(testAdmins.length);
-          
-          var prevAdmin = null;
-          for (var admin of res.body) {
-            if (prevAdmin !== null) {
-              new Date(prevAdmin.created).should.be
-                .at.most(new Date(admin.created));
-            }
-            prevAdmin = admin;
-          }
-          
-          done();
-        });
-      }, done);
-    });
-    it('can explicitly sort ascending by created date', done => {
-      populateDB(Object.values(testAdmins), testAdmins => {
-        chai.request(server)
-        .get(path + '?sort_by=created&direction=asc')
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.an('array');
-          res.body.should.have.lengthOf(testAdmins.length);
-          
-          var prevAdmin = null;
-          for (var admin of res.body) {
-            if (prevAdmin !== null) {
-              new Date(prevAdmin.created).should.be
-                .at.most(new Date(admin.created));
-            }
-            prevAdmin = admin;
-          }
-          
-          done();
-        });
-      }, done);
-    });
-    it('can explicitly sort descending by created date', done => {
-      populateDB(Object.values(testAdmins), testAdmins => {
-        chai.request(server)
-        .get(path + '?sort_by=created&direction=desc')
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.an('array');
-          res.body.should.have.lengthOf(testAdmins.length);
-          
-          var prevAdmin = null;
-          for (var admin of res.body) {
-            if (prevAdmin !== null) {
-              new Date(prevAdmin.created).should.be
-                .at.least(new Date(admin.created));
-            }
-            prevAdmin = admin;
-          }
-          
-          done();
-        });
-      }, done);
-    });
-    it('can sort ascending by name lexicographically', done => {
-      populateDB(Object.values(testAdmins), testAdmins => {
-        chai.request(server)
-        .get(path + '?sort_by=name')
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.an('array');
-          res.body.should.have.lengthOf(testAdmins.length);
-          
-          var prevAdmin = null;
-          for (var admin of res.body) {
-            if (prevAdmin !== null) {
-              prevAdmin.name.should.be.at.most(admin.name);
-            }
-            prevAdmin = admin;
-          }
-          
-          done();
-        });
-      }, done);
-    });
-    it('can sort explicitly ascending by name lexicographically', done => {
-      populateDB(Object.values(testAdmins), testAdmins => {
-        chai.request(server)
-        .get(path + '?sort_by=name&direction=asc')
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.an('array');
-          res.body.should.have.lengthOf(testAdmins.length);
-          
-          var prevAdmin = null;
-          for (var admin of res.body) {
-            if (prevAdmin !== null) {
-              prevAdmin.name.should.be.at.most(admin.name);
-            }
-            prevAdmin = admin;
-          }
-          
-          done();
-        });
-      }, done);
-    });
-    it('can sort descending by name lexicographically', done => {
-      populateDB(Object.values(testAdmins), testAdmins => {
-        chai.request(server)
-        .get(path + '?sort_by=name&direction=desc')
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.an('array');
-          res.body.should.have.lengthOf(testAdmins.length);
-          
-          var prevAdmin = null;
-          for (var admin of res.body) {
-            if (prevAdmin !== null) {
-              prevAdmin.name.should.be.at.least(admin.name);
-            }
-            prevAdmin = admin;
-          }
-          
-          done();
-        });
-      }, done);
-    });
-    it('can sort ascending by ID', done => {
-      populateDB(Object.values(testAdmins), testAdmins => {
-        chai.request(server)
-        .get(path + '?sort_by=id')
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.an('array');
-          res.body.should.have.lengthOf(testAdmins.length);
-          
-          var prevAdmin = null;
-          for (var admin of res.body) {
-            if (prevAdmin !== null) {
-              prevAdmin.id.should.be.below(admin.id);
-            }
-            prevAdmin = admin;
-          }
-          
-          done();
-        });
-      }, done);
-    });
-    it('can sort explicitly ascending by ID', done => {
-      populateDB(Object.values(testAdmins), testAdmins => {
-        chai.request(server)
-        .get(path + '?sort_by=id&direction=asc')
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.an('array');
-          res.body.should.have.lengthOf(testAdmins.length);
-          
-          var prevAdmin = null;
-          for (var admin of res.body) {
-            if (prevAdmin !== null) {
-              prevAdmin.id.should.be.below(admin.id);
-            }
-            prevAdmin = admin;
-          }
-          
-          done();
-        });
-      }, done);
-    });
-    it('can sort descending by ID', done => {
-      populateDB(Object.values(testAdmins), testAdmins => {
-        chai.request(server)
-        .get(path + '?sort_by=id&direction=desc')
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.an('array');
-          res.body.should.have.lengthOf(testAdmins.length);
-          
-          var prevAdmin = null;
-          for (var admin of res.body) {
-            if (prevAdmin !== null) {
-              prevAdmin.id.should.be.above(admin.id);
-            }
-            prevAdmin = admin;
-          }
-          
-          done();
-        });
-      }, done);
-    });
+    it('can retrieve all of them at once', getGetTester(path, allTestAdmins));
+    
+    var createdAscSort = (admin, admin2) =>
+      new Date(admin.created).should.be.at.most(new Date(admin2.created));
+    var createdDescSort = (admin, admin2) =>
+      new Date(admin.created).should.be.at.least(new Date(admin2.created));
+    it('defaults to sorting ascending by created date',
+      getSortTester(path, allTestAdmins, createdAscSort));
+    it('can sort descending by created date',
+      getSortTester(path + '?direction=desc', allTestAdmins, createdDescSort));
+    it('can explicitly sort ascending, defaulting to created date',
+      getSortTester(path + '?direction=asc', allTestAdmins, createdAscSort));
+    it('can explicitly sort by created date, defaulting to ascending',
+      getSortTester(path + '?sort_by=created', allTestAdmins, createdAscSort));
+    it('can explicitly sort ascending by created date',
+      getSortTester(path + '?sort_by=created&direction=asc', allTestAdmins,
+        createdAscSort));
+    it('can explicitly sort descending by created date',
+      getSortTester(path + '?sort_by=created&direction=desc', allTestAdmins,
+        createdDescSort));
+    
+    var nameAscSort = (admin, admin2) =>
+      admin.name.should.be.at.most(admin2.name);
+    var nameDescSort = (admin, admin2) =>
+      admin.name.should.be.at.least(admin2.name);
+    it('can sort ascending by name lexicographically',
+      getSortTester(path + '?sort_by=name', allTestAdmins, nameAscSort));
+    it('can sort explicitly ascending by name lexicographically',
+      getSortTester(path + '?sort_by=name&direction=asc', allTestAdmins,
+        nameAscSort));
+    it('can sort descending by name lexicographically',
+      getSortTester(path + '?sort_by=name&direction=desc', allTestAdmins,
+        nameDescSort));
+    
+    var idAscSort = (admin, admin2) => admin.id.should.be.below(admin2.id);
+    var idDescSort = (admin, admin2) => admin.id.should.be.above(admin2.id);
+    it('can sort ascending by ID',
+      getSortTester(path + '?sort_by=id', allTestAdmins, idAscSort));
+    it('can sort explicitly ascending by ID',
+      getSortTester(path + '?sort_by=id&direction=asc', allTestAdmins,
+        idAscSort));
+    it('can sort descending by ID',
+      getSortTester(path + '?sort_by=id&direction=desc', allTestAdmins,
+        idDescSort));
   });
   describe('POST /v0/admins', () => {
     it('creates a valid admin', done => {
