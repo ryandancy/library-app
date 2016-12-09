@@ -98,6 +98,19 @@ function populateDB(docs, callbackSuccess, callbackErr) {
   }, callbackErr);
 }
 
+function baseNoPagingGetResponseCheck(res, testDocs) {
+  res.should.have.status(200);
+  res.body.should.have.property('data').that.is.an('array');
+  res.body.should.have.property('hasMore').that.is.equal(false);
+  res.body.should.have.property('maxItems').that.is.equal(testDocs.length);
+  res.body.should.have.property('remainingItems').that.is.equal(0);
+  
+  var data = res.body.data;
+  data.should.have.lengthOf(testDocs.length);
+  
+  return data;
+}
+
 function checkAndSanitizeResponseDoc(doc) {
   doc.should.have.property('id');
   doc.should.not.have.property('_id');
@@ -118,11 +131,9 @@ function testGet(path, testDocs, done) {
     chai.request(server)
     .get(path)
     .end((err, res) => {
-      res.should.have.status(200);
-      res.body.should.be.an('array');
-      res.body.should.have.lengthOf(testDocs.length);
+      var data = baseNoPagingGetResponseCheck(res, testDocs);
       
-      for (var resDoc of res.body) {
+      for (var resDoc of data) {
         var doc = checkAndSanitizeResponseDoc(resDoc);
         delete doc.created;
         delete doc.updated;
@@ -151,12 +162,10 @@ function testSortableGet(path, testDocs, checker, done) {
     chai.request(server)
     .get(path)
     .end((err, res) => {
-      res.should.have.status(200);
-      res.body.should.be.an('array');
-      res.body.should.have.lengthOf(testDocs.length);
+      var data = baseNoPagingGetResponseCheck(res, testDocs);
       
       var prevDoc = null;
-      for (var doc of res.body) {
+      for (var doc of data) {
         if (prevDoc !== null) {
           checker(prevDoc, doc);
         }

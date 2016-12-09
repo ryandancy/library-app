@@ -125,8 +125,8 @@ module.exports = (router, baseUri) => {
          .isIn(Object.keys(sortDirObj));
       if (pageable) {
         req.checkQuery('page', 'Invalid page %0').isInt({min: 0});
-        req.checkQuery('per_page', 'Invalid per_page %0 (min=10, max=200)')
-           .isInt({min: 10, max: 200});
+        req.checkQuery('per_page', 'Invalid per_page %0 (min=1, max=200)')
+           .isInt({min: 1, max: 200});
       }
       
       if (!util.validate(req, res)) return;
@@ -150,7 +150,35 @@ module.exports = (router, baseUri) => {
         handleBatchHook(
           docs,
           (doc, next) => req.hook(req, res, doc, next),
-          () => res.status(200).json(docs.map(toInputConverter))
+          () => {
+            var outgoingDocs = docs.map(toInputConverter);
+            if (pageable) {
+              model.count({}, (err, count) => {
+                if (err) return util.handleDBError(err, res);
+                
+                var partial = outgoingDocs.length < count;
+                
+                // 206 is "Partial Content", used if we're not returning the
+                // entire collection; 200 is for the entire collection
+                res.status(partial ? 206 : 200);
+                
+                var start = req.query.page * req.query.per_page;
+                var end = start + req.query.per_page - 1;
+                if (partial) {
+                  res.setHeader('range', `${start}-${end}/${count}`);
+                }
+                
+                res.json({
+                  data: outgoingDocs,
+                  hasMore: end < count - 1,
+                  maxItems: count,
+                  remainingItems: Math.max(count - (end + 1), 0)
+                });
+              });
+            } else {
+              res.status(200).json(outgoingDocs);
+            }
+          }
         );
       });
     });
