@@ -127,6 +127,9 @@ module.exports = (router, baseUri) => {
         req.checkQuery('page', 'Invalid page %0').isInt({min: 0});
         req.checkQuery('per_page', 'Invalid per_page %0 (min=1, max=200)')
            .isInt({min: 1, max: 200});
+        
+        req.sanitizeQuery('page').toInt();
+        req.sanitizeQuery('per_page').toInt();
       }
       
       if (!util.validate(req, res)) return;
@@ -156,14 +159,21 @@ module.exports = (router, baseUri) => {
               model.count({}, (err, count) => {
                 if (err) return util.handleDBError(err, res);
                 
+                var start = req.query.page * req.query.per_page;
+                var end = Math.min(start + req.query.per_page - 1, count - 1);
+                
+                if (start >= count && count > 0) {
+                  res.status(404);
+                  res.setHeader('range', `${start}-${end}/${count}`);
+                  return res.end();
+                }
+                
                 var partial = outgoingDocs.length < count;
                 
                 // 206 is "Partial Content", used if we're not returning the
                 // entire collection; 200 is for the entire collection
                 res.status(partial ? 206 : 200);
                 
-                var start = req.query.page * req.query.per_page;
-                var end = start + req.query.per_page - 1;
                 if (partial) {
                   res.setHeader('range', `${start}-${end}/${count}`);
                 }

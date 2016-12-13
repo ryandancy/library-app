@@ -181,16 +181,68 @@ function getSortTester(path, testDocs, checker) {
   return done => testSortableGet(path, testDocs, checker, done);
 }
 
-function testStatusReturned(path, status, done, method = 'get') {
+function testStatusReturned(path, status, done, admins = [], method = 'get') {
   // call the relevant HTTP method name function
-  chai.request(server)[method](path).end((err, res) => {
-    res.should.have.status(status);
-    done();
+  populateDB(Array.from(admins), () => {
+    chai.request(server)[method](path).end((err, res) => {
+      res.should.have.status(status);
+      done();
+    });
   });
 }
 
-function getStatusTester(path, status, method = 'get') {
-  return done => testStatusReturned(path, status, done, method);
+function getStatusTester(path, status, admins = [], method = 'get') {
+  return done => testStatusReturned(path, status, done, admins, method);
+}
+
+function testPaging(path, testDocs, values, done) {
+  if (values.maxItems === undefined) values.maxItems = docs.length;
+  
+  populateDB(Array.from(testDocs), docs => {
+    chai.request(server)
+    .get(path)
+    .end((err, res) => {
+      res.should.have.status(values.status);
+      res.body.should.have.property('hasMore').that.is.equal(values.hasMore);
+      res.body.should.have.property('maxItems').that.is.equal(values.maxItems);
+      res.body.should.have.property('remainingItems')
+        .that.is.equal(values.remainingItems);
+      
+      if (values.range) {
+        res.headers.should.have.property('range').that.is.equal(values.range);
+      } else {
+        res.headers.should.not.have.property('range');
+      }
+      
+      done();
+    });
+  }, done);
+}
+
+function getPagingTester(path, docs, values) {
+  return done => testPaging(path, docs, values, done);
+}
+
+function* generateAdmins(num) {
+  for (var i = 0; i < num; i++) {
+    yield {
+      name: 'GeneratedTestAdmin-' + num,
+      item: {
+        read: true,
+        write: true,
+      },
+      checkout: {
+        read: true,
+        write: true
+      },
+      patron: {
+        read: true,
+        write: true
+      },
+      signIn: true,
+      signOut: true
+    };
+  }
 }
 
 describe('Admins', () => {
@@ -267,6 +319,179 @@ describe('Admins', () => {
       getStatusTester(path + '?sort_by=foo&direction=bar', 422));
     it('gives a 422 on empty both sort_by and direction',
       getStatusTester(path + '?sort_by=&direction=', 422));
+    
+    it('has correct paging on no admins, no query string',
+      getPagingTester(path, [], {
+        status: 200,
+        hasMore: false,
+        maxItems: 0,
+        remainingItems: 0,
+        range: false
+      })
+    );
+    it('has correct paging on one admin, no query string',
+      getPagingTester(path, generateAdmins(1), {
+        status: 200,
+        hasMore: false,
+        maxItems: 1,
+        remainingItems: 0,
+        range: false
+      })
+    );
+    it('has correct paging on two admins, no query string',
+      getPagingTester(path, generateAdmins(2), {
+        status: 200,
+        hasMore: false,
+        maxItems: 2,
+        remainingItems: 0,
+        range: false
+      })
+    );
+    it('has correct paging on 31 admins, no query string',
+      getPagingTester(path, generateAdmins(31), {
+        status: 206,
+        hasMore: true,
+        maxItems: 31,
+        remainingItems: 1,
+        range: '0-29/31'
+      })
+    );
+    it('has correct paging on 30 admins, no query string',
+      getPagingTester(path, generateAdmins(30), {
+        status: 200,
+        hasMore: false,
+        maxItems: 30,
+        remainingItems: 0,
+        range: false
+      })
+    );
+    it('handles explicit page=0, implicit per_page=30, 30 admins',
+      getPagingTester(path + '?page=0', generateAdmins(30), {
+        status: 200,
+        hasMore: false,
+        maxItems: 30,
+        remainingItems: 0,
+        range: false
+      })
+    );
+    it('handles implicit page=0, explicit per_page=30, 30 admins',
+      getPagingTester(path + '?per_page=30', generateAdmins(30), {
+        status: 200,
+        hasMore: false,
+        maxItems: 30,
+        remainingItems: 0,
+        range: false
+      })
+    );
+    it('handles explicit page=0, explicit per_page=30, 30 admins',
+      getPagingTester(path + '?page=0&per_page=30', generateAdmins(30), {
+        status: 200,
+        hasMore: false,
+        maxItems: 30,
+        remainingItems: 0,
+        range: false
+      })
+    );
+    it('handles implicit page=0, explicit per_page=10, 15 admins',
+      getPagingTester(path + '?per_page=10', generateAdmins(15), {
+        status: 206,
+        hasMore: true,
+        maxItems: 15,
+        remainingItems: 5,
+        range: '0-9/15'
+      })
+    );
+    it('handles implicit page=0, explicit per_page=20, 15 admins',
+      getPagingTester(path + '?per_page=20', generateAdmins(15), {
+        status: 200,
+        hasMore: false,
+        maxItems: 15,
+        remainingItems: 0,
+        range: false
+      })
+    );
+    it('handles explicit page=0, explicit per_page=10, 15 admins',
+      getPagingTester(path + '?page=0&per_page=10', generateAdmins(15), {
+        status: 206,
+        hasMore: true,
+        maxItems: 15,
+        remainingItems: 5,
+        range: '0-9/15'
+      })
+    );
+    it('handles explicit page=1, implicit per_page=30, 40 admins',
+      getPagingTester(path + '?page=1', generateAdmins(40), {
+        status: 206,
+        hasMore: false,
+        maxItems: 40,
+        remainingItems: 0,
+        range: '30-39/40'
+      })
+    );
+    it('handles explicit page=1, explicit per_page=10, 15 admins',
+      getPagingTester(path + '?page=1&per_page=10', generateAdmins(15), {
+        status: 206,
+        hasMore: false,
+        maxItems: 15,
+        remainingItems: 0,
+        range: '10-14/15'
+      })
+    );
+    it('handles explicit page=1, implicit per_page=30, 60 admins',
+      getPagingTester(path + '?page=1', generateAdmins(60), {
+        status: 206,
+        hasMore: false,
+        maxItems: 60,
+        remainingItems: 0,
+        range: '30-59/60'
+      })
+    );
+    it('handles explicit page=1, explicit per_page=2, 4 admins',
+      getPagingTester(path + '?page=1&per_page=2', generateAdmins(4), {
+        status: 206,
+        hasMore: false,
+        maxItems: 4,
+        remainingItems: 0,
+        range: '2-3/4'
+      })
+    );
+    it('handles explicit page=2, implicit per_page=30, 100 admins',
+      getPagingTester(path + '?page=2', generateAdmins(100), {
+        status: 206,
+        hasMore: true,
+        maxItems: 100,
+        remainingItems: 10,
+        range: '60-89/100'
+      })
+    );
+    it('handles explicit page=8, explicit per_page=4, 50 admins',
+      getPagingTester(path + '?page=8&per_page=4', generateAdmins(50), {
+        status: 206,
+        hasMore: true,
+        maxItems: 50,
+        remainingItems: 14,
+        range: '32-35/50'
+      })
+    );
+    it('handle explicit page=23, explicit per_page=1, 33 admins',
+      getPagingTester(path + '?page=23&per_page=1', generateAdmins(33), {
+        status: 206,
+        hasMore: true,
+        maxItems: 33,
+        remainingItems: 9,
+        range: '23-23/33'
+      })
+    );
+    it('gives a 422 on page=-1', getStatusTester(path + '?page=-1', 422));
+    it('gives a 422 on per_page=-1',
+      getStatusTester(path + '?per_page=-1', 422));
+    it('gives a 422 on per_page=0', getStatusTester(path + '?per_page=0', 422));
+    it('gives a 422 on per_page=201',
+      getStatusTester(path + '?per_page=201', 422));
+    it('gives a 404 on explicit page=1, implicit per_page=30, 20 admins',
+      getStatusTester(path + '?page=1', 404, generateAdmins(20)));
+    it('gives a 404 on explicit page=1, explicit per_page=10, 5 admins',
+      getStatusTester(path + '?page=1&per_page=10', 404, generateAdmins(5)));
   });
   describe('POST /v0/admins', () => {
     it('creates a valid admin', done => {
