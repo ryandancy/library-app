@@ -181,18 +181,26 @@ function getSortTester(path, testDocs, checker) {
   return done => testSortableGet(path, testDocs, checker, done);
 }
 
-function testStatusReturned(path, status, done, admins = [], method = 'get') {
-  // call the relevant HTTP method name function
+function testStatusReturned(
+    path, status, done, admins = [], method = 'get', send) {
   populateDB(Array.from(admins), () => {
-    chai.request(server)[method](path).end((err, res) => {
+    var request = chai.request(server);
+    request = request[method](path); // call the relevant HTTP method function
+    if (send !== undefined) {
+      request = request.send(send);
+    }
+    
+    // Content-Type defaults to x-www-form-urlencoded if the JSON's invalid
+    request.set('content-type', 'application/json')
+    .end((err, res) => {
       res.should.have.status(status);
       done();
     });
   });
 }
 
-function getStatusTester(path, status, admins = [], method = 'get') {
-  return done => testStatusReturned(path, status, done, admins, method);
+function getStatusTester(path, status, admins = [], method = 'get', send) {
+  return done => testStatusReturned(path, status, done, admins, method, send);
 }
 
 function testPaging(path, testDocs, values, done) {
@@ -242,6 +250,88 @@ function* generateAdmins(num) {
       signIn: true,
       signOut: true
     };
+  }
+}
+
+function testPost(path, doc, model, done, docsForDB = []) {
+  populateDB(Array.from(docsForDB), () => {
+    chai.request(server)
+    .post(path)
+    .send(doc)
+    .end((err, res) => {
+      res.should.have.status(201);
+      res.body.should.deep.equal({});
+      res.should.have.property('text').that.is.equal('');
+      
+      var queryStart = path.lastIndexOf('?');
+      var pathRoot = queryStart >= 0 ? path.slice(0, queryStart) : path;
+      
+      res.header.should.have.property('location')
+        .that.match(new RegExp(`^${pathRoot}\\/[\\w\\d]+$`));
+      
+      var location = res.header.location;
+      var id = location.slice(location.lastIndexOf('/') + 1);
+      
+      // check that it was set in the database
+      model.findOne(doc, (err, dbDoc) => {
+        should.not.exist(err);
+        should.exist(dbDoc);
+        dbDoc._id.toString().should.equal(id);
+        
+        for (var prop in doc) {
+          if (!doc.hasOwnProperty(prop)) continue;
+          // HACK: fix doc[prop] printing as [object Object], dbDoc[prop] not
+          // this was causing the deep.equal assertion to fail
+          var dbProp = JSON.parse(JSON.stringify(dbDoc[prop]));
+          var docProp = JSON.parse(JSON.stringify(doc[prop]));
+          dbProp.should.deep.equal(docProp);
+        }
+        
+        done();
+      });
+    });
+  });
+}
+
+function getPostTester(path, doc, model, docsForDB = []) {
+  return done => testPost(path, doc, model, done, docsForDB);
+}
+
+function cloneObject(obj) {
+  // REVIEW there's probably a better way to do this...
+  var newObj = {};
+  for (var prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      newObj[prop] = obj[prop];
+    }
+  }
+  return newObj;
+}
+
+function getObjectMissingProperty(obj, prop) {
+  var newObj = cloneObject(obj);
+  delete newObj[prop];
+  return newObj;
+}
+
+function* generateObjectsMissingOneProperty(obj) {
+  for (var prop in obj) {
+    if (!obj.hasOwnProperty(prop)) continue;
+    if (typeof obj[prop] === 'object') {
+      for (var gen of generateObjectsMissingOneProperty(obj[prop])) {
+        var newObj = cloneObject(obj);
+        newObj[prop] = gen.obj;
+        yield {
+          obj: newObj,
+          prop: `${prop}.${gen.prop}`
+        };
+      }
+    } else {
+      yield {
+        obj: getObjectMissingProperty(obj, prop),
+        prop: prop
+      };
+    }
   }
 }
 
@@ -494,28 +584,41 @@ describe('Admins', () => {
       getStatusTester(path + '?page=1&per_page=10', 404, generateAdmins(5)));
   });
   describe('POST /v0/admins', () => {
-    it('creates a valid admin', done => {
-      chai.request(server)
-      .post(path)
-      .send(testAdmins.simple1)
-      .end((err, res) => {
-        res.should.have.status(201);
-        res.body.should.deep.equal({});
-        res.should.have.property('text').that.is.equal('');
-        res.header.should.have.property('location')
-          .that.match(/\/v0\/admins\/[\w\d]+/);
-        
-        var location = res.header.location;
-        var id = location.slice(location.lastIndexOf('/') + 1);
-        
-        // see if it was set in the database
-        Admin.findOne(testAdmins.simple1, (err, admin) => {
-          should.not.exist(err);
-          should.exist(admin);
-          admin._id.toString().should.equal(id);
-          done();
-        });
-      });
-    });
+    it('creates a valid admin', getPostTester(path, testAdmins.simple1, Admin));
+    it('creates a valid admin with a unicode name',
+      getPostTester(path, testAdmins.unicode, Admin));
+    it('creates a valid admin with a whitespace name',
+      getPostTester(path, testAdmins.whitespace, Admin));
+    it("creates a valid admin when there's already an admin in the system",
+      getPostTester(path, testAdmins.simple2, Admin, testAdmins.simple1));
+    it("creates a valid admin when there's already one with the same name",
+      getPostTester(path, testAdmins.simple1, Admin, {
+        name: testAdmins.simple1.name,
+        item: testAdmins.simple2.item,
+        checkout: testAdmins.simple2.checkout,
+        patron: testAdmins.simple2.patron,
+        signIn: true,
+        signOut: true
+      }));
+    it("creates a valid admin when there's already an identical one",
+      getPostTester(path, testAdmins.simple1, Admin, testAdmins.simple1));
+    it('creates a valid admin when there are already 100 admins in the system',
+      getPostTester(path, testAdmins.simple1, Admin, generateAdmins(100)));
+    
+    it('gives a 400 on syntatically invalid input',
+      getStatusTester(path, 400, [], 'post', "I'm invalid"));
+    it('gives a 400 on psuedo-valid input',
+      getStatusTester(path, 400, [], 'post', '"Hi!"'));
+    it('gives a 422 on an empty object as input',
+      getStatusTester(path, 422, [], 'post', {}));
+    it('treats empty input the same as an empty object (422)',
+      getStatusTester(path, 422, [], 'post', ''));
+    it('gives a 422 on an array of valid admins as input',
+      getStatusTester(path, 422, [], 'post', Array.from(generateAdmins(5))));
+    
+    for (var admin of generateObjectsMissingOneProperty(testAdmins.simple1)) {
+      it(`gives a 422 when missing "${admin.prop}"`,
+        getStatusTester(path, 422, [], 'post', admin.obj));
+    }
   });
 });

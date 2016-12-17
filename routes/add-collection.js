@@ -63,6 +63,16 @@ module.exports = (router, baseUri) => {
       next();
     });
     
+    // disallow arrays in POST/PUT/PATCH requests
+    // REVIEW should this be allowed for POST requests?
+    router.use(collectionPath, function(req, res, next) {
+      if (['POST', 'PUT', 'PATCH'].includes(req.method)
+          && Array.isArray(req.body)) {
+        return res.status(422).json({err: 'Arrays cannot be used'});
+      }
+      next();
+    });
+    
     // validate the :id
     router.use(resourcePath, function(req, res, next) {
       req.checkParams('id', 'Invalid ID').isInt();
@@ -195,16 +205,19 @@ module.exports = (router, baseUri) => {
     
     // create a new thing
     router.post(collectionPath, function(req, res) {
-      if (!util.validate(req, res)) return;
+      if (!util.validate(req, res)) return
       
       // make the new thing
       var newDoc = toDBConverter(req.body);
       req.hook(req, res, newDoc, () => {
         model.create(newDoc, function(err, doc) {
-          if (err) return util.handleDBError(err, res);
+          if (err) {
+            return util.handleDBError(err, res,
+              err.name === 'ValidationError' ?  422 : 500);
+          }
           res.status(201)
-             .set('Location', `/${baseUri}/${name}/${doc._id}`)
-             .send();
+          .set('Location', `${baseUri}/${name}/${doc._id}`)
+          .send();
         });
       });
     });
