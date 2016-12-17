@@ -9,18 +9,18 @@ var Checkout = require('../models/checkout.js');
 var Item = require('../models/item.js');
 var Patron = require('../models/patron.js');
 
-module.exports = function(router, baseUri) {
+module.exports = (router, baseUri) => {
   var addCollection = addCollectionFunc(router, baseUri);
   
   addCollection(Admin, 'admins');
   
   addCollection(Checkout, 'checkouts', {
-    create: function(req, res, checkout, next) {
+    create: (req, res, checkout, next) => {
       var promises = [];
       
       // update item status, make sure item's not checked out already
-      promises.push(new Promise(function(resolve, reject) {
-        Item.findById(checkout.itemID, function(err, item) {
+      promises.push(new Promise((resolve, reject) => {
+        Item.findById(checkout.itemID, (err, item) => {
           if (err) return reject(err);
           
           if (item.status !== 'in') {
@@ -29,7 +29,7 @@ module.exports = function(router, baseUri) {
           }
           
           item.status = 'out';
-          item.save(function(err) {
+          item.save(err => {
             if (err) return reject(err);
             resolve();
           });
@@ -44,7 +44,7 @@ module.exports = function(router, baseUri) {
       
       Promise.all(promises).then(next, err => util.handleDBError(err, res));
     },
-    update: function(req, res, oldCheckout, newCheckout, next) {
+    update: (req, res, oldCheckout, newCheckout, next) => {
       var promises = [];
       
       // handle changed item ID
@@ -79,12 +79,12 @@ module.exports = function(router, baseUri) {
       
       Promise.all(promises).then(next, err => util.handleDBError(err, res));
     },
-    delete: function(req, res, checkout, next) {
+    delete: (req, res, checkout, next) => {
       var promises = [];
       
       // update item status, remove from patron checkouts
-      promises.push(new Promise(function(resolve, reject) {
-        Item.findById(checkout.itemID, function(err, item) {
+      promises.push(new Promise((resolve, reject) => {
+        Item.findById(checkout.itemID, (err, item) => {
           if (err) return reject(err);
           
           // if an item is lost we might just be cleaning up
@@ -93,7 +93,7 @@ module.exports = function(router, baseUri) {
             item.status = 'in';
           }
           
-          item.save(function(err) {
+          item.save(err => {
             if (err) return reject(err);
             resolve();
           });
@@ -112,19 +112,19 @@ module.exports = function(router, baseUri) {
   });
   
   addCollection(Item, 'items', {
-    delete: function(req, res, item, next) {
+    delete: (req, res, item, next) => {
       var promises = [];
       
       if (item.checkoutID !== undefined) {
         // remove checkout from checkout's patron's checkoutIDs
-        promises.push(new Promise(function(resolve, reject) {
-          Checkout.findById(item.checkoutID, function(err, checkout) {
+        promises.push(new Promise((resolve, reject) => {
+          Checkout.findById(item.checkoutID, (err, checkout) => {
             if (err) return reject(err);
             
             Patron.findByIdAndUpdate(
               checkout.patronID,
               {$pull: {checkoutIDs: item.checkoutID}}
-            ).exec(function(err) {
+            ).exec(err => {
               if (err) return reject(err);
               resolve();
             });
@@ -141,10 +141,10 @@ module.exports = function(router, baseUri) {
   
   var marcPath = '/items/:id/marc';
   
-  router.get(marcPath, function(req, res) {
+  router.get(marcPath, (req, res) => {
     if (!util.validate(req, res)) return;
     
-    Item.findById(req.params.id, function(err, item) {
+    Item.findById(req.params.id, (err, item) => {
       if (err) return util.handleDBError(err, res);
       
       var marc = item.marc;
@@ -159,7 +159,7 @@ module.exports = function(router, baseUri) {
     });
   });
   
-  router.put(marcPath, function(req, res) {
+  router.put(marcPath, (req, res) => {
     if (!util.validate(req, res)) return;
     
     var marc;
@@ -178,7 +178,7 @@ module.exports = function(router, baseUri) {
     Item.findByIdAndUpdate(
       req.params.id,
       {$set: {marc: marc}}
-    ).exec(function(err) {
+    ).exec(err => {
       if (err) {
         return util.handleDBError(
           err, res, err.name === 'ValidationError' ? 422 : 500);
@@ -187,14 +187,14 @@ module.exports = function(router, baseUri) {
     });
   });
   
-  router.patch(marcPath, function(req, res) {
+  router.patch(marcPath, (req, res) => {
     if (!util.validate(req, res)) return;
     
-    Item.findById(req.params.id, function(err, item) {
+    Item.findById(req.params.id, (err, item) => {
       if (err) return util.handleDBError(err, res);
       
       item.marc = mergePatch.apply(item.marc, req.body);
-      item.save(function(err, item) {
+      item.save((err, item) => {
         if (err) {
           return util.handleDBError(
             err, res, err.name === 'ValidationError' ? 422 : 500);
@@ -205,19 +205,19 @@ module.exports = function(router, baseUri) {
   });
   
   addCollection(Patron, 'patrons', {
-    delete: function(req, res, patron, next) {
+    delete: (req, res, patron, next) => {
       var promises = [];
       
       for (var checkoutID of patron.checkoutIDs) {
         // remove checkout's item's checkoutID
-        promises.push(new Promise(function(resolve, reject) {
-          Checkout.findById(checkoutID, function(err, checkout) {
+        promises.push(new Promise((resolve, reject) => {
+          Checkout.findById(checkoutID, (err, checkout) => {
             if (err) return reject(err);
             
             Item.findByIdAndUpdate(
               checkout.patronID,
               {$unset: {checkoutID: ''}}
-            ).exec(function(err) {
+            ).exec(err => {
               if (err) return reject(err);
               resolve();
             });

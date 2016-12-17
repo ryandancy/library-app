@@ -27,7 +27,7 @@ module.exports = (router, baseUri) => {
     // toInputConverter, toDBConverter default to converting _id <=> id
     // NOTE hopefully this works and doesn't require copying the object
     if (!toInputConverter) {
-      toInputConverter = function(doc) {
+      toInputConverter = doc => {
         obj = doc.toObject();
         obj.id = obj._id;
         delete obj._id;
@@ -36,7 +36,7 @@ module.exports = (router, baseUri) => {
       };
     }
     if (!toDBConverter) {
-      toDBConverter = function(doc) {
+      toDBConverter = doc => {
         if (doc.hasOwnProperty('id')) {
           doc._id = doc.id;
           delete doc.id;
@@ -53,7 +53,7 @@ module.exports = (router, baseUri) => {
     // MIDDLEWARE
     
     // make sure unmodifiables aren't present in a POST/PUT/PATCH request
-    router.use(collectionPath, function(req, res, next) {
+    router.use(collectionPath, (req, res, next) => {
       if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
         for (var unmod of unmodifiables) {
           req.checkBody(unmod, '%0 is unmodifiable and cannot be present')
@@ -65,7 +65,7 @@ module.exports = (router, baseUri) => {
     
     // disallow arrays in POST/PUT/PATCH requests
     // REVIEW should this be allowed for POST requests?
-    router.use(collectionPath, function(req, res, next) {
+    router.use(collectionPath, (req, res, next) => {
       if (['POST', 'PUT', 'PATCH'].includes(req.method)
           && Array.isArray(req.body)) {
         return res.status(422).json({err: 'Arrays cannot be used'});
@@ -74,7 +74,7 @@ module.exports = (router, baseUri) => {
     });
     
     // validate the :id
-    router.use(resourcePath, function(req, res, next) {
+    router.use(resourcePath, (req, res, next) => {
       req.checkParams('id', 'Invalid ID').isInt();
       next();
     });
@@ -87,7 +87,7 @@ module.exports = (router, baseUri) => {
       PATCH: 'update',
       DELETE: 'delete'
     };
-    router.use(collectionPath, function(req, res, next) {
+    router.use(collectionPath, (req, res, next) => {
       var crud = methodToCRUD[req.method];
       var hook = hooks[crud];
       req.hook = hook || function() {
@@ -105,9 +105,9 @@ module.exports = (router, baseUri) => {
       }
       var promises = [];
       for (param of paramArray) {
-        promises.push(new Promise(function(resolve, reject) {
-          hookCaller(param, resolve);
-        }));
+        promises.push(new Promise(
+          (resolve, reject) => hookCaller(param, resolve)
+        ));
       }
       Promise.all(promises).then(callback, callback);
     }
@@ -115,7 +115,7 @@ module.exports = (router, baseUri) => {
     // ROUTES
     
     // get a list of all things
-    router.get(collectionPath, function(req, res) {
+    router.get(collectionPath, (req, res) => {
       // create objs of query params to internal representations to keep it DRY
       var sortByObj = {'created': 'created', 'name': 'name', 'id': '_id'};
       var sortDirObj = {'asc': 1, 'desc': -1};
@@ -158,7 +158,7 @@ module.exports = (router, baseUri) => {
       }
       
       // execute the query
-      query.exec(function(err, docs) {
+      query.exec((err, docs) => {
         if (err) return util.handleDBError(err, res);
         handleBatchHook(
           docs,
@@ -204,13 +204,13 @@ module.exports = (router, baseUri) => {
     });
     
     // create a new thing
-    router.post(collectionPath, function(req, res) {
+    router.post(collectionPath, (req, res) => {
       if (!util.validate(req, res)) return
       
       // make the new thing
       var newDoc = toDBConverter(req.body);
       req.hook(req, res, newDoc, () => {
-        model.create(newDoc, function(err, doc) {
+        model.create(newDoc, (err, doc) => {
           if (err) {
             return util.handleDBError(err, res,
               err.name === 'ValidationError' ?  422 : 500);
@@ -225,17 +225,17 @@ module.exports = (router, baseUri) => {
     // delete all things
     // TODO admin will need to override this so as not to delete self
     // REVIEW should this even be a thing?
-    router.delete(collectionPath, function(req, res) {
+    router.delete(collectionPath, (req, res) => {
       if (!util.validate(req, res)) return;
       
       // find all things, pass to hook before deleting
-      model.find({}, function(err, docs) {
+      model.find({}, (err, docs) => {
         if (err) return util.handleDBError(err, res);
         handleBatchHook(
           docs,
           (doc, next) => req.hook(req, res, doc, next),
           () => {
-            model.remove({}, function(err) {
+            model.remove({}, err => {
               if (err) return util.handleDBError(err, res);
               res.status(204).send();
             })
@@ -244,11 +244,11 @@ module.exports = (router, baseUri) => {
     });
     
     // get a thing
-    router.get(resourcePath, function(req, res) {
+    router.get(resourcePath, (req, res) => {
       if (!util.validate(req, res)) return;
       
       var id = req.params.id;
-      model.findById(id, function(err, doc) {
+      model.findById(id, (err, doc) => {
         if (err) return util.handleDBError(err, res);
         req.hook(req, res, doc, () => {
           res.status(200).json(toInputConverter(doc));
@@ -257,14 +257,14 @@ module.exports = (router, baseUri) => {
     });
     
     // update a thing
-    router.put(resourcePath, function(req, res) {
+    router.put(resourcePath, (req, res) => {
       if (!util.validate(req, res)) return;
       
       var id = req.params.id;
       var mask = toDBConverter(req.body);
       
       // find old doc, pass to hook before updating
-      model.findById(id, function(err, oldDoc) {
+      model.findById(id, (err, oldDoc) => {
         if (err) return util.handleDBError(err, res);
         
         var newDoc = {};
@@ -278,7 +278,7 @@ module.exports = (router, baseUri) => {
             if (!newDoc.hasOwnProperty(prop)) continue;
             oldDoc[prop] = newDoc[prop];
           }
-          oldDoc.save(function(err, doc) {
+          oldDoc.save((err, doc) => {
             if (err) {
               return util.handleDBError(
                 err, res, err.name === 'ValidationError' ? 422 : 500);
@@ -290,15 +290,15 @@ module.exports = (router, baseUri) => {
     });
     
     // partially update a thing
-    router.patch(resourcePath, function(req, res) {
+    router.patch(resourcePath, (req, res) => {
       if (!util.validate(req, res)) return;
       
       var id = req.params.id;
-      model.findById(id, function(err, oldDoc) {
+      model.findById(id, (err, oldDoc) => {
         if (err) return util.handleDBError(err, res);
         // hopefully this works
         var newDoc = mergePatch.apply(oldDoc, toDBConverter(req.body));
-        req.hook(req, res, oldDoc, newDoc, () => doc.save(function(err, doc) {
+        req.hook(req, res, oldDoc, newDoc, () => doc.save((err, doc) => {
           if (err) {
             return util.handleDBError(
               err, res, err.name === 'ValidationError' ? 422 : 500);
@@ -309,13 +309,13 @@ module.exports = (router, baseUri) => {
     });
     
     // delete a thing
-    router.delete(resourcePath, function(req, res) {
+    router.delete(resourcePath, (req, res) => {
       if (!util.validate(req, res)) return;
       
       var id = req.params.id;
-      model.findById(id, function(err, doc) {
+      model.findById(id, (err, doc) => {
         if (err) return util.handleDBError(err, res);
-        req.hook(req, res, doc, () => doc.remove(function(err) {
+        req.hook(req, res, doc, () => doc.remove(err => {
           if (err) return util.handleDBError(err, res);
           res.status(204).send();
         }));
