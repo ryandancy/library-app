@@ -297,6 +297,28 @@ function getPostTester(path, doc, model, docsForDB = []) {
   return done => testPost(path, doc, model, done, docsForDB);
 }
 
+function testCollectionDelete(path, model, docsForDB, done) {
+  populateDB(Array.from(docsForDB), () => {
+    chai.request(server)
+    .delete(path)
+    .end((err, res) => {
+      res.should.have.status(204);
+      res.body.should.deep.equal({});
+      res.should.have.property('text').that.is.equal('');
+      
+      model.count({}, (err, count) => {
+        should.not.exist(err);
+        count.should.be.equal(0);
+        done();
+      });
+    });
+  });
+}
+
+function getCollectionDeleteTester(path, model, docsForDB) {
+  return done => testCollectionDelete(path, model, docsForDB, done);
+}
+
 function cloneObject(obj) {
   // REVIEW there's probably a better way to do this...
   var newObj = {};
@@ -620,5 +642,15 @@ describe('Admins', () => {
       it(`gives a 422 when missing "${admin.prop}"`,
         getStatusTester(path, 422, [], 'post', admin.obj));
     }
+  });
+  describe('DELETE /v0/admins', () => {
+    it('does nothing with no admins in the database',
+      getCollectionDeleteTester(path, Admin, []));
+    it('deletes 1 admin in the database',
+      getCollectionDeleteTester(path, Admin, testAdmins.simple1));
+    it('deletes a bunch of edge cases in the database',
+      getCollectionDeleteTester(path, Admin, Object.values(testAdmins)));
+    it('deletes 100 admins in the database',
+      getCollectionDeleteTester(path, Admin, generateAdmins(100)));
   });
 });
