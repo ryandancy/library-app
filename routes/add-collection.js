@@ -75,7 +75,7 @@ module.exports = (router, baseUri) => {
     
     // validate the :id
     router.use(resourcePath, (req, res, next) => {
-      req.checkParams('id', 'Invalid ID').isInt();
+      req.checkParams('id', 'Invalid ID').isHexadecimal();
       next();
     });
     

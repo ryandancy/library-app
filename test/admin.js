@@ -153,6 +153,27 @@ function testGet(path, testDocs) {
   };
 }
 
+function testResourceGet(path, doc, dbDocs = []) {
+  return done => {
+    populateDB([doc].concat(Array.from(dbDocs)), (docs, dbDocs) => {
+      chai.request(server)
+      .get(`${path}/${dbDocs[0]._id}`)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.an('object');
+        
+        var resDoc = checkAndSanitizeResponseDoc(res.body);
+        delete resDoc.created;
+        delete resDoc.updated;
+        
+        resDoc.should.deep.equal(doc);
+        
+        done();
+      });
+    });
+  };
+}
+
 function testSortableGet(path, testDocs, checker) {
   return done => {
     testDocs = coerceToArray(testDocs);
@@ -641,5 +662,26 @@ describe('Admins', () => {
       testCollectionDelete(path, Admin, Object.values(testAdmins)));
     it('deletes 100 admins in the database',
       testCollectionDelete(path, Admin, generateAdmins(100)));
+  });
+  
+  describe('GET /v0/admins/:id', () => {
+    it('gets a simple admin as the only admin in the database',
+      testResourceGet(path, testAdmins.simple1));
+    it('gets a unicode admin as the only admin in the database',
+      testResourceGet(path, testAdmins.unicode));
+    it('gets a whitespace admin as the only admin in the database',
+      testResourceGet(path, testAdmins.whitespace));
+    it('gets a simple admin with 4 edge-case admins in the database',
+      testResourceGet(path, testAdmins.simple2, Object.values(testAdmins)));
+    it('gets a unicode admin with 4 edge-case admins in the database',
+      testResourceGet(path, testAdmins.unicode, Object.values(testAdmins)));
+    it('gets a whitespace admin with 4 edge-case admins in the database',
+      testResourceGet(path, testAdmins.whitespace, Object.values(testAdmins)));
+    it('gets a simple admin with 100 admins in the database',
+      testResourceGet(path, testAdmins.simple1, generateAdmins(100)));
+    it('gets a unicode admin with 100 admins in the database',
+      testResourceGet(path, testAdmins.unicode, generateAdmins(100)));
+    it('gets a whitespace admin with 100 admins in the database',
+      testResourceGet(path, testAdmins.whitespace, generateAdmins(100)));
   });
 });
