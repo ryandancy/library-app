@@ -75,7 +75,10 @@ module.exports = (router, baseUri) => {
     
     // validate the :id
     router.use(resourcePath, (req, res, next) => {
-      req.checkParams('id', 'Invalid ID').isHexadecimal();
+      // test for valid ObjectId
+      if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+        return res.status(400).json({msg: `Invalid ID ${req.params.id}`});
+      }
       next();
     });
     
@@ -250,6 +253,10 @@ module.exports = (router, baseUri) => {
       var id = req.params.id;
       model.findById(id, (err, doc) => {
         if (err) return util.handleDBError(err, res);
+        if (doc === null) {
+          // It doesn't exist -- 404
+          return res.status(404).end();
+        }
         req.hook(req, res, doc, () => {
           res.status(200).json(toInputConverter(doc));
         });

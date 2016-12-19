@@ -683,5 +683,17 @@ describe('Admins', () => {
       testResourceGet(path, testAdmins.unicode, generateAdmins(100)));
     it('gets a whitespace admin with 100 admins in the database',
       testResourceGet(path, testAdmins.whitespace, generateAdmins(100)));
+    
+    it('404s when trying to get a nonexistant admin with an empty database',
+      testStatus(path + '/123456789012345678901234', 404));
+    it('404s when trying to get a nonexistant admin with a non-empty database',
+      testStatus(path + '/123456789012345678901234', 404, generateAdmins(10)));
+    it('404s on a nonexistant hex ID',
+      testStatus(path + '/DeadBeefFeedCabFad123456', 404));
+    it('gives a 400 on an invalid ID',
+      testStatus(path + '/invalid-id-because-chars', 400));
+    it('gives a 400 on a too-short ID', testStatus(path + '/123', 400));
+    it('gives a 400 on a negative ID',
+      testStatus(path + '/-123456789012345678901234', 400));
   });
 });
