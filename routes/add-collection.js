@@ -56,7 +56,7 @@ module.exports = (router, baseUri) => {
     router.use(collectionPath, (req, res, next) => {
       if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
         for (var unmod of unmodifiables) {
-          req.checkBody(unmod, '%0 is unmodifiable and cannot be present')
+          req.checkBody(unmod, unmod + ' is unmodifiable and cannot be present')
              .notPresent();
         }
       }
@@ -216,7 +216,7 @@ module.exports = (router, baseUri) => {
         model.create(newDoc, (err, doc) => {
           if (err) {
             return util.handleDBError(err, res,
-              err.name === 'ValidationError' ?  422 : 500);
+              err.name === 'ValidationError' ? 422 : 500);
           }
           res.status(201)
           .set('Location', `${baseUri}/${name}/${doc._id}`)
@@ -270,14 +270,22 @@ module.exports = (router, baseUri) => {
       var id = req.params.id;
       var mask = toDBConverter(req.body);
       
+      // make sure the new thing's valid as a whole
+      // REVIEW there's probably something wrong about using `hydrate` this way
+      var errors = model.hydrate(mask).validateSync();
+      if (errors) {
+        return res.status(422).json(errors);
+      }
+      
       // find old doc, pass to hook before updating
       model.findById(id, (err, oldDoc) => {
         if (err) return util.handleDBError(err, res);
         
         var newDoc = {};
-        for (var prop in oldDoc) {
-          if (!oldDoc.hasOwnProperty(prop)) continue;
-          newDoc[prop] = mask.hasOwnProperty(prop) ? mask[prop] : oldDoc[prop];
+        for (var prop in mask) {
+          if (!mask.hasOwnProperty(prop) || prop === '_id') continue;
+          newDoc[prop] = oldDoc.hasOwnProperty(prop) ? oldDoc[prop]
+            : mask[prop];
         }
         
         req.hook(req, res, oldDoc, newDoc, () => {

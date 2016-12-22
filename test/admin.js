@@ -6,9 +6,11 @@ var Admin = require('../models/admin.js');
 
 var chai = require('chai');
 var chaiHttp = require('chai-http');
+var chaiSubset = require('chai-subset');
 
 var should = chai.should();
 chai.use(chaiHttp);
+chai.use(chaiSubset);
 
 var testAdmins = {
   simple1: {
@@ -174,6 +176,29 @@ function testResourceGet(path, doc, dbDocs = []) {
   };
 }
 
+function testPut(path, model, oldDoc, newDoc, dbDocs = []) {
+  return done => {
+    populateDB([oldDoc].concat(Array.from(dbDocs)), (docs, dbDocs) => {
+      var id = dbDocs[0]._id;
+      chai.request(server)
+      .put(`${path}/${id}`)
+      .send(newDoc)
+      .end((err, res) => {
+        res.should.have.status(204);
+        res.body.should.deep.equal({});
+        res.should.have.property('text').that.equal('');
+        
+        // check the database was updated
+        model.findById(id, (err, dbDoc) => {
+          should.not.exist(err);
+          dbDoc.should.containSubset(newDoc);
+          done();
+        });
+      });
+    });
+  };
+}
+
 function testSortableGet(path, testDocs, checker) {
   return done => {
     testDocs = coerceToArray(testDocs);
@@ -200,7 +225,11 @@ function testSortableGet(path, testDocs, checker) {
 
 function testStatus(path, status, admins = [], method = 'get', send) {
   return done => {
-    populateDB(Array.from(admins), () => {
+    populateDB(Array.from(admins), (admins_, dbAdmins) => {
+      if (path.includes(':id')) {
+        path = path.replace(':id', dbAdmins[0]._id);
+      }
+      
       var request = chai.request(server);
       request = request[method](path); // call the relevant HTTP method function
       if (send !== undefined) {
@@ -695,5 +724,50 @@ describe('Admins', () => {
     it('gives a 400 on a too-short ID', testStatus(path + '/123', 400));
     it('gives a 400 on a negative ID',
       testStatus(path + '/-123456789012345678901234', 400));
+  });
+  describe('PUT /v0/admins/:id', () => {
+    it('replaces a simple admin with another simple admin, empty DB',
+      testPut(path, Admin, testAdmins.simple1, testAdmins.simple2));
+    it('replaces a simple admin with a unicode admin, empty DB',
+      testPut(path, Admin, testAdmins.simple1, testAdmins.unicode));
+    it('replaces a simple admin with a whitespace admin, empty DB',
+      testPut(path, Admin, testAdmins.simple1, testAdmins.whitespace));
+    it('replaces a unicode admin with a simple admin, empty DB',
+      testPut(path, Admin, testAdmins.unicode, testAdmins.simple1));
+    it('replaces a unicode admin with a whitespace admin, empty DB',
+      testPut(path, Admin, testAdmins.unicode, testAdmins.whitespace));
+    it('replaces a whitespace admin with a simple admin, empty DB',
+      testPut(path, Admin, testAdmins.whitespace, testAdmins.simple1));
+    it('replaces a whitespace admin with a unicode admin, empty DB',
+      testPut(path, Admin, testAdmins.whitespace, testAdmins.unicode));
+      
+    it('replaces a simple admin with another simple admin, 1 other in DB',
+      testPut(path, Admin, testAdmins.simple1, testAdmins.simple2,
+        generateAdmins(1)));
+    it('replaces a simple admin with another simple admin, 100 others in DB',
+      testPut(path, Admin, testAdmins.simple1, testAdmins.simple2,
+        generateAdmins(100)));
+    it('replaces a unicode admin with a whitespace admin, 100 others in DB',
+      testPut(path, Admin, testAdmins.unicode, testAdmins.whitespace,
+        generateAdmins(100)));
+    
+    var idPath = path + '/:id';
+    it('gives a 400 on invalid JSON',
+      testStatus(idPath, 400, [testAdmins.simple1], 'put', 'invalid'));
+    it('gives a 400 on strictly invalid JSON (parsable by JSON.parse)',
+      testStatus(idPath, 400, [testAdmins.simple1], 'put', '"Hi!"'));
+    
+    for (var unmod of ['created', 'updated', 'id']) {
+      var admin = JSON.parse(JSON.stringify(testAdmins.simple1));
+      admin[unmod] = unmod === 'id' ? '123456789012345678901234'
+        : '2016-10-24T17:00:42-03:00';
+      it(`gives a 422 when including "${unmod}"`,
+        testStatus(idPath, 422, [testAdmins.simple1], 'put', admin));
+    }
+    
+    for (var admin of generateObjectsMissingOneProperty(testAdmins.simple1)) {
+      it(`gives a 422 when missing "${admin.prop}"`,
+        testStatus(idPath, 422, [testAdmins.simple1], 'put', admin.obj));
+    }
   });
 });
