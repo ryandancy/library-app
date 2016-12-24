@@ -253,10 +253,7 @@ module.exports = (router, baseUri) => {
       var id = req.params.id;
       model.findById(id, (err, doc) => {
         if (err) return util.handleDBError(err, res);
-        if (doc === null) {
-          // It doesn't exist -- 404
-          return res.status(404).end();
-        }
+        if (doc === null) return res.status(404).end(); // it doesn't exist
         req.hook(req, res, doc, () => {
           res.status(200).json(toInputConverter(doc));
         });
@@ -280,6 +277,7 @@ module.exports = (router, baseUri) => {
       // find old doc, pass to hook before updating
       model.findById(id, (err, oldDoc) => {
         if (err) return util.handleDBError(err, res);
+        if (oldDoc === null) return res.status(404).end(); // it doesn't exist
         
         var newDoc = {};
         for (var prop in mask) {
@@ -311,6 +309,8 @@ module.exports = (router, baseUri) => {
       var id = req.params.id;
       model.findById(id, (err, oldDoc) => {
         if (err) return util.handleDBError(err, res);
+        if (oldDoc === null) return res.status(404).end(); // it doesn't exist
+        
         // hopefully this works
         var newDoc = mergePatch.apply(oldDoc, toDBConverter(req.body, false));
         req.hook(req, res, oldDoc, newDoc, () => newDoc.save((err, doc) => {
@@ -326,6 +326,7 @@ module.exports = (router, baseUri) => {
     // delete a thing
     router.delete(resourcePath, (req, res) => {
       if (!util.validate(req, res)) return;
+      if (doc === null) return res.status(404).end(); // it doesn't exist
       
       var id = req.params.id;
       model.findById(id, (err, doc) => {
