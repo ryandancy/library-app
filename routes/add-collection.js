@@ -36,11 +36,11 @@ module.exports = (router, baseUri) => {
       };
     }
     if (!toDBConverter) {
-      toDBConverter = doc => {
+      toDBConverter = (doc, genID = true) => {
         if (doc.hasOwnProperty('id')) {
           doc._id = doc.id;
           delete doc.id;
-        } else {
+        } else if (genID) {
           doc._id = mongoose.Types.ObjectId();
         }
         return doc;
@@ -312,13 +312,13 @@ module.exports = (router, baseUri) => {
       model.findById(id, (err, oldDoc) => {
         if (err) return util.handleDBError(err, res);
         // hopefully this works
-        var newDoc = mergePatch.apply(oldDoc, toDBConverter(req.body));
-        req.hook(req, res, oldDoc, newDoc, () => doc.save((err, doc) => {
+        var newDoc = mergePatch.apply(oldDoc, toDBConverter(req.body, false));
+        req.hook(req, res, oldDoc, newDoc, () => newDoc.save((err, doc) => {
           if (err) {
             return util.handleDBError(
               err, res, err.name === 'ValidationError' ? 422 : 500);
           }
-          res.status(200).json(doc);
+          res.status(200).json(toInputConverter(doc));
         }));
       });
     });

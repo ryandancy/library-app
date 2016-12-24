@@ -199,6 +199,32 @@ function testPut(path, model, oldDoc, newDoc, dbDocs = []) {
   };
 }
 
+function testPatch(path, model, oldDoc, patch, patchApplier, dbDocs = []) {
+  return done => {
+    populateDB([oldDoc].concat(Array.from(dbDocs)), (docs, dbDocs) => {
+      var id = dbDocs[0]._id;
+      chai.request(server)
+      .patch(`${path}/${id}`)
+      .send(patch)
+      .end((err, res) => {
+        res.should.have.status(200);
+        
+        var newDoc = JSON.parse(JSON.stringify(oldDoc));
+        patchApplier(newDoc);
+        res.body.should.containSubset(newDoc);
+        res.body.should.not.have.property('_id');
+        res.body.should.not.have.property('__v');
+        
+        model.findById(id, (err, doc) => {
+          should.not.exist(err);
+          doc.should.containSubset(newDoc);
+          done();
+        });
+      });
+    });
+  };
+}
+
 function testSortableGet(path, testDocs, checker) {
   return done => {
     testDocs = coerceToArray(testDocs);
@@ -769,5 +795,48 @@ describe('Admins', () => {
       it(`gives a 422 when missing "${admin.prop}"`,
         testStatus(idPath, 422, [testAdmins.simple1], 'put', admin.obj));
     }
+  });
+  describe('PATCH /v0/admins/:id', () => {
+    it('can patch a simple admin changing name',
+      testPatch(path, Admin, testAdmins.simple1, {name: 'Testy 2'},
+        admin => admin.name = 'Testy 2'));
+    it('can patch a simple admin changing a nested property',
+      testPatch(path, Admin, testAdmins.simple1, {patron: {read: true}},
+        admin => admin.patron.read = true));
+    it('can patch a simple admin changing multiple top-level properties',
+      testPatch(path, Admin, testAdmins.simple1,
+        {name: 'Foo', signIn: false, signOut: false},
+        admin => {
+          admin.name = 'Foo';
+          admin.signIn = false;
+          admin.signOut = false;
+        }));
+    it('can patch a simple admin changing an entire top-level object property',
+      testPatch(path, Admin, testAdmins.simple1,
+        {patron: {read: true, write: false}},
+        admin => {
+          admin.patron.read = true;
+          admin.patron.write = false;
+        }));
+    it('can patch a simple admin changing top-level and deeper properties',
+      testPatch(path, Admin, testAdmins.simple1,
+        {signIn: false, checkout: {read: true, write: true}},
+        admin => {
+          admin.signIn = false;
+          admin.checkout.read = true;
+          admin.checkout.write = true;
+        }));
+    it('can patch a simple admin changing name to unicode',
+      testPatch(path, Admin, testAdmins.simple1, {name: 'Úñí¢öðè ïß ©öół'},
+        admin => admin.name = 'Úñí¢öðè ïß ©öół'));
+    it('can patch a simple admin changing name to whitespace',
+      testPatch(path, Admin, testAdmins.simple1, {name: '   \t\n\t  '},
+        admin => admin.name = '   \t\n\t  '));
+    it('can patch a unicode admin changing name to normal',
+      testPatch(path, Admin, testAdmins.unicode, {name: 'Testy McTestface 2.0'},
+        admin => admin.name = 'Testy McTestface 2.0'));
+    it('can patch a whitespace admin changing name to normal',
+      testPatch(path, Admin, testAdmins.whitespace, {name: 'Testy McTest'},
+        admin => admin.name = 'Testy McTest'));
   });
 });
