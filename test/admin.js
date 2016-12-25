@@ -106,20 +106,23 @@ function* generateAdmins(num) {
   }
 }
 
-function testIDHandling(path, method, send = undefined) {
+function testIDHandling(path, model, method, send = undefined) {
   it('404s when trying to get a nonexistant admin with an empty database',
-    util.testStatus(path + '/123456789012345678901234', 404, [], method, send));
-  it('404s when trying to get a nonexistant admin with a non-empty database',
-    util.testStatus(path + '/123456789012345678901234', 404, generateAdmins(10),
+    util.testStatus(path + '/123456789012345678901234', model, 404, [],
       method, send));
+  it('404s when trying to get a nonexistant admin with a non-empty database',
+    util.testStatus(path + '/123456789012345678901234', model, 404,
+      generateAdmins(10), method, send));
   it('404s on a nonexistant hex ID',
-    util.testStatus(path + '/DeadBeefFeedCabFad123456', 404, [], method, send));
+    util.testStatus(path + '/DeadBeefFeedCabFad123456', model, 404, [],
+      method, send));
   it('gives a 400 on an invalid ID',
-    util.testStatus(path + '/invalid-id-because-chars', 400, [], method, send));
+    util.testStatus(path + '/invalid-id-because-chars', model, 400, [],
+      method, send));
   it('gives a 400 on a too-short ID',
-    util.testStatus(path + '/123', 400, [], method, send));
+    util.testStatus(path + '/123', model, 400, [], method, send));
   it('gives a 400 on a negative ID',
-    util.testStatus(path + '/-123456789012345678901234', 400, [],
+    util.testStatus(path + '/-123456789012345678901234', model, 400, [],
       method, send));
 }
 
@@ -133,36 +136,38 @@ describe('Admins', () => {
   var allTestAdmins = Object.values(testAdmins);
   
   describe('GET /v0/admins', () => {
-    it('should initially get an empty array', util.testGet(path, []));
-    it('can retrieve a single admin', util.testGet(path, testAdmins.simple1));
+    it('should initially get an empty array', util.testGet(path, Admin, []));
+    it('can retrieve a single admin',
+      util.testGet(path, Admin, testAdmins.simple1));
     it('can retrieve multiple admins',
-      util.testGet(path, [testAdmins.simple1, testAdmins.simple2]));
+      util.testGet(path, Admin, [testAdmins.simple1, testAdmins.simple2]));
     it('accepts unicode in admin names',
-      util.testGet(path, testAdmins.unicode));
+      util.testGet(path, Admin, testAdmins.unicode));
     it('accepts whitespace in admin names',
-      util.testGet(path, testAdmins.whitespace));
-    it('can retrieve all of them at once', util.testGet(path, allTestAdmins));
+      util.testGet(path, Admin, testAdmins.whitespace));
+    it('can retrieve all of them at once',
+      util.testGet(path, Admin, allTestAdmins));
     
     var createdAscSort = (admin, admin2) =>
       new Date(admin.created).should.be.at.most(new Date(admin2.created));
     var createdDescSort = (admin, admin2) =>
       new Date(admin.created).should.be.at.least(new Date(admin2.created));
     it('defaults to sorting ascending by created date',
-      util.testSortableGet(path, allTestAdmins, createdAscSort));
+      util.testSortableGet(path, Admin, allTestAdmins, createdAscSort));
     it('can sort descending by created date',
-      util.testSortableGet(path + '?direction=desc', allTestAdmins,
+      util.testSortableGet(path + '?direction=desc', Admin, allTestAdmins,
         createdDescSort));
     it('can explicitly sort ascending, defaulting to created date',
-      util.testSortableGet(path + '?direction=asc', allTestAdmins,
+      util.testSortableGet(path + '?direction=asc', Admin, allTestAdmins,
         createdAscSort));
     it('can explicitly sort by created date, defaulting to ascending',
-      util.testSortableGet(path + '?sort_by=created', allTestAdmins,
+      util.testSortableGet(path + '?sort_by=created', Admin, allTestAdmins,
         createdAscSort));
     it('can explicitly sort ascending by created date',
-      util.testSortableGet(path + '?sort_by=created&direction=asc',
+      util.testSortableGet(path + '?sort_by=created&direction=asc', Admin,
         allTestAdmins, createdAscSort));
     it('can explicitly sort descending by created date',
-      util.testSortableGet(path + '?sort_by=created&direction=desc',
+      util.testSortableGet(path + '?sort_by=created&direction=desc', Admin,
         allTestAdmins, createdDescSort));
     
     var nameAscSort = (admin, admin2) =>
@@ -170,40 +175,42 @@ describe('Admins', () => {
     var nameDescSort = (admin, admin2) =>
       admin.name.should.be.at.least(admin2.name);
     it('can sort ascending by name lexicographically',
-      util.testSortableGet(path + '?sort_by=name', allTestAdmins, nameAscSort));
-    it('can sort explicitly ascending by name lexicographically',
-      util.testSortableGet(path + '?sort_by=name&direction=asc', allTestAdmins,
+      util.testSortableGet(path + '?sort_by=name', Admin, allTestAdmins,
         nameAscSort));
+    it('can sort explicitly ascending by name lexicographically',
+      util.testSortableGet(path + '?sort_by=name&direction=asc', Admin,
+        allTestAdmins, nameAscSort));
     it('can sort descending by name lexicographically',
-      util.testSortableGet(path + '?sort_by=name&direction=desc', allTestAdmins,
-        nameDescSort));
+      util.testSortableGet(path + '?sort_by=name&direction=desc', Admin,
+        allTestAdmins, nameDescSort));
     
     var idAscSort = (admin, admin2) => admin.id.should.be.below(admin2.id);
     var idDescSort = (admin, admin2) => admin.id.should.be.above(admin2.id);
     it('can sort ascending by ID',
-      util.testSortableGet(path + '?sort_by=id', allTestAdmins, idAscSort));
-    it('can sort explicitly ascending by ID',
-      util.testSortableGet(path + '?sort_by=id&direction=asc', allTestAdmins,
+      util.testSortableGet(path + '?sort_by=id', Admin, allTestAdmins,
         idAscSort));
+    it('can sort explicitly ascending by ID',
+      util.testSortableGet(path + '?sort_by=id&direction=asc', Admin,
+        allTestAdmins, idAscSort));
     it('can sort descending by ID',
-      util.testSortableGet(path + '?sort_by=id&direction=desc', allTestAdmins,
-        idDescSort));
+      util.testSortableGet(path + '?sort_by=id&direction=desc', Admin,
+        allTestAdmins, idDescSort));
     
     it('gives a 422 on an invalid sort_by value',
-      util.testStatus(path + '?sort_by=INVALID', 422));
+      util.testStatus(path + '?sort_by=INVALID', Admin, 422));
     it('gives a 422 on an empty sort_by value',
-      util.testStatus(path + '?sort_by=', 422));
+      util.testStatus(path + '?sort_by=', Admin, 422));
     it('gives a 422 on an invalid direction value',
-      util.testStatus(path + '?direction=INVALID', 422));
+      util.testStatus(path + '?direction=INVALID', Admin, 422));
     it('gives a 422 on an empty direction value',
-      util.testStatus(path + '?direction=', 422));
+      util.testStatus(path + '?direction=', Admin, 422));
     it('gives a 422 on invalid both sort_by and direction',
-      util.testStatus(path + '?sort_by=foo&direction=bar', 422));
+      util.testStatus(path + '?sort_by=foo&direction=bar', Admin, 422));
     it('gives a 422 on empty both sort_by and direction',
-      util.testStatus(path + '?sort_by=&direction=', 422));
+      util.testStatus(path + '?sort_by=&direction=', Admin, 422));
     
     it('has correct paging on no admins, no query string',
-      util.testPaging(path, [], {
+      util.testPaging(path, Admin, [], {
         status: 200,
         hasMore: false,
         maxItems: 0,
@@ -212,7 +219,7 @@ describe('Admins', () => {
       })
     );
     it('has correct paging on one admin, no query string',
-      util.testPaging(path, generateAdmins(1), {
+      util.testPaging(path, Admin, generateAdmins(1), {
         status: 200,
         hasMore: false,
         maxItems: 1,
@@ -221,7 +228,7 @@ describe('Admins', () => {
       })
     );
     it('has correct paging on two admins, no query string',
-      util.testPaging(path, generateAdmins(2), {
+      util.testPaging(path, Admin, generateAdmins(2), {
         status: 200,
         hasMore: false,
         maxItems: 2,
@@ -230,7 +237,7 @@ describe('Admins', () => {
       })
     );
     it('has correct paging on 31 admins, no query string',
-      util.testPaging(path, generateAdmins(31), {
+      util.testPaging(path, Admin, generateAdmins(31), {
         status: 206,
         hasMore: true,
         maxItems: 31,
@@ -239,7 +246,7 @@ describe('Admins', () => {
       })
     );
     it('has correct paging on 30 admins, no query string',
-      util.testPaging(path, generateAdmins(30), {
+      util.testPaging(path, Admin, generateAdmins(30), {
         status: 200,
         hasMore: false,
         maxItems: 30,
@@ -248,7 +255,7 @@ describe('Admins', () => {
       })
     );
     it('handles explicit page=0, implicit per_page=30, 30 admins',
-      util.testPaging(path + '?page=0', generateAdmins(30), {
+      util.testPaging(path + '?page=0', Admin, generateAdmins(30), {
         status: 200,
         hasMore: false,
         maxItems: 30,
@@ -257,7 +264,7 @@ describe('Admins', () => {
       })
     );
     it('handles implicit page=0, explicit per_page=30, 30 admins',
-      util.testPaging(path + '?per_page=30', generateAdmins(30), {
+      util.testPaging(path + '?per_page=30', Admin, generateAdmins(30), {
         status: 200,
         hasMore: false,
         maxItems: 30,
@@ -266,7 +273,7 @@ describe('Admins', () => {
       })
     );
     it('handles explicit page=0, explicit per_page=30, 30 admins',
-      util.testPaging(path + '?page=0&per_page=30', generateAdmins(30), {
+      util.testPaging(path + '?page=0&per_page=30', Admin, generateAdmins(30), {
         status: 200,
         hasMore: false,
         maxItems: 30,
@@ -275,7 +282,7 @@ describe('Admins', () => {
       })
     );
     it('handles implicit page=0, explicit per_page=10, 15 admins',
-      util.testPaging(path + '?per_page=10', generateAdmins(15), {
+      util.testPaging(path + '?per_page=10', Admin, generateAdmins(15), {
         status: 206,
         hasMore: true,
         maxItems: 15,
@@ -284,7 +291,7 @@ describe('Admins', () => {
       })
     );
     it('handles implicit page=0, explicit per_page=20, 15 admins',
-      util.testPaging(path + '?per_page=20', generateAdmins(15), {
+      util.testPaging(path + '?per_page=20', Admin, generateAdmins(15), {
         status: 200,
         hasMore: false,
         maxItems: 15,
@@ -293,7 +300,7 @@ describe('Admins', () => {
       })
     );
     it('handles explicit page=0, explicit per_page=10, 15 admins',
-      util.testPaging(path + '?page=0&per_page=10', generateAdmins(15), {
+      util.testPaging(path + '?page=0&per_page=10', Admin, generateAdmins(15), {
         status: 206,
         hasMore: true,
         maxItems: 15,
@@ -302,7 +309,7 @@ describe('Admins', () => {
       })
     );
     it('handles explicit page=1, implicit per_page=30, 40 admins',
-      util.testPaging(path + '?page=1', generateAdmins(40), {
+      util.testPaging(path + '?page=1', Admin, generateAdmins(40), {
         status: 206,
         hasMore: false,
         maxItems: 40,
@@ -311,7 +318,7 @@ describe('Admins', () => {
       })
     );
     it('handles explicit page=1, explicit per_page=10, 15 admins',
-      util.testPaging(path + '?page=1&per_page=10', generateAdmins(15), {
+      util.testPaging(path + '?page=1&per_page=10', Admin, generateAdmins(15), {
         status: 206,
         hasMore: false,
         maxItems: 15,
@@ -320,7 +327,7 @@ describe('Admins', () => {
       })
     );
     it('handles explicit page=1, implicit per_page=30, 60 admins',
-      util.testPaging(path + '?page=1', generateAdmins(60), {
+      util.testPaging(path + '?page=1', Admin, generateAdmins(60), {
         status: 206,
         hasMore: false,
         maxItems: 60,
@@ -329,7 +336,7 @@ describe('Admins', () => {
       })
     );
     it('handles explicit page=1, explicit per_page=2, 4 admins',
-      util.testPaging(path + '?page=1&per_page=2', generateAdmins(4), {
+      util.testPaging(path + '?page=1&per_page=2', Admin, generateAdmins(4), {
         status: 206,
         hasMore: false,
         maxItems: 4,
@@ -338,7 +345,7 @@ describe('Admins', () => {
       })
     );
     it('handles explicit page=2, implicit per_page=30, 100 admins',
-      util.testPaging(path + '?page=2', generateAdmins(100), {
+      util.testPaging(path + '?page=2', Admin, generateAdmins(100), {
         status: 206,
         hasMore: true,
         maxItems: 100,
@@ -347,7 +354,7 @@ describe('Admins', () => {
       })
     );
     it('handles explicit page=8, explicit per_page=4, 50 admins',
-      util.testPaging(path + '?page=8&per_page=4', generateAdmins(50), {
+      util.testPaging(path + '?page=8&per_page=4', Admin, generateAdmins(50), {
         status: 206,
         hasMore: true,
         maxItems: 50,
@@ -356,7 +363,7 @@ describe('Admins', () => {
       })
     );
     it('handle explicit page=23, explicit per_page=1, 33 admins',
-      util.testPaging(path + '?page=23&per_page=1', generateAdmins(33), {
+      util.testPaging(path + '?page=23&per_page=1', Admin, generateAdmins(33), {
         status: 206,
         hasMore: true,
         maxItems: 33,
@@ -364,16 +371,19 @@ describe('Admins', () => {
         range: '23-23/33'
       })
     );
-    it('gives a 422 on page=-1', util.testStatus(path + '?page=-1', 422));
+    it('gives a 422 on page=-1',
+      util.testStatus(path + '?page=-1', Admin, 422));
     it('gives a 422 on per_page=-1',
-      util.testStatus(path + '?per_page=-1', 422));
-    it('gives a 422 on per_page=0', util.testStatus(path + '?per_page=0', 422));
+      util.testStatus(path + '?per_page=-1', Admin, 422));
+    it('gives a 422 on per_page=0',
+      util.testStatus(path + '?per_page=0', Admin, 422));
     it('gives a 422 on per_page=201',
-      util.testStatus(path + '?per_page=201', 422));
+      util.testStatus(path + '?per_page=201', Admin, 422));
     it('gives a 404 on explicit page=1, implicit per_page=30, 20 admins',
-      util.testStatus(path + '?page=1', 404, generateAdmins(20)));
+      util.testStatus(path + '?page=1', Admin, 404, generateAdmins(20)));
     it('gives a 404 on explicit page=1, explicit per_page=10, 5 admins',
-      util.testStatus(path + '?page=1&per_page=10', 404, generateAdmins(5)));
+      util.testStatus(path + '?page=1&per_page=10', Admin, 404,
+        generateAdmins(5)));
   });
   describe('POST /v0/admins', () => {
     it('creates a valid admin', util.testPost(path, testAdmins.simple1, Admin));
@@ -398,20 +408,21 @@ describe('Admins', () => {
       util.testPost(path, testAdmins.simple1, Admin, generateAdmins(100)));
     
     it('gives a 400 on syntatically invalid input',
-      util.testStatus(path, 400, [], 'post', "I'm invalid"));
+      util.testStatus(path, Admin, 400, [], 'post', "I'm invalid"));
     it('gives a 400 on psuedo-valid input',
-      util.testStatus(path, 400, [], 'post', '"Hi!"'));
+      util.testStatus(path, Admin, 400, [], 'post', '"Hi!"'));
     it('gives a 422 on an empty object as input',
-      util.testStatus(path, 422, [], 'post', {}));
+      util.testStatus(path, Admin, 422, [], 'post', {}));
     it('treats empty input the same as an empty object (422)',
-      util.testStatus(path, 422, [], 'post', ''));
+      util.testStatus(path, Admin, 422, [], 'post', ''));
     it('gives a 422 on an array of valid admins as input',
-      util.testStatus(path, 422, [], 'post', Array.from(generateAdmins(5))));
+      util.testStatus(path, Admin, 422, [], 'post',
+        Array.from(generateAdmins(5))));
     
     for (var admin of util.generateObjectsMissingOneProperty(
         testAdmins.simple1)) {
       it(`gives a 422 when missing "${admin.prop}"`,
-        util.testStatus(path, 422, [], 'post', admin.obj));
+        util.testStatus(path, Admin, 422, [], 'post', admin.obj));
     }
   });
   describe('DELETE /v0/admins', () => {
@@ -427,28 +438,31 @@ describe('Admins', () => {
   
   describe('GET /v0/admins/:id', () => {
     it('gets a simple admin as the only admin in the database',
-      util.testResourceGet(path, testAdmins.simple1));
+      util.testResourceGet(path, Admin, testAdmins.simple1));
     it('gets a unicode admin as the only admin in the database',
-      util.testResourceGet(path, testAdmins.unicode));
+      util.testResourceGet(path, Admin, testAdmins.unicode));
     it('gets a whitespace admin as the only admin in the database',
-      util.testResourceGet(path, testAdmins.whitespace));
+      util.testResourceGet(path, Admin, testAdmins.whitespace));
     it('gets a simple admin with 4 edge-case admins in the database',
-      util.testResourceGet(path, testAdmins.simple2,
+      util.testResourceGet(path, Admin, testAdmins.simple2,
         Object.values(testAdmins)));
     it('gets a unicode admin with 4 edge-case admins in the database',
-      util.testResourceGet(path, testAdmins.unicode,
+      util.testResourceGet(path, Admin, testAdmins.unicode,
         Object.values(testAdmins)));
     it('gets a whitespace admin with 4 edge-case admins in the database',
-      util.testResourceGet(path, testAdmins.whitespace,
+      util.testResourceGet(path, Admin, testAdmins.whitespace,
         Object.values(testAdmins)));
     it('gets a simple admin with 100 admins in the database',
-      util.testResourceGet(path, testAdmins.simple1, generateAdmins(100)));
+      util.testResourceGet(path, Admin, testAdmins.simple1,
+        generateAdmins(100)));
     it('gets a unicode admin with 100 admins in the database',
-      util.testResourceGet(path, testAdmins.unicode, generateAdmins(100)));
+      util.testResourceGet(path, Admin, testAdmins.unicode,
+        generateAdmins(100)));
     it('gets a whitespace admin with 100 admins in the database',
-      util.testResourceGet(path, testAdmins.whitespace, generateAdmins(100)));
+      util.testResourceGet(path, Admin, testAdmins.whitespace,
+        generateAdmins(100)));
     
-    testIDHandling(path, 'get');
+    testIDHandling(path, Admin, 'get');
   });
   describe('PUT /v0/admins/:id', () => {
     it('replaces a simple admin with another simple admin, empty DB',
@@ -477,25 +491,29 @@ describe('Admins', () => {
         generateAdmins(100)));
     
     it('gives a 400 on invalid JSON',
-      util.testStatus(idPath, 400, [testAdmins.simple1], 'put', 'invalid'));
+      util.testStatus(idPath, Admin, 400, [testAdmins.simple1],
+        'put', 'invalid'));
     it('gives a 400 on strictly invalid JSON (parsable by JSON.parse)',
-      util.testStatus(idPath, 400, [testAdmins.simple1], 'put', '"Hi!"'));
+      util.testStatus(idPath, Admin, 400, [testAdmins.simple1],
+        'put', '"Hi!"'));
     
     for (var unmod of ['created', 'updated', 'id']) {
       var admin = JSON.parse(JSON.stringify(testAdmins.simple1));
       admin[unmod] = unmod === 'id' ? '123456789012345678901234'
         : '2016-10-24T17:00:42-03:00';
       it(`gives a 422 when including "${unmod}"`,
-        util.testStatus(idPath, 422, [testAdmins.simple1], 'put', admin));
+        util.testStatus(idPath, Admin, 422, [testAdmins.simple1],
+          'put', admin));
     }
     
     for (var admin of util.generateObjectsMissingOneProperty(
           testAdmins.simple1)) {
       it(`gives a 422 when missing "${admin.prop}"`,
-        util.testStatus(idPath, 422, [testAdmins.simple1], 'put', admin.obj));
+        util.testStatus(idPath, Admin, 422, [testAdmins.simple1],
+          'put', admin.obj));
     }
     
-    testIDHandling(path, 'put', testAdmins.simple1);
+    testIDHandling(path, Admin, 'put', testAdmins.simple1);
   });
   describe('PATCH /v0/admins/:id', () => {
     it('can patch a simple admin changing name',
@@ -555,16 +573,19 @@ describe('Admins', () => {
         admin => admin.name = 'Foo'));
     
     it('gives a 400 on invalid JSON',
-      util.testStatus(idPath, 400, [testAdmins.simple1], 'patch', ":'invalid"));
+      util.testStatus(idPath, Admin, 400, [testAdmins.simple1],
+        'patch', ":'invalid"));
     it('gives a 400 on strictly invalid JSON (parseable by JSON.parse)',
-      util.testStatus(idPath, 400, [testAdmins.simple1], 'patch', '"invalid"'));
+      util.testStatus(idPath, Admin, 400, [testAdmins.simple1],
+        'patch', '"invalid"'));
     
     for (var patch of util.generateSinglePropertyPatches(testAdmins.simple1)) {
       it(`gives a 422 when trying to delete "${patch.prop}"`,
-        util.testStatus(idPath, 422, [testAdmins.simple1], 'patch', patch.obj));
+        util.testStatus(idPath, Admin, 422, [testAdmins.simple1],
+          'patch', patch.obj));
     }
     
-    testIDHandling(path, 'patch');
+    testIDHandling(path, Admin, 'patch');
   });
   describe('DELETE /v0/admins/:id', () => {
     it('can delete a simple admin with an empty database',
@@ -589,6 +610,6 @@ describe('Admins', () => {
     it('can delete a whitespace admin with 100 admins in the database',
       util.testDelete(path, Admin, testAdmins.whitespace, generateAdmins(100)));
     
-    testIDHandling(path, 'delete');
+    testIDHandling(path, Admin, 'delete');
   });
 });

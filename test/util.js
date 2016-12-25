@@ -14,7 +14,7 @@ chai.use(chaiSubset);
 
 var coerceToArray = value => Array.isArray(value) ? value : [value];
 
-function populateDB(docs, callbackSuccess, callbackErr) {
+function populateDB(docs, model, callbackSuccess, callbackErr) {
   var docArr = Array.isArray(docs) ? docs : [docs];
   
   var promises = [];
@@ -52,7 +52,7 @@ function checkAndSanitizeResponseDoc(doc) {
   return doc;
 }
 
-exports.testGet = (path, testDocs) => {
+exports.testGet = (path, model, testDocs) => {
   return done => {
     testDocs = coerceToArray(testDocs);
     
@@ -77,14 +77,14 @@ exports.testGet = (path, testDocs) => {
     if (testDocs === []) {
       after();
     } else {
-      populateDB(testDocs, after, done);
+      populateDB(testDocs, model, after, done);
     }
   };
 }
 
-exports.testResourceGet = (path, doc, dbDocs = []) => {
+exports.testResourceGet = (path, model, doc, dbDocs = []) => {
   return done => {
-    populateDB([doc].concat(Array.from(dbDocs)), (docs, dbDocs) => {
+    populateDB([doc].concat(Array.from(dbDocs)), model, (docs, dbDocs) => {
       chai.request(server)
       .get(`${path}/${dbDocs[0]._id}`)
       .end((err, res) => {
@@ -105,7 +105,7 @@ exports.testResourceGet = (path, doc, dbDocs = []) => {
 
 exports.testPut = (path, model, oldDoc, newDoc, dbDocs = []) => {
   return done => {
-    populateDB([oldDoc].concat(Array.from(dbDocs)), (docs, dbDocs) => {
+    populateDB([oldDoc].concat(Array.from(dbDocs)), model, (docs, dbDocs) => {
       var id = dbDocs[0]._id;
       chai.request(server)
       .put(`${path}/${id}`)
@@ -128,7 +128,7 @@ exports.testPut = (path, model, oldDoc, newDoc, dbDocs = []) => {
 
 exports.testPatch = (path, model, oldDoc, patch, patchApplier, dbDocs = []) => {
   return done => {
-    populateDB([oldDoc].concat(Array.from(dbDocs)), (docs, dbDocs) => {
+    populateDB([oldDoc].concat(Array.from(dbDocs)), model, (docs, dbDocs) => {
       var id = dbDocs[0]._id;
       chai.request(server)
       .patch(`${path}/${id}`)
@@ -154,7 +154,7 @@ exports.testPatch = (path, model, oldDoc, patch, patchApplier, dbDocs = []) => {
 
 exports.testDelete = (path, model, doc, dbDocs = []) => {
   return done => {
-    populateDB([doc].concat(Array.from(dbDocs)), (doc_, dbDocs) => {
+    populateDB([doc].concat(Array.from(dbDocs)), model, (doc_, dbDocs) => {
       var id = dbDocs[0]._id;
       chai.request(server)
       .delete(`${path}/${id}`)
@@ -174,11 +174,11 @@ exports.testDelete = (path, model, doc, dbDocs = []) => {
   };
 }
 
-exports.testSortableGet = (path, testDocs, checker) => {
+exports.testSortableGet = (path, model, testDocs, checker) => {
   return done => {
     testDocs = coerceToArray(testDocs);
     
-    populateDB(testDocs, testDocs => {
+    populateDB(testDocs, model, testDocs => {
       chai.request(server)
       .get(path)
       .end((err, res) => {
@@ -198,9 +198,9 @@ exports.testSortableGet = (path, testDocs, checker) => {
   };
 }
 
-exports.testStatus = (path, status, admins = [], method = 'get', send) => {
+exports.testStatus = (path, model, status, admins=[], method='get', send) => {
   return done => {
-    populateDB(Array.from(admins), (admins_, dbAdmins) => {
+    populateDB(Array.from(admins), model, (admins_, dbAdmins) => {
       if (path.includes(':id')) {
         path = path.replace(':id', dbAdmins[0]._id);
       }
@@ -221,11 +221,11 @@ exports.testStatus = (path, status, admins = [], method = 'get', send) => {
   };
 }
 
-exports.testPaging = (path, testDocs, values) => {
+exports.testPaging = (path, model, testDocs, values) => {
   return done => {
     if (values.maxItems === undefined) values.maxItems = docs.length;
     
-    populateDB(Array.from(testDocs), docs => {
+    populateDB(Array.from(testDocs), model, docs => {
       chai.request(server)
       .get(path)
       .end((err, res) => {
@@ -250,7 +250,7 @@ exports.testPaging = (path, testDocs, values) => {
 
 exports.testPost = (path, doc, model, docsForDB = []) => {
   return done => {
-    populateDB(Array.from(docsForDB), () => {
+    populateDB(Array.from(docsForDB), model, () => {
       chai.request(server)
       .post(path)
       .send(doc)
@@ -292,7 +292,7 @@ exports.testPost = (path, doc, model, docsForDB = []) => {
 
 exports.testCollectionDelete = (path, model, docsForDB) => {
   return done => {
-    populateDB(Array.from(docsForDB), () => {
+    populateDB(Array.from(docsForDB), model, () => {
       chai.request(server)
       .delete(path)
       .end((err, res) => {
