@@ -335,11 +335,11 @@ module.exports = (router, baseUri) => {
     // delete a thing
     router.delete(resourcePath, (req, res) => {
       if (!util.validate(req, res)) return;
-      if (doc === null) return res.status(404).end(); // it doesn't exist
       
       var id = req.params.id;
       model.findById(id, (err, doc) => {
         if (err) return util.handleDBError(err, res);
+        if (doc === null) return res.status(404).end(); // it doesn't exist
         req.hook(req, res, doc, () => doc.remove(err => {
           if (err) return util.handleDBError(err, res);
           res.status(204).send();

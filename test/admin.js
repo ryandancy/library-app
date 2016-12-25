@@ -225,6 +225,28 @@ function testPatch(path, model, oldDoc, patch, patchApplier, dbDocs = []) {
   };
 }
 
+function testDelete(path, model, doc, dbDocs = []) {
+  return done => {
+    populateDB([doc].concat(Array.from(dbDocs)), (doc_, dbDocs) => {
+      var id = dbDocs[0]._id;
+      chai.request(server)
+      .delete(`${path}/${id}`)
+      .end((err, res) => {
+        res.should.have.status(204);
+        res.body.should.deep.equal({});
+        res.should.have.property('text').that.equal('');
+        
+        // verify it's not in the database
+        model.count({_id: id}, (err, count) => {
+          should.not.exist(err);
+          count.should.equal(0);
+          done();
+        });
+      });
+    });
+  };
+}
+
 function testSortableGet(path, testDocs, checker) {
   return done => {
     testDocs = coerceToArray(testDocs);
@@ -891,5 +913,29 @@ describe('Admins', () => {
     }
     
     testIDHandling(path, 'patch');
+  });
+  describe('DELETE /v0/admins/:id', () => {
+    it('can delete a simple admin with an empty database',
+      testDelete(path, Admin, testAdmins.simple1));
+    it('can delete a unicode admin with an empty database',
+      testDelete(path, Admin, testAdmins.unicode));
+    it('can delete a whitespace admin with an empty database',
+      testDelete(path, Admin, testAdmins.whitespace));
+    
+    it('can delete a simple admin with another simple admin in the database',
+      testDelete(path, Admin, testAdmins.simple1, [testAdmins.simple2]));
+    it('can delete a unicode admin with a simple admin in the database',
+      testDelete(path, Admin, testAdmins.unicode, [testAdmins.simple2]));
+    it('can delete a whitespace admin with a simple admin in the database',
+      testDelete(path, Admin, testAdmins.whitespace, [testAdmins.simple2]));
+      
+    it('can delete a simple admin with 100 admins in the database',
+      testDelete(path, Admin, testAdmins.simple1, generateAdmins(100)));
+    it('can delete a unicode admin with 100 admins in the database',
+      testDelete(path, Admin, testAdmins.unicode, generateAdmins(100)));
+    it('can delete a whitespace admin with 100 admins in the database',
+      testDelete(path, Admin, testAdmins.whitespace, generateAdmins(100)));
+    
+    testIDHandling(path, 'delete');
   });
 });
