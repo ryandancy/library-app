@@ -311,8 +311,17 @@ module.exports = (router, baseUri) => {
         if (err) return util.handleDBError(err, res);
         if (oldDoc === null) return res.status(404).end(); // it doesn't exist
         
-        // hopefully this works
-        var newDoc = mergePatch.apply(oldDoc, toDBConverter(req.body, false));
+        // validate the patch
+        // REVIEW the hydrate() abuse
+        var patch = toDBConverter(req.body, false);
+        var newDocObj = mergePatch.apply(oldDoc.toObject(), patch);
+        var errors = model.hydrate(newDocObj).validateSync();
+        if (errors) {
+          return res.status(422).json(errors);
+        }
+        
+        // actually update the doc
+        var newDoc = mergePatch.apply(oldDoc, patch);
         req.hook(req, res, oldDoc, newDoc, () => newDoc.save((err, doc) => {
           if (err) {
             return util.handleDBError(

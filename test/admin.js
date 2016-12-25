@@ -436,12 +436,32 @@ function* generateObjectsMissingOneProperty(obj) {
   }
 }
 
+function* generateSinglePropertyPatches(obj, value = null) {
+  for (var prop in obj) {
+    if (!obj.hasOwnProperty(prop)) continue;
+    if (typeof obj[prop] === 'object') {
+      for (var gen of generateSinglePropertyPatches(obj[prop], value)) {
+        yield {
+          obj: {[prop]: gen.obj},
+          prop: `${prop}.${gen.prop}`
+        };
+      }
+    } else {
+      yield {
+        obj: {[prop]: value},
+        prop: prop
+      };
+    }
+  }
+}
+
 describe('Admins', () => {
   beforeEach(done => {
     Admin.remove({}, err => done());
   });
   
   var path = '/v0/admins';
+  var idPath = path + '/:id';
   var allTestAdmins = Object.values(testAdmins);
   
   describe('GET /v0/admins', () => {
@@ -783,7 +803,6 @@ describe('Admins', () => {
       testPut(path, Admin, testAdmins.unicode, testAdmins.whitespace,
         generateAdmins(100)));
     
-    var idPath = path + '/:id';
     it('gives a 400 on invalid JSON',
       testStatus(idPath, 400, [testAdmins.simple1], 'put', 'invalid'));
     it('gives a 400 on strictly invalid JSON (parsable by JSON.parse)',
@@ -846,6 +865,30 @@ describe('Admins', () => {
     it('can patch a whitespace admin changing name to normal',
       testPatch(path, Admin, testAdmins.whitespace, {name: 'Testy McTest'},
         admin => admin.name = 'Testy McTest'));
+    it('does nothing with an empty object',
+      testPatch(path, Admin, testAdmins.simple1, {}, admin => {}));
+    it('ignores nonexistant properties in the patch',
+      testPatch(path, Admin, testAdmins.simple1, {nonexistant: 3},
+        admin => {}));
+    it('ignores nonexistant nested properties in the patch',
+      testPatch(path, Admin, testAdmins.simple1,
+        {non: {existant: "I don't exist!"}}, admin => {}));
+    it('ignores nonexistant nested properties where the parent property exists',
+      testPatch(path, Admin, testAdmins.simple1, {patron: {foo: 'bar'}},
+        admin => {}));
+    it('ignores nonexistant properties when combined with existing properties',
+      testPatch(path, Admin, testAdmins.simple1, {name: 'Foo', ne: 901},
+        admin => admin.name = 'Foo'));
+    
+    it('gives a 400 on invalid JSON',
+      testStatus(idPath, 400, [testAdmins.simple1], 'patch', "'invalid':??"));
+    it('gives a 400 on strictly invalid JSON (parseable by JSON.parse)',
+      testStatus(idPath, 400, [testAdmins.simple1], 'patch', '"invalid"'));
+    
+    for (var patch of generateSinglePropertyPatches(testAdmins.simple1)) {
+      it(`gives a 422 when trying to delete "${patch.prop}"`,
+        testStatus(idPath, 422, [testAdmins.simple1], 'patch', patch.obj));
+    }
     
     testIDHandling(path, 'patch');
   });

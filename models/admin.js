@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 var reqt = require('./util/req-types.js');
 
-module.exports = mongoose.model('Admin', {
+var adminSchema = new Schema({
   name: reqt.String,
   item: {
     read: reqt.Boolean,
@@ -17,4 +18,6 @@ module.exports = mongoose.model('Admin', {
   },
   signIn: reqt.Boolean,
   signOut: reqt.Boolean
-});
+}, {strict: 'throw'});
+
+module.exports = mongoose.model('Admin', adminSchema);

@@ -1,8 +1,9 @@
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 var isUri = require('valid-url').isUri;
 var reqt = require('./util/req-types.js');
 
-module.exports = mongoose.model('Patron', {
+var patronSchema = new Schema({
   name: reqt.String,
   pic: {
     type: String,
@@ -14,4 +15,6 @@ module.exports = mongoose.model('Patron', {
     required: true
   },
   checkouts: [reqt.ObjectId]
-});
+}, {strict: 'throw'});
+
+module.exports = mongoose.model('Patron', patronSchema);

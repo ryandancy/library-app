@@ -41,7 +41,7 @@ var marcVariableField = {
   ind2: Character
 };
 
-module.exports = mongoose.model('Item', {
+var itemSchema = new Schema({
   marc: {
     leader: {
       type: String,
@@ -61,4 +61,6 @@ module.exports = mongoose.model('Item', {
     required: true
   },
   checkoutID: ObjectId
-});
+}, {strict: 'throw'});
+
+module.exports = mongoose.model('Item', itemSchema);
