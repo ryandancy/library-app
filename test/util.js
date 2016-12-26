@@ -2,7 +2,6 @@
 
 var mongoose = require('mongoose');
 var server = require('../server.js');
-var Admin = require('../models/admin.js');
 
 var chai = require('chai');
 var chaiHttp = require('chai-http');
@@ -19,7 +18,7 @@ function populateDB(docs, model, callbackSuccess, callbackErr) {
   
   var promises = [];
   for (var doc of docArr) {
-    promises.push(new Admin(doc).save());
+    promises.push(new model(doc).save());
   }
   
   Promise.all(promises).then(function() {
