@@ -197,11 +197,11 @@ exports.testSortableGet = (path, model, testDocs, checker) => {
   };
 }
 
-exports.testStatus = (path, model, status, admins=[], method='get', send) => {
+exports.testStatus = (path, model, status, docs = [], method = 'get', send) => {
   return done => {
-    populateDB(Array.from(admins), model, (admins_, dbAdmins) => {
+    populateDB(Array.from(docs), model, (docs_, dbDocs) => {
       if (path.includes(':id')) {
-        path = path.replace(':id', dbAdmins[0]._id);
+        path = path.replace(':id', dbDocs[0]._id);
       }
       
       var request = chai.request(server);
