@@ -70,10 +70,10 @@ module.exports = options => {
   }
   
   function testIDHandling(method, send = undefined) {
-    it(`404s when trying to get a nonexistant ${singular} with an empty database`,
+    it(`404s when trying to get a nonexistant ${singular} with an empty DB`,
       util.testStatus(path + '/123456789012345678901234', model, 404, [],
         method, send));
-    it(`404s when trying to get a nonexistant ${singular} with a non-empty database`,
+    it(`404s when trying to get a nonexistant ${singular} with a non-empty DB`,
       util.testStatus(path + '/123456789012345678901234', model, 404,
         generateDocs(10), method, send));
     it('404s on a nonexistant hex ID',
@@ -349,18 +349,19 @@ module.exports = options => {
           generateDocs(5)));
     });
     describe(`POST ${path}`, () => {
-      it(`creates a valid ${singular}`, util.testPost(path, testDocs.simple1, model));
+      it(`creates a ${singular}`,
+        util.testPost(path, testDocs.simple1, model));
       if (testDocs.unicode) {
-        it(`creates a valid ${singular} with unicode strings`,
+        it(`creates a ${singular} with unicode strings`,
           util.testPost(path, testDocs.unicode, model));
       }
       if (testDocs.whitespace) {
-        it(`creates a valid ${singular} with whitespace strings`,
+        it(`creates a ${singular} with whitespace strings`,
           util.testPost(path, testDocs.whitespace, model));
       }
-      it(`creates a valid ${singular} when there's already a ${singular} in the system`,
+      it(`creates a ${singular} when there's already a ${singular} in the DB`,
         util.testPost(path, testDocs.simple2, model, testDocs.simple1));
-      it(`creates a valid ${singular} when there's already one with the same name`,
+      it(`creates a ${singular} when there's already one with the same name`,
         util.testPost(path, testDocs.simple1, model, {
           name: testDocs.simple1.name,
           item: testDocs.simple2.item,
@@ -369,9 +370,9 @@ module.exports = options => {
           signIn: true,
           signOut: true
         }));
-      it(`creates a valid ${singular} when there's already an identical one`,
+      it(`creates a ${singular} when there's already an identical one`,
         util.testPost(path, testDocs.simple1, model, testDocs.simple1));
-      it(`creates a valid ${singular} when there are already 100 ${plural} in the system`,
+      it(`creates a ${singular} when there are already 100 ${plural} in the DB`,
         util.testPost(path, testDocs.simple1, model, generateDocs(100)));
       
       it('gives a 400 on syntatically invalid input',
@@ -404,34 +405,34 @@ module.exports = options => {
     });
     
     describe(`GET ${idPath}`, () => {
-      it(`gets a simple ${singular} as the only ${singular} in the database`,
+      it(`gets a simple ${singular} as the only ${singular} in the DB`,
         util.testResourceGet(path, model, testDocs.simple1));
       if (testDocs.unicode) {
-        it(`gets a unicode ${singular} as the only ${singular} in the database`,
+        it(`gets a unicode ${singular} as the only ${singular} in the DB`,
           util.testResourceGet(path, model, testDocs.unicode));
       }
       if (testDocs.whitespace) {
-        it(`gets a whitespace ${singular} as the only ${singular} in the database`,
+        it(`gets a whitespace ${singular} as the only ${singular} in the DB`,
           util.testResourceGet(path, model, testDocs.whitespace));
       }
-      it(`gets a simple ${singular} with edge-case ${plural} in the database`,
+      it(`gets a simple ${singular} with edge-case ${plural} in the DB`,
         util.testResourceGet(path, model, testDocs.simple2,
           Object.values(testDocs)));
       if (testDocs.unicode) {
-        it(`gets a unicode ${singular} with edge-case ${plural} in the database`,
+        it(`gets a unicode ${singular} with edge-case ${plural} in the DB`,
           util.testResourceGet(path, model, testDocs.unicode,
             Object.values(testDocs)));
       }
       if (testDocs.whitespace) {
-        it(`gets a whitespace ${singular} with edge-case ${plural} in the database`,
+        it(`gets a whitespace ${singular} with edge-case ${plural} in the DB`,
           util.testResourceGet(path, model, testDocs.whitespace,
             Object.values(testDocs)));
       }
-      it(`gets a simple ${singular} with 100 ${plural} in the database`,
+      it(`gets a simple ${singular} with 100 ${plural} in the DB`,
         util.testResourceGet(path, model, testDocs.simple1,
           generateDocs(100)));
       if (testDocs.unicode) {
-        it(`gets a unicode ${singular} with 100 ${plural} in the database`,
+        it(`gets a unicode ${singular} with 100 ${plural} in the DB`,
           util.testResourceGet(path, model, testDocs.unicode,
             generateDocs(100)));
       }
@@ -444,37 +445,37 @@ module.exports = options => {
       testIDHandling('get');
     });
     describe(`PUT ${idPath}`, () => {
-      it(`replaces a simple ${singular} with another simple ${singular}, empty DB`,
+      it(`replaces a simple ${singular} with a simple ${singular}`,
         util.testPut(path, model, testDocs.simple1, testDocs.simple2));
       if (testDocs.unicode) {
-        it(`replaces a simple ${singular} with a unicode ${singular}, empty DB`,
+        it(`replaces a simple ${singular} with a unicode ${singular}`,
           util.testPut(path, model, testDocs.simple1, testDocs.unicode));
-        it(`replaces a unicode ${singular} with a simple ${singular}, empty DB`,
+        it(`replaces a unicode ${singular} with a simple ${singular}`,
           util.testPut(path, model, testDocs.unicode, testDocs.simple1));
       }
       if (testDocs.whitespace) {
-        it(`replaces a simple ${singular} with a whitespace ${singular}, empty DB`,
+        it(`replaces a simple ${singular} with a whitespace ${singular}`,
           util.testPut(path, model, testDocs.simple1, testDocs.whitespace));
-        it(`replaces a whitespace ${singular} with a simple ${singular}, empty DB`,
+        it(`replaces a whitespace ${singular} with a simple ${singular}`,
           util.testPut(path, model, testDocs.whitespace, testDocs.simple1));
       }
       if (testDocs.unicode && testDocs.whitespace) {
-        it(`replaces a unicode ${singular} with a whitespace ${singular}, empty DB`,
+        it(`replaces a unicode ${singular} with a whitespace ${singular}`,
           util.testPut(path, model, testDocs.unicode, testDocs.whitespace));
-        it(`replaces a whitespace ${singular} with a unicode ${singular}, empty DB`,
+        it(`replaces a whitespace ${singular} with a unicode ${singular}`,
           util.testPut(path, model, testDocs.whitespace, testDocs.unicode));
       }
         
-      it(`replaces a simple ${singular} with another simple ${singular}, 1 other in DB`,
+      it(`replaces a simple ${singular} with a simple ${singular}, 1 in DB`,
         util.testPut(path, model, testDocs.simple1, testDocs.simple2,
           generateDocs(1)));
-      it(`replaces a simple ${singular} with another simple ${singular}, 100 others in DB`,
+      it(`replaces a simple ${singular} with a simple ${singular}, 100 in DB`,
         util.testPut(path, model, testDocs.simple1, testDocs.simple2,
           generateDocs(100)));
       if (testDocs.unicode && testDocs.whitespace) {
-        it(`replaces a unicode ${singular} with a whitespace ${singular}, 100 others in DB`,
+        it(`replaces unicode ${singular} with whitespace ${singular}, 99 in DB`,
           util.testPut(path, model, testDocs.unicode, testDocs.whitespace,
-            generateDocs(100)));
+            generateDocs(99)));
       }
       
       it('gives a 400 on invalid JSON',
@@ -551,19 +552,19 @@ module.exports = options => {
       }
       
       if (stringProp) {
-        it(`can patch a simple ${singular} changing ${stringProp}`,
+        it(`patches a ${singular} changing ${stringProp}`,
           util.testPatch(path, model, testDocs.simple1,
             {[stringProp]: '__##TEST##__'},
             doc => doc[stringProp] = '__##TEST##__'));
       }
       if (nestedProp) {
-        it(`can patch a simple ${singular} changing a nested property`,
+        it(`patches a ${singular} changing a nested property`,
           util.testPatch(path, model, testDocs.simple1,
             {[nestedParentProp]: {[nestedProp]: nestedValue}},
             doc => doc[nestedParentProp][nestedProp] = nestedValue));
       }
       if (stringProp && topLevelProp) {
-        it(`can patch a simple ${singular} changing multiple top-level properties`,
+        it(`patches a ${singular} changing multiple top-level properties`,
           util.testPatch(path, model, testDocs.simple1,
             {[stringProp]: '__##TEST##__', [topLevelProp]: topLevelValue},
             doc => {
@@ -572,7 +573,7 @@ module.exports = options => {
             }));
       }
       if (topLevelProp && nestedProp) {
-        it(`can patch a simple ${singular} changing top-level and deeper properties`,
+        it(`patches a ${singular} changing top-level and deeper properties`,
           util.testPatch(path, model, testDocs.simple1,
             {[topLevelProp]: topLevelValue,
               [nestedParentProp]: {[nestedProp]: nestedValue}},
@@ -582,22 +583,22 @@ module.exports = options => {
             }));
       }
       if (stringProp) {
-        it(`can patch a simple ${singular} changing ${stringProp} to unicode`,
+        it(`patches a simple ${singular} changing ${stringProp} to unicode`,
           util.testPatch(path, model, testDocs.simple1,
             {[stringProp]: 'Úñí¢öðè ïß ©öół'},
             doc => doc[stringProp] = 'Úñí¢öðè ïß ©öół'));
-        it(`can patch a simple ${singular} changing ${stringProp} to whitespace`,
+        it(`patches a simple ${singular} changing ${stringProp} to whitespace`,
           util.testPatch(path, model, testDocs.simple1,
             {[stringProp]: '   \t\n\t  '},
             doc => doc[stringProp] = '   \t\n\t  '));
         if (testDocs.unicode) {
-          it(`can patch a unicode ${singular} changing ${stringProp} to normal`,
+          it(`patches a unicode ${singular} changing ${stringProp} to ASCII`,
             util.testPatch(path, model, testDocs.unicode,
               {[stringProp]: 'I am a test and you should know that'},
               doc => doc[stringProp] = 'I am a test and you should know that'));
         }
         if (testDocs.whitespace) {
-          it(`can patch a whitespace ${singular} changing ${stringProp} to normal`,
+          it(`patches a whitespace ${singular} changing ${stringProp} to ASCII`,
             util.testPatch(path, model, testDocs.whitespace,
               {[stringProp]: 'I am a test and you should know that'},
               doc => doc[stringProp] = 'I am a test and you should know that'));
@@ -612,13 +613,13 @@ module.exports = options => {
         util.testPatch(path, model, testDocs.simple1,
           {non: {existant: "I don't exist!"}}, doc => {}));
       if (nestedParentProp) {
-        it('ignores nonexistant nested properties where the parent property exists',
+        it('ignores nonexistant nested properties when parent property exists',
           util.testPatch(path, model, testDocs.simple1,
             {[nestedParentProp]: {nonexistant: 'bar'}},
             doc => {}));
       }
       if (topLevelProp) {
-        it('ignores nonexistant properties when combined with existing properties',
+        it('ignores nonexistant properties  combined with existing properties',
           util.testPatch(path, model, testDocs.simple1,
             {[topLevelProp]: topLevelValue, nonexistant: 901},
             doc => doc[topLevelProp] = topLevelValue));
@@ -640,29 +641,29 @@ module.exports = options => {
       testIDHandling('patch');
     });
     describe(`DELETE ${idPath}`, () => {
-      it(`can delete a simple ${singular} with an empty database`,
+      it(`deletes a simple ${singular} with an empty DB`,
         util.testDelete(path, model, testDocs.simple1));
-      it(`can delete a simple ${singular} with another simple ${singular} in the database`,
+      it(`deletes a simple ${singular} with a simple ${singular} in DB`,
         util.testDelete(path, model, testDocs.simple1, [testDocs.simple2]));
-      it(`can delete a simple ${singular} with 100 ${plural} in the database`,
+      it(`deletes a simple ${singular} with 100 ${plural} in DB`,
         util.testDelete(path, model, testDocs.simple1, generateDocs(100)));
       
       if (testDocs.unicode) {
-        it(`can delete a unicode ${singular} with an empty database`,
+        it(`deletes a unicode ${singular} with an empty DB`,
           util.testDelete(path, model, testDocs.unicode));
-        it(`can delete a unicode ${singular} with a simple ${singular} in the database`,
+        it(`deletes a unicode ${singular} with a simple ${singular} in DB`,
           util.testDelete(path, model, testDocs.unicode, [testDocs.simple2]));
-        it(`can delete a unicode ${singular} with 100 ${plural} in the database`,
+        it(`deletes a unicode ${singular} with 100 ${plural} in DB`,
           util.testDelete(path, model, testDocs.unicode, generateDocs(100)));
       }
       
       if (testDocs.whitespace) {
-        it(`can delete a whitespace ${singular} with an empty database`,
+        it(`deletes a whitespace ${singular} with an empty DB`,
           util.testDelete(path, model, testDocs.whitespace));
-        it(`can delete a whitespace ${singular} with a simple ${singular} in the database`,
+        it(`deletes a whitespace ${singular} with a simple ${singular} in DB`,
           util.testDelete(path, model, testDocs.whitespace,
             [testDocs.simple2]));
-        it(`can delete a whitespace ${singular} with 100 ${plural} in the database`,
+        it(`deletes a whitespace ${singular} with 100 ${plural} in DB`,
           util.testDelete(path, model, testDocs.whitespace, generateDocs(100)));
       }
       
