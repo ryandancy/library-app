@@ -13,17 +13,26 @@ chai.use(chaiSubset);
 
 var coerceToArray = value => Array.isArray(value) ? value : [value];
 
-function populateDB(docs, model, callbackSuccess, callbackErr) {
+function populateDB(docs, model, callbackSuccess, callbackErr, hooks = {}) {
   var docArr = Array.isArray(docs) ? docs : [docs];
+  var preHook = hooks.pre || ((docs, done) => done());
+  var postHook = hooks.post || ((docs, dbDocs, done) => done());
   
-  var promises = [];
-  for (var doc of docArr) {
-    promises.push(new model(doc).save());
-  }
-  
-  Promise.all(promises).then(function() {
-    callbackSuccess(docs, ...arguments);
-  }, callbackErr);
+  preHook(docs, err => {
+    if (err) return callbackErr(err);
+    
+    var promises = [];
+    for (var doc of docArr) {
+      promises.push(new model(doc).save());
+    }
+    
+    Promise.all(promises).then(dbDocs => {
+      postHook(docs, dbDocs, err => {
+        if (err) return callbackErr(Error(err));
+        callbackSuccess(docs, dbDocs);
+      });
+    }, callbackErr);
+  });
 }
 
 function baseNoPagingGetResponseCheck(res, testDocs) {
@@ -51,7 +60,7 @@ function checkAndSanitizeResponseDoc(doc) {
   return doc;
 }
 
-exports.testGet = (path, model, testDocs) => {
+exports.testGet = (path, model, testDocs, hooks) => {
   return done => {
     testDocs = coerceToArray(testDocs);
     
@@ -66,7 +75,7 @@ exports.testGet = (path, model, testDocs) => {
           var doc = checkAndSanitizeResponseDoc(resDoc);
           delete doc.created;
           delete doc.updated;
-          testDocs.should.deep.include(doc);
+          JSON.parse(JSON.stringify(testDocs)).should.deep.include(doc);
         }
         
         done();
@@ -76,12 +85,12 @@ exports.testGet = (path, model, testDocs) => {
     if (testDocs === []) {
       after();
     } else {
-      populateDB(testDocs, model, after, done);
+      populateDB(testDocs, model, after, done, hooks);
     }
   };
 }
 
-exports.testResourceGet = (path, model, doc, dbDocs = []) => {
+exports.testResourceGet = (path, model, doc, hooks, dbDocs = []) => {
   return done => {
     populateDB([doc].concat(Array.from(dbDocs)), model, (docs, dbDocs) => {
       chai.request(server)
@@ -94,15 +103,15 @@ exports.testResourceGet = (path, model, doc, dbDocs = []) => {
         delete resDoc.created;
         delete resDoc.updated;
         
-        resDoc.should.deep.equal(doc);
+        resDoc.should.deep.equal(JSON.parse(JSON.stringify(doc)));
         
         done();
       });
-    });
+    }, done, hooks);
   };
 }
 
-exports.testPut = (path, model, oldDoc, newDoc, dbDocs = []) => {
+exports.testPut = (path, model, oldDoc, newDoc, hooks, dbDocs = []) => {
   return done => {
     populateDB([oldDoc].concat(Array.from(dbDocs)), model, (docs, dbDocs) => {
       var id = dbDocs[0]._id;
@@ -121,13 +130,14 @@ exports.testPut = (path, model, oldDoc, newDoc, dbDocs = []) => {
           done();
         });
       });
-    });
+    }, done, hooks);
   };
 }
 
-exports.testPatch = (path, model, oldDoc, patch, patchApplier, dbDocs = []) => {
+// why you broke, atom lang-javascript syntax highlighter?
+exports.testPatch = (path, model, doc, patch, patchFunc, hooks, dbDocs=[]) => {
   return done => {
-    populateDB([oldDoc].concat(Array.from(dbDocs)), model, (docs, dbDocs) => {
+    populateDB([doc].concat(Array.from(dbDocs)), model, (docs, dbDocs) => {
       var id = dbDocs[0]._id;
       chai.request(server)
       .patch(`${path}/${id}`)
@@ -135,23 +145,24 @@ exports.testPatch = (path, model, oldDoc, patch, patchApplier, dbDocs = []) => {
       .end((err, res) => {
         res.should.have.status(200);
         
-        var newDoc = JSON.parse(JSON.stringify(oldDoc));
-        patchApplier(newDoc);
-        res.body.should.containSubset(newDoc);
-        res.body.should.not.have.property('_id');
-        res.body.should.not.have.property('__v');
+        var body = JSON.parse(JSON.stringify(res.body));
+        var newDoc = JSON.parse(JSON.stringify(doc));
+        patchFunc(newDoc);
+        body.should.containSubset(newDoc);
+        body.should.not.have.property('_id');
+        body.should.not.have.property('__v');
         
         model.findById(id, (err, doc) => {
           should.not.exist(err);
-          doc.should.containSubset(newDoc);
+          JSON.parse(JSON.stringify(doc)).should.containSubset(newDoc);
           done();
         });
       });
-    });
+    }, done, hooks);
   };
 }
 
-exports.testDelete = (path, model, doc, dbDocs = []) => {
+exports.testDelete = (path, model, doc, hooks, dbDocs = []) => {
   return done => {
     populateDB([doc].concat(Array.from(dbDocs)), model, (doc_, dbDocs) => {
       var id = dbDocs[0]._id;
@@ -169,11 +180,11 @@ exports.testDelete = (path, model, doc, dbDocs = []) => {
           done();
         });
       });
-    });
+    }, done, hooks);
   };
 }
 
-exports.testSortableGet = (path, model, testDocs, checker) => {
+exports.testSortableGet = (path, model, testDocs, checker, hooks) => {
   return done => {
     testDocs = coerceToArray(testDocs);
     
@@ -193,11 +204,11 @@ exports.testSortableGet = (path, model, testDocs, checker) => {
         
         done();
       });
-    }, done);
+    }, done, hooks);
   };
 }
 
-exports.testStatus = (path, model, status, docs = [], method = 'get', send) => {
+exports.testStatus = (path, model, stat, hooks, docs=[], meth='get', send) => {
   return done => {
     populateDB(Array.from(docs), model, (docs_, dbDocs) => {
       if (path.includes(':id')) {
@@ -205,7 +216,7 @@ exports.testStatus = (path, model, status, docs = [], method = 'get', send) => {
       }
       
       var request = chai.request(server);
-      request = request[method](path); // call the relevant HTTP method function
+      request = request[meth](path); // call the relevant HTTP method function
       if (send !== undefined) {
         request = request.send(send);
       }
@@ -213,14 +224,14 @@ exports.testStatus = (path, model, status, docs = [], method = 'get', send) => {
       // Content-Type defaults to x-www-form-urlencoded if the JSON's invalid
       request.set('content-type', 'application/json')
       .end((err, res) => {
-        res.should.have.status(status);
+        res.should.have.status(stat);
         done();
       });
-    });
+    }, done, hooks);
   };
 }
 
-exports.testPaging = (path, model, testDocs, values) => {
+exports.testPaging = (path, model, testDocs, values, hooks) => {
   return done => {
     if (values.maxItems === undefined) values.maxItems = docs.length;
     
@@ -243,11 +254,11 @@ exports.testPaging = (path, model, testDocs, values) => {
         
         done();
       });
-    }, done);
+    }, done, hooks);
   };
 }
 
-exports.testPost = (path, doc, model, docsForDB = []) => {
+exports.testPost = (path, doc, model, hooks, docsForDB = []) => {
   return done => {
     populateDB(Array.from(docsForDB), model, () => {
       chai.request(server)
@@ -285,11 +296,11 @@ exports.testPost = (path, doc, model, docsForDB = []) => {
           done();
         });
       });
-    });
+    }, done, hooks);
   };
 }
 
-exports.testCollectionDelete = (path, model, docsForDB) => {
+exports.testCollectionDelete = (path, model, docsForDB, hooks) => {
   return done => {
     populateDB(Array.from(docsForDB), model, () => {
       chai.request(server)
@@ -305,7 +316,7 @@ exports.testCollectionDelete = (path, model, docsForDB) => {
           done();
         });
       });
-    });
+    }, done, hooks);
   };
 }
 

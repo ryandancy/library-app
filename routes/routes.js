@@ -208,7 +208,7 @@ module.exports = (router, baseUri) => {
     delete: (req, res, patron, next) => {
       var promises = [];
       
-      for (var checkoutID of patron.checkoutIDs) {
+      for (var checkoutID of patron.checkouts) {
         // remove checkout's item's checkoutID
         promises.push(new Promise((resolve, reject) => {
           Checkout.findById(checkoutID, (err, checkout) => {
