@@ -36,6 +36,13 @@ chai.use(chaiSubset);
       there are no strings in the document.
     - whitespace: a document where all strings are fully whitespace. Not present
       if there are no strings in the document.
+  - optionalProperties: an array of, well, properties that are optional, in
+    string form with dots ('.') separating nested properties. Defaults to [].
+  - modifiableStringProperty: a string specifying a string property that can
+    be modified without restriction. Defaults to 'name'. Set to `false` if there
+    is no appropriate property. The property must be top-level.
+  - customUnmodifiables: an array of unmodifiable top-level (for now) properties
+    that cannot be present in a PUT/PATCH/POST request. Defaults to [].
   - *generator: a function that takes a single parameter `num` and returns a
     single document, where whenever the function is called with the same
     argument it returns the same document. Used for generating documents.
@@ -71,6 +78,10 @@ module.exports = options => {
   var plural = options.name.plural || path.slice(path.lastIndexOf('/') + 1);
   var testDocs = options.testDocs;
   var allTestDocs = Object.values(testDocs);
+  var optionalProps = options.optionalProperties || [];
+  var stringProp = options.modifiableStringProperty === undefined ? 'name'
+    : options.modifiableStringProperty;
+  var unmodifiables = options.customUnmodifiables || [];
   var generator = options.generator;
   var customBeforeEach = options.beforeEach || false;
   var hooks = options.populateDBHooks || {};
@@ -80,6 +91,21 @@ module.exports = options => {
       yield generator(num);
     }
   }
+  
+  function filterUnmodifiables(object) {
+    var resObj = JSON.parse(JSON.stringify(testDocs));
+    for (var key in resObj) {
+      if (!resObj.hasOwnProperty(key)) continue;
+      for (var unmod of unmodifiables) {
+        if (resObj[key].hasOwnProperty(unmod)) {
+          delete resObj[key][unmod];
+        }
+      }
+    }
+    return resObj;
+  }
+  
+  var unmodTestDocs = filterUnmodifiables(testDocs);
   
   function testIDHandling(method, send = undefined) {
     it(`404s when trying to get a nonexistant ${singular} with an empty DB`,
@@ -106,7 +132,22 @@ module.exports = options => {
       model.remove({}, err => done());
     });
     if (customBeforeEach) {
-      beforeEach(done => customBeforeEach(done, testDocs));
+      beforeEach(done => {
+        customBeforeEach(() => {
+          var newUnmodTestDocs = filterUnmodifiables(testDocs);
+          // this dance is necessary to avoid assigning to unmodTestDocs
+          // directly, or to any of its properties, which would not carry over
+          // to the tests
+          for (var prop in newUnmodTestDocs) {
+            if (!newUnmodTestDocs.hasOwnProperty(prop)) continue;
+            for (var subProp in newUnmodTestDocs[prop]) {
+              if (!newUnmodTestDocs[prop].hasOwnProperty(subProp)) continue;
+              unmodTestDocs[prop][subProp] = newUnmodTestDocs[prop][subProp];
+            }
+          }
+          done();
+        }, testDocs);
+      });
     }
     
     describe(`GET ${path}`, () => {
@@ -149,19 +190,30 @@ module.exports = options => {
         util.testSortableGet(path + '?sort_by=created&direction=desc', model,
           allTestDocs, createdDescSort, hooks));
       
-      var nameAscSort = (doc, doc2) =>
-        doc.name.should.be.at.most(doc2.name);
-      var nameDescSort = (doc, doc2) =>
-        doc.name.should.be.at.least(doc2.name);
-      it('can sort ascending by name lexicographically',
-        util.testSortableGet(path + '?sort_by=name', model, allTestDocs,
-          nameAscSort, hooks));
-      it('can sort explicitly ascending by name lexicographically',
-        util.testSortableGet(path + '?sort_by=name&direction=asc', model,
-          allTestDocs, nameAscSort, hooks));
-      it('can sort descending by name lexicographically',
-        util.testSortableGet(path + '?sort_by=name&direction=desc', model,
-          allTestDocs, nameDescSort, hooks));
+      if (Object.keys(model.schema.path).includes('name')) {
+        var nameAscSort = (doc, doc2) =>
+          doc.name.should.be.at.most(doc2.name);
+        var nameDescSort = (doc, doc2) =>
+          doc.name.should.be.at.least(doc2.name);
+        it('can sort ascending by name lexicographically',
+          util.testSortableGet(path + '?sort_by=name', model, allTestDocs,
+            nameAscSort, hooks));
+        it('can sort explicitly ascending by name lexicographically',
+          util.testSortableGet(path + '?sort_by=name&direction=asc', model,
+            allTestDocs, nameAscSort, hooks));
+        it('can sort descending by name lexicographically',
+          util.testSortableGet(path + '?sort_by=name&direction=desc', model,
+            allTestDocs, nameDescSort, hooks));
+      } else {
+        it('gives a 422 when sorting by name lexicographically',
+          util.testStatus(path + '?sort_by=name', model, 422, hooks));
+        it('gives a 422 when sorting explicitly ascending by name '
+         + 'lexicographically', util.testStatus(
+            path + '?sort_by=name&direction=asc', model, 422, hooks));
+        it('gives a 422 when sorting descending by name lexicographically',
+          util.testStatus(path + '?sort_by=name&direction=desc', model, 422,
+            hooks));
+      }
       
       var idAscSort = (doc, doc2) => doc.id.should.be.below(doc2.id);
       var idDescSort = (doc, doc2) => doc.id.should.be.above(doc2.id);
@@ -367,30 +419,24 @@ module.exports = options => {
     });
     describe(`POST ${path}`, () => {
       it(`creates a ${singular}`,
-        util.testPost(path, testDocs.simple1, model, hooks));
+        util.testPost(path, unmodTestDocs.simple1, model, hooks));
       if (testDocs.unicode) {
         it(`creates a ${singular} with unicode strings`,
-          util.testPost(path, testDocs.unicode, model, hooks));
+          util.testPost(path, unmodTestDocs.unicode, model, hooks));
       }
       if (testDocs.whitespace) {
         it(`creates a ${singular} with whitespace strings`,
-          util.testPost(path, testDocs.whitespace, model, hooks));
+          util.testPost(path, unmodTestDocs.whitespace, model, hooks));
       }
       it(`creates a ${singular} when there's already a ${singular} in the DB`,
-        util.testPost(path, testDocs.simple2, model, hooks, testDocs.simple1));
-      it(`creates a ${singular} when there's already one with the same name`,
-        util.testPost(path, testDocs.simple1, model, hooks, {
-          name: testDocs.simple1.name,
-          item: testDocs.simple2.item, hooks,
-          checkout: testDocs.simple2.checkout,
-          patron: testDocs.simple2.patron,
-          signIn: true,
-          signOut: true
-        }));
+        util.testPost(path, unmodTestDocs.simple2, model, hooks,
+          testDocs.simple1));
       it(`creates a ${singular} when there's already an identical one`,
-        util.testPost(path, testDocs.simple1, model, hooks, testDocs.simple1));
+        util.testPost(path, unmodTestDocs.simple1, model, hooks,
+          testDocs.simple1));
       it(`creates a ${singular} when there are already 100 ${plural} in the DB`,
-        util.testPost(path, testDocs.simple1, model, hooks, generateDocs(100)));
+        util.testPost(path, unmodTestDocs.simple1, model, hooks,
+          generateDocs(100)));
       
       it('gives a 400 on syntatically invalid input',
         util.testStatus(path, model, 400, hooks, [], 'post', "I'm invalid"));
@@ -405,9 +451,14 @@ module.exports = options => {
           Array.from(generateDocs(5))));
       
       for (var doc of util.generateObjectsMissingOneProperty(
-          testDocs.simple1)) {
-        it(`gives a 422 when missing "${doc.prop}"`,
-          util.testStatus(path, model, 422, hooks, [], 'post', doc.obj));
+          unmodTestDocs.simple1)) {
+        if (optionalProps.includes(doc.prop)) {
+          it(`works fine when missing optional property "${doc.prop}"`,
+            util.testPost(path, doc.obj, model, hooks));
+        } else {
+          it(`gives a 422 when missing require property "${doc.prop}"`,
+            util.testStatus(path, model, 422, hooks, [], 'post', doc.obj));
+        }
       }
     });
     describe(`DELETE ${path}`, () => {
@@ -463,39 +514,42 @@ module.exports = options => {
     });
     describe(`PUT ${idPath}`, () => {
       it(`replaces a simple ${singular} with a simple ${singular}`,
-        util.testPut(path, model, testDocs.simple1, testDocs.simple2, hooks));
+        util.testPut(path, model, testDocs.simple1, unmodTestDocs.simple2,
+          hooks));
       if (testDocs.unicode) {
         it(`replaces a simple ${singular} with a unicode ${singular}`,
-          util.testPut(path, model, testDocs.simple1, testDocs.unicode, hooks));
+          util.testPut(path, model, testDocs.simple1, unmodTestDocs.unicode,
+            hooks));
         it(`replaces a unicode ${singular} with a simple ${singular}`,
-          util.testPut(path, model, testDocs.unicode, testDocs.simple1, hooks));
+          util.testPut(path, model, testDocs.unicode, unmodTestDocs.simple1,
+            hooks));
       }
       if (testDocs.whitespace) {
         it(`replaces a simple ${singular} with a whitespace ${singular}`,
           util.testPut(path, model, testDocs.simple1,
-            testDocs.whitespace, hooks));
+            unmodTestDocs.whitespace, hooks));
         it(`replaces a whitespace ${singular} with a simple ${singular}`,
           util.testPut(path, model, testDocs.whitespace,
-            testDocs.simple1, hooks));
+            unmodTestDocs.simple1, hooks));
       }
       if (testDocs.unicode && testDocs.whitespace) {
         it(`replaces a unicode ${singular} with a whitespace ${singular}`,
           util.testPut(path, model, testDocs.unicode,
-            testDocs.whitespace, hooks));
+            unmodTestDocs.whitespace, hooks));
         it(`replaces a whitespace ${singular} with a unicode ${singular}`,
           util.testPut(path, model, testDocs.whitespace,
-            testDocs.unicode, hooks));
+            unmodTestDocs.unicode, hooks));
       }
       
       it(`replaces a simple ${singular} with a simple ${singular}, 1 in DB`,
-        util.testPut(path, model, testDocs.simple1, testDocs.simple2, hooks,
-          generateDocs(1)));
+        util.testPut(path, model, testDocs.simple1, unmodTestDocs.simple2,
+          hooks, generateDocs(1)));
       it(`replaces a simple ${singular} with a simple ${singular}, 100 in DB`,
-        util.testPut(path, model, testDocs.simple1, testDocs.simple2, hooks,
-          generateDocs(100)));
+        util.testPut(path, model, testDocs.simple1, unmodTestDocs.simple2,
+          hooks, generateDocs(100)));
       if (testDocs.unicode && testDocs.whitespace) {
         it(`replaces unicode ${singular} with whitespace ${singular}, 99 in DB`,
-          util.testPut(path, model, testDocs.unicode, testDocs.whitespace,
+          util.testPut(path, model, testDocs.unicode, unmodTestDocs.whitespace,
             hooks, generateDocs(99)));
       }
       
@@ -506,8 +560,8 @@ module.exports = options => {
         util.testStatus(idPath, model, 400, hooks, [testDocs.simple1],
           'put', '"Hi!"'));
       
-      for (var unmod of ['created', 'updated', 'id']) {
-        var doc = JSON.parse(JSON.stringify(testDocs.simple1));
+      for (var unmod of ['created', 'updated', 'id'].concat(unmodifiables)) {
+        var doc = JSON.parse(JSON.stringify(unmodTestDocs.simple1));
         doc[unmod] = unmod === 'id' ? '123456789012345678901234'
           : '2016-10-24T17:00:42-03:00';
         it(`gives a 422 when including "${unmod}"`,
@@ -522,59 +576,55 @@ module.exports = options => {
             'put', doc.obj));
       }
       
-      testIDHandling('put', testDocs.simple1);
+      testIDHandling('put', unmodTestDocs.simple1);
     });
     describe(`PATCH ${idPath}`, () => {
       // try to find all the properties
       // TODO find a more elegant way of doing this
       
-      var stringProp = null;
       var topLevelProp = null;
       var topLevelValue = null;
       var nestedParentProp = null;
       var nestedProp = null;
       var nestedValue = null;
-      for (var prop in testDocs.simple1) {
-        if (!testDocs.simple1.hasOwnProperty(prop)) continue;
-        switch (typeof testDocs.simple1[prop]) {
-          case 'string':
-            stringProp = prop;
-            break;
+      for (var prop in unmodTestDocs.simple1) {
+        if (!unmodTestDocs.simple1.hasOwnProperty(prop)) continue;
+        switch (typeof unmodTestDocs.simple1[prop]) {
           case 'boolean':
             topLevelProp = prop;
-            topLevelValue = !testDocs.simple1[prop];
+            topLevelValue = !unmodTestDocs.simple1[prop];
             break;
           case 'number':
             topLevelProp = prop;
-            topLevelValue = testDocs.simple1[prop] + 1;
+            topLevelValue = unmodTestDocs.simple1[prop] + 1;
             break;
           case 'object':
-            if (Array.isArray(testDocs.simple1[prop])) continue;
+            if (Array.isArray(unmodTestDocs.simple1[prop])) continue;
             
             nestedParentProp = prop;
             
             var i = 0;
-            var keys = Object.keys(testDocs.simple1[prop]);
+            var keys = Object.keys(unmodTestDocs.simple1[prop]);
             do {
               nestedProp = keys[i];
               i++;
             } while (i < keys.length && !['string', 'number', 'boolean']
-              .includes(typeof testDocs.simple1[prop][nestedProp]));
+              .includes(typeof unmodTestDocs.simple1[prop][nestedProp]));
             
-            switch (typeof testDocs.simple1[prop][nestedProp]) {
+            switch (typeof unmodTestDocs.simple1[prop][nestedProp]) {
               case 'string':
               case 'number':
-                nestedValue = testDocs.simple1[prop][nestedProp] + 1;
+                nestedValue = unmodTestDocs.simple1[prop][nestedProp] + 1;
                 break;
               case 'boolean':
-                nestedValue = !testDocs.simple1[prop][nestedProp];
+                nestedValue = !unmodTestDocs.simple1[prop][nestedProp];
                 break;
             }
             
             break;
         }
       }
-      if (testDocs.simple1.hasOwnProperty('name')) stringProp = 'name';
+      if (unmodTestDocs.simple1.hasOwnProperty('name')) stringProp = 'name';
       
       if (stringProp) {
         it(`patches a ${singular} changing ${stringProp}`,
@@ -659,7 +709,8 @@ module.exports = options => {
         util.testStatus(idPath, model, 400, hooks, [testDocs.simple1],
           'patch', '"invalid"'));
       
-      for (var patch of util.generateSinglePropertyPatches(testDocs.simple1)) {
+      for (var patch of util.generateSinglePropertyPatches(
+          unmodTestDocs.simple1)) {
         it(`gives a 422 when trying to delete "${patch.prop}"`,
           util.testStatus(idPath, model, 422, hooks, [testDocs.simple1],
             'patch', patch.obj));

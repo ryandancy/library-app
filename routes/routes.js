@@ -21,14 +21,16 @@ module.exports = (router, baseUri) => {
       // update item status, make sure item's not checked out already
       promises.push(new Promise((resolve, reject) => {
         Item.findById(checkout.itemID, (err, item) => {
+          if (item === null) return resolve(); // it doesn't exist
           if (err) return reject(err);
           
           if (item.status !== 'in') {
-            res.json({msg: 'Cannot create checkout: item not in'});
+            res.status(422).json({msg: 'Cannot create checkout: item not in'});
             return resolve(item.status);
           }
           
           item.status = 'out';
+          item.checkoutID = checkout._id;
           item.save(err => {
             if (err) return reject(err);
             resolve();
@@ -37,9 +39,9 @@ module.exports = (router, baseUri) => {
       }));
       
       // update patron checkouts
-      promises.push(Item.findByIdAndUpdate(
+      promises.push(Patron.findByIdAndUpdate(
         checkout.patronID,
-        {$push: {checkoutIDs: checkout}}
+        {$push: {checkouts: checkout._id}}
       ).exec());
       
       Promise.all(promises).then(next, err => util.handleDBError(err, res));
@@ -67,13 +69,13 @@ module.exports = (router, baseUri) => {
         // remove checkout from old patron
         promises.push(Patron.findByIdAndUpdate(
           oldCheckout.patronID,
-          {$pull: {checkoutIDs: oldCheckout._id}}
+          {$pull: {checkouts: oldCheckout._id}}
         ).exec());
         
         // add checkout to new patron
         promises.push(Patron.findByIdAndUpdate(
           newCheckout.patronID,
-          {$push: {checkoutIDs: newCheckout._id}}
+          {$push: {checkouts: newCheckout._id}}
         ).exec());
       }
       
@@ -85,6 +87,7 @@ module.exports = (router, baseUri) => {
       // update item status, remove from patron checkouts
       promises.push(new Promise((resolve, reject) => {
         Item.findById(checkout.itemID, (err, item) => {
+          if (item === null) return resolve(); // it doesn't exist
           if (err) return reject(err);
           
           // if an item is lost we might just be cleaning up
@@ -104,7 +107,7 @@ module.exports = (router, baseUri) => {
       // silently ignore if the checkout's not in the patron's checkouts
       promises.push(Patron.findByIdAndUpdate(
         checkout.patronID,
-        {$pull: {checkoutIDs: checkout._id}}
+        {$pull: {checkouts: checkout._id}}
       ).exec());
       
       Promise.all(promises).then(next, err => util.handleDBError(err, res));
@@ -116,14 +119,14 @@ module.exports = (router, baseUri) => {
       var promises = [];
       
       if (item.checkoutID !== undefined) {
-        // remove checkout from checkout's patron's checkoutIDs
+        // remove checkout from checkout's patron's checkouts
         promises.push(new Promise((resolve, reject) => {
           Checkout.findById(item.checkoutID, (err, checkout) => {
             if (err) return reject(err);
             
             Patron.findByIdAndUpdate(
               checkout.patronID,
-              {$pull: {checkoutIDs: item.checkoutID}}
+              {$pull: {checkouts: item.checkoutID}}
             ).exec(err => {
               if (err) return reject(err);
               resolve();
@@ -230,5 +233,5 @@ module.exports = (router, baseUri) => {
       
       Promise.all(promises).then(next, err => util.handleDBError(err, res));
     }
-  }, ['checkoutIDs']);
+  }, ['checkouts']);
 };

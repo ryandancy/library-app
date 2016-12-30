@@ -20,6 +20,7 @@ template({
     plural: 'patrons'
   },
   testDocs: testPatrons,
+  customUnmodifiables: ['checkouts'],
   generator: num => ({
     name: 'GeneratedPatron-' + num,
     pic: 'http://foo.bar/pic.png',

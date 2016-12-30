@@ -1,6 +1,7 @@
 // Contains utility functions for testing
 
 var mongoose = require('mongoose');
+var ObjectId = mongoose.Types.ObjectId;
 var server = require('../server.js');
 
 var chai = require('chai');
@@ -126,7 +127,7 @@ exports.testPut = (path, model, oldDoc, newDoc, hooks, dbDocs = []) => {
         // check the database was updated
         model.findById(id, (err, dbDoc) => {
           should.not.exist(err);
-          dbDoc.should.containSubset(newDoc);
+          JSON.parse(JSON.stringify(dbDoc)).should.containSubset(newDoc);
           done();
         });
       });
@@ -224,6 +225,7 @@ exports.testStatus = (path, model, stat, hooks, docs=[], meth='get', send) => {
       // Content-Type defaults to x-www-form-urlencoded if the JSON's invalid
       request.set('content-type', 'application/json')
       .end((err, res) => {
+        if (res.status === 422 && stat === 404) console.log(res);
         res.should.have.status(stat);
         done();
       });
@@ -340,7 +342,7 @@ exports.getObjectMissingProperty = (obj, prop) => {
 exports.generateObjectsMissingOneProperty = function*(obj) {
   for (var prop in obj) {
     if (!obj.hasOwnProperty(prop)) continue;
-    if (typeof obj[prop] === 'object') {
+    if (typeof obj[prop] === 'object' && !(obj[prop] instanceof ObjectId)) {
       for (var gen of exports.generateObjectsMissingOneProperty(obj[prop])) {
         var newObj = cloneObject(obj);
         newObj[prop] = gen.obj;
@@ -361,7 +363,7 @@ exports.generateObjectsMissingOneProperty = function*(obj) {
 exports.generateSinglePropertyPatches = function*(obj, value = null) {
   for (var prop in obj) {
     if (!obj.hasOwnProperty(prop)) continue;
-    if (typeof obj[prop] === 'object') {
+    if (typeof obj[prop] === 'object' && !(obj[prop] instanceof ObjectId)) {
       for (var gen of exports.generateSinglePropertyPatches(obj[prop], value)) {
         yield {
           obj: {[prop]: gen.obj},

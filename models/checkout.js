@@ -5,8 +5,8 @@ var reqt = require('./util/req-types.js');
 
 var checkoutSchema = new Schema({
   dueDate: reqt.Date,
-  itemID: ObjectId,
-  patronID: ObjectId,
+  itemID: reqt.ObjectId,
+  patronID: reqt.ObjectId,
   renewals: reqt.Number,
   status: {
     type: String,

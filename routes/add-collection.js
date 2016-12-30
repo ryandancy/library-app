@@ -86,7 +86,7 @@ module.exports = (router, baseUri) => {
     methodToCRUD = {
       POST: 'create',
       GET: 'retrieve',
-      POST: 'update',
+      PUT: 'update',
       PATCH: 'update',
       DELETE: 'delete'
     };
@@ -122,6 +122,10 @@ module.exports = (router, baseUri) => {
       // create objs of query params to internal representations to keep it DRY
       var sortByObj = {'created': 'created', 'name': 'name', 'id': '_id'};
       var sortDirObj = {'asc': 1, 'desc': -1};
+      
+      if (!Object.keys(model.schema.path).includes('name')) {
+        delete sortByObj.name;
+      }
       
       // set defaults
       if (req.query.sort_by === undefined) req.query.sort_by = 'created';
@@ -208,7 +212,7 @@ module.exports = (router, baseUri) => {
     
     // create a new thing
     router.post(collectionPath, (req, res) => {
-      if (!util.validate(req, res)) return
+      if (!util.validate(req, res)) return;
       
       // make the new thing
       var newDoc = toDBConverter(req.body);
@@ -216,7 +220,8 @@ module.exports = (router, baseUri) => {
         model.create(newDoc, (err, doc) => {
           if (err) {
             return util.handleDBError(err, res,
-              err.name === 'ValidationError' ? 422 : 500);
+              err.name === 'ValidationError' || err.name === 'StrictModeError'
+                ? 422 : 500);
           }
           res.status(201)
           .set('Location', `${baseUri}/${name}/${doc._id}`)
