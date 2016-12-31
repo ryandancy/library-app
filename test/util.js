@@ -32,8 +32,32 @@ function populateDB(docs, model, callbackSuccess, callbackErr, hooks = {}) {
         if (err) return callbackErr(Error(err));
         callbackSuccess(docs, dbDocs);
       });
-    }, callbackErr);
+    }, err => {
+      console.log(err);
+      console.log(JSON.stringify(docs, null, 2));
+      callbackErr(err);
+    });
   });
+}
+
+function getQueryObject(doc) {
+  var query = {};
+  
+  function generateQuery(root, obj) {
+    for (var prop in obj) {
+      if (!obj.hasOwnProperty(prop)) continue;
+      
+      var propAddress = root ? `${root}.${prop}` : prop;
+      if (typeof obj[prop] === 'object' && !(obj[prop] instanceof ObjectId)) {
+        generateQuery(propAddress, obj[prop]);
+      } else {
+        query[propAddress] = obj[prop];
+      }
+    }
+  }
+  
+  generateQuery(null, doc);
+  return query;
 }
 
 function baseNoPagingGetResponseCheck(res, testDocs) {
@@ -281,7 +305,7 @@ exports.testPost = (path, doc, model, hooks, docsForDB = []) => {
         var id = location.slice(location.lastIndexOf('/') + 1);
         
         // check that it was set in the database
-        model.findOne(doc, (err, dbDoc) => {
+        model.findOne(getQueryObject(doc), (err, dbDoc) => {
           should.not.exist(err);
           should.exist(dbDoc);
           dbDoc._id.toString().should.equal(id);

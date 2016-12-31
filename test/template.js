@@ -38,9 +38,21 @@ chai.use(chaiSubset);
       if there are no strings in the document.
   - optionalProperties: an array of, well, properties that are optional, in
     string form with dots ('.') separating nested properties. Defaults to [].
-  - modifiableStringProperty: a string specifying a string property that can
-    be modified without restriction. Defaults to 'name'. Set to `false` if there
-    is no appropriate property. The property must be top-level.
+    Can use a * in place of a string to specify all sub-properties; this is only
+    supported as the last char in the string.
+  - ignoredProperties: an array of properties that should be ignored. Can use
+    wildcards the same as optionalProperties. Defaults to [].
+  - *patchProperties: an object containing properties for the PATCH tests:
+    - string: a string specifying a string property that can be modified without
+      restriction. Defaults to 'name'. Set to `false` if there is no appropriate
+      property. The property must be top-level.
+    - *topLevel: an object containing: (or false if no applicable property)
+      - *property: a top-level property name.
+      - *value: a value to which it can be changed.
+    - *nested: an object containing: (or false if no applicable property)
+      - *property: a second-level property name.
+      - *parentProperty: the parent property name of `property`.
+      - *value: a value to which it can be changed.
   - customUnmodifiables: an array of unmodifiable top-level (for now) properties
     that cannot be present in a PUT/PATCH/POST request. Defaults to [].
   - *generator: a function that takes a single parameter `num` and returns a
@@ -66,6 +78,18 @@ module.exports = options => {
     || !options.hasOwnProperty('testDocs')
     || !options.testDocs.hasOwnProperty('simple1')
     || !options.testDocs.hasOwnProperty('simple2')
+    || !options.hasOwnProperty('patchProperties')
+    || !options.patchProperties.hasOwnProperty('topLevel')
+    || (options.patchProperties.topLevel && (
+      !options.patchProperties.topLevel.hasOwnProperty('property')
+      || !options.patchProperties.topLevel.hasOwnProperty('value')
+    ))
+    || !options.patchProperties.hasOwnProperty('nested')
+    || (options.patchProperties.nested && (
+      !options.patchProperties.nested.hasOwnProperty('property')
+      || !options.patchProperties.nested.hasOwnProperty('parentProperty')
+      || !options.patchProperties.nested.hasOwnProperty('value')
+    ))
     || !options.hasOwnProperty('generator')
   ) {
     throw new Error('options parameter is missing some required properties');
@@ -79,17 +103,43 @@ module.exports = options => {
   var testDocs = options.testDocs;
   var allTestDocs = Object.values(testDocs);
   var optionalProps = options.optionalProperties || [];
-  var stringProp = options.modifiableStringProperty === undefined ? 'name'
-    : options.modifiableStringProperty;
+  var ignoreProps = options.ignoredProperties || [];
   var unmodifiables = options.customUnmodifiables || [];
   var generator = options.generator;
   var customBeforeEach = options.beforeEach || false;
   var hooks = options.populateDBHooks || {};
   
+  var patchProps = options.patchProperties;
+  var stringProp = patchProps.string === undefined ? 'name' : patchProps.string;
+  var topLevelProp = patchProps.topLevel ? patchProps.topLevel.property : false;
+  var topLevelValue = patchProps.topLevel ? patchProps.topLevel.value : false;
+  var nestedProp = patchProps.nested ? patchProps.nested.property : false;
+  var nestedValue = patchProps.nested ? patchProps.nested.value : false;
+  var nestedParentProp = patchProps.nested ? patchProps.nested.parentProperty
+    : false;
+  
   function* generateDocs(num) {
     for (var i = 0; i < num; i++) {
       yield generator(num);
     }
+  }
+  
+  function handleWildcard(propArr, prop) {
+    if (propArr.includes(prop)) return true;
+    for (var aProp of propArr) {
+      if (aProp.endsWith('.*') && prop.startsWith(aProp.slice(0, -1))) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  function isIgnored(prop) {
+    return handleWildcard(ignoreProps, prop);
+  }
+  
+  function isOptional(prop) {
+    return handleWildcard(optionalProps, prop);
   }
   
   function filterUnmodifiables(object) {
@@ -452,7 +502,8 @@ module.exports = options => {
       
       for (var doc of util.generateObjectsMissingOneProperty(
           unmodTestDocs.simple1)) {
-        if (optionalProps.includes(doc.prop)) {
+        if (isIgnored(doc.prop)) continue;
+        if (isOptional(doc.prop)) {
           it(`works fine when missing optional property "${doc.prop}"`,
             util.testPost(path, doc.obj, model, hooks));
         } else {
@@ -571,61 +622,20 @@ module.exports = options => {
       
       for (var doc of util.generateObjectsMissingOneProperty(
             testDocs.simple1)) {
-        it(`gives a 422 when missing "${doc.prop}"`,
-          util.testStatus(idPath, model, 422, hooks, [testDocs.simple1],
-            'put', doc.obj));
+        if (isIgnored(doc.prop)) continue;
+        if (isOptional(doc.prop)) {
+          it(`works fine when missing "${doc.prop}"`,
+            util.testPut(path, model, testDocs.simple1, doc.obj, hooks));
+        } else {
+          it(`gives a 422 when missing "${doc.prop}"`,
+            util.testStatus(idPath, model, 422, hooks, [testDocs.simple1],
+              'put', doc.obj));
+        }
       }
       
       testIDHandling('put', unmodTestDocs.simple1);
     });
     describe(`PATCH ${idPath}`, () => {
-      // try to find all the properties
-      // TODO find a more elegant way of doing this
-      
-      var topLevelProp = null;
-      var topLevelValue = null;
-      var nestedParentProp = null;
-      var nestedProp = null;
-      var nestedValue = null;
-      for (var prop in unmodTestDocs.simple1) {
-        if (!unmodTestDocs.simple1.hasOwnProperty(prop)) continue;
-        switch (typeof unmodTestDocs.simple1[prop]) {
-          case 'boolean':
-            topLevelProp = prop;
-            topLevelValue = !unmodTestDocs.simple1[prop];
-            break;
-          case 'number':
-            topLevelProp = prop;
-            topLevelValue = unmodTestDocs.simple1[prop] + 1;
-            break;
-          case 'object':
-            if (Array.isArray(unmodTestDocs.simple1[prop])) continue;
-            
-            nestedParentProp = prop;
-            
-            var i = 0;
-            var keys = Object.keys(unmodTestDocs.simple1[prop]);
-            do {
-              nestedProp = keys[i];
-              i++;
-            } while (i < keys.length && !['string', 'number', 'boolean']
-              .includes(typeof unmodTestDocs.simple1[prop][nestedProp]));
-            
-            switch (typeof unmodTestDocs.simple1[prop][nestedProp]) {
-              case 'string':
-              case 'number':
-                nestedValue = unmodTestDocs.simple1[prop][nestedProp] + 1;
-                break;
-              case 'boolean':
-                nestedValue = !unmodTestDocs.simple1[prop][nestedProp];
-                break;
-            }
-            
-            break;
-        }
-      }
-      if (unmodTestDocs.simple1.hasOwnProperty('name')) stringProp = 'name';
-      
       if (stringProp) {
         it(`patches a ${singular} changing ${stringProp}`,
           util.testPatch(path, model, testDocs.simple1,
@@ -711,9 +721,12 @@ module.exports = options => {
       
       for (var patch of util.generateSinglePropertyPatches(
           unmodTestDocs.simple1)) {
-        it(`gives a 422 when trying to delete "${patch.prop}"`,
-          util.testStatus(idPath, model, 422, hooks, [testDocs.simple1],
-            'patch', patch.obj));
+        if (isIgnored(patch.prop)) continue;
+        if (!isOptional(patch.prop)) {
+          it(`gives a 422 when trying to delete "${patch.prop}"`,
+            util.testStatus(idPath, model, 422, hooks, [testDocs.simple1],
+              'patch', patch.obj));
+        }
       }
       
       testIDHandling('patch');

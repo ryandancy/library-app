@@ -7,23 +7,23 @@ module.exports = {
       leader: '05463nam  2200075 a 4500',
       fields: {
         control: [{
-          tag: '001',
+          tag: 1,
           value: '89187647889'
         }, {
-          tag: '003',
+          tag: 3,
           value: '87164'
         }, {
-          tag: '005',
+          tag: 5,
           value: '19920331092212.7'
         }, {
-          tag: '007',
+          tag: 7,
           value: 'ta'
         }, {
-          tag: '008',
+          tag: 8,
           value: '820305s1991    nyu           001 0 eng  '
         }],
         variable: [{
-          tag: '020',
+          tag: 20,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -34,7 +34,7 @@ module.exports = {
             value: '$29.95 (£19.50 U.K.)'
           }]
         }, {
-          tag: '020',
+          tag: 20,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -42,7 +42,7 @@ module.exports = {
             value: '0845348205 (pbk.)'
           }]
         }, {
-          tag: '040',
+          tag: 40,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -53,7 +53,7 @@ module.exports = {
             value: 'OacTY'
           }]
         }, {
-          tag: '050',
+          tag: 50,
           ind1: '1',
           ind2: '4',
           subfields: [{
@@ -64,7 +64,7 @@ module.exports = {
             value: 'T47 1991'
           }]
         }, {
-          tag: '082',
+          tag: 82,
           ind1: '0',
           ind2: '4',
           subfields: [{
@@ -75,7 +75,7 @@ module.exports = {
             value: '219'
           }]
         }, {
-          tag: '100',
+          tag: 100,
           ind1: '1',
           ind2: ' ',
           subfields: [{
@@ -86,7 +86,7 @@ module.exports = {
             value: '1948-'
           }]
         }, {
-          tag: '245',
+          tag: 245,
           ind1: '1',
           ind2: '0',
           subfields: [{
@@ -100,7 +100,7 @@ module.exports = {
             value: 'Vincent Terrace'
           }]
         }, {
-          tag: '246',
+          tag: 246,
           ind1: '1',
           ind2: ' ',
           subfields: [{
@@ -108,7 +108,7 @@ module.exports = {
             value: '50 years of television'
           }]
         }, {
-          tag: '260',
+          tag: 260,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -122,7 +122,7 @@ module.exports = {
             value: 'c1991'
           }]
         }, {
-          tag: '300',
+          tag: 300,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -133,7 +133,7 @@ module.exports = {
             value: '24 cm'
           }]
         }, {
-          tag: '500',
+          tag: 500,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -141,7 +141,7 @@ module.exports = {
             value: 'Includes index'
           }]
         }, {
-          tag: '650',
+          tag: 650,
           ind1: ' ',
           ind2: '0',
           subfields: [{
@@ -155,7 +155,7 @@ module.exports = {
             value: 'Catalogs'
           }]
         }, {
-          tag: '650',
+          tag: 650,
           ind1: ' ',
           ind2: '0',
           subfields: [{
@@ -179,20 +179,20 @@ module.exports = {
       leader: '09348cas  2200053 a 4500',
       fields: {
         control: [{
-          tag: '001',
+          tag: 1,
           value: '218974634621'
         }, {
-          tag: '003',
+          tag: 3,
           value: '1893'
         }, {
-          tag: '005',
+          tag: 5,
           value: '19920716101553.0'
         }, {
-          tag: '008',
+          tag: 8,
           value: '791031c19789999dcuar1        0   a0eng d'
         }],
         variable: [{
-          tag: '010',
+          tag: 10,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -203,7 +203,7 @@ module.exports = {
             value: 'sc 80000109 '
           }]
         }, {
-          tag: '022',
+          tag: 22,
           ind1: '0',
           ind2: ' ',
           subfields: [{
@@ -211,7 +211,7 @@ module.exports = {
             value: '0273-1967'
           }]
         }, {
-          tag: '035',
+          tag: 35,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -219,7 +219,7 @@ module.exports = {
             value: '(OCoLC)5629434'
           }]
         }, {
-          tag: '040',
+          tag: 40,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -233,7 +233,7 @@ module.exports = {
             value: 'JJE'
           }]
         }, {
-          tag: '042',
+          tag: 42,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -244,7 +244,7 @@ module.exports = {
             value: 'nsdp'
           }]
         }, {
-          tag: '043',
+          tag: 43,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -252,7 +252,7 @@ module.exports = {
             value: 'n-us---'
           }]
         }, {
-          tag: '050',
+          tag: 50,
           ind1: '0',
           ind2: '0',
           subfields: [{
@@ -263,7 +263,7 @@ module.exports = {
             value: '.U63a'
           }]
         }, {
-          tag: '082',
+          tag: 82,
           ind1: '0',
           ind2: '0',
           subfields: [{
@@ -274,7 +274,7 @@ module.exports = {
             value: '19'
           }]
         }, {
-          tag: '210',
+          tag: 210,
           ind1: '0',
           ind2: ' ',
           subfields: [{
@@ -282,7 +282,7 @@ module.exports = {
             value: 'Annu. wildl. fish. rep.'
           }]
         }, {
-          tag: '222',
+          tag: 222,
           ind1: ' ',
           ind2: '0',
           subfields: [{
@@ -290,7 +290,7 @@ module.exports = {
             value: 'Annual wildlife an fisheries report'
           }]
         }, {
-          tag: '245',
+          tag: 245,
           ind1: '0',
           ind2: '0',
           subfields: [{
@@ -302,7 +302,7 @@ module.exports = {
               'Wildlife and Fisheries'
           }]
         }, {
-          tag: '246',
+          tag: 246,
           ind1: '1',
           ind2: '4',
           subfields: [{
@@ -310,7 +310,7 @@ module.exports = {
             value: 'Wildlife and fish habitat management in the Forest Service'
           }]
         }, {
-          tag: '260',
+          tag: 260,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -321,7 +321,7 @@ module.exports = {
             value: 'Wildlife and Fisheries'
           }]
         }, {
-          tag: '300',
+          tag: 300,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -335,7 +335,7 @@ module.exports = {
             value: '28 cm'
           }]
         }, {
-          tag: '310',
+          tag: 310,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -343,7 +343,7 @@ module.exports = {
             value: 'Annual'
           }]
         }, {
-          tag: '362',
+          tag: 362,
           ind1: '1',
           ind2: ' ',
           subfields: [{
@@ -351,7 +351,7 @@ module.exports = {
             value: 'Began with vol. for 1978'
           }]
         }, {
-          tag: '500',
+          tag: 500,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -359,7 +359,7 @@ module.exports = {
             value: 'Description based on: 1983'
           }]
         }, {
-          tag: '650',
+          tag: 650,
           ind1: ' ',
           ind2: '0',
           subfields: [{
@@ -376,7 +376,7 @@ module.exports = {
             value: 'Periodicals'
           }]
         }, {
-          tag: '650',
+          tag: 650,
           ind1: ' ',
           ind2: '0',
           subfields: [{
@@ -390,7 +390,7 @@ module.exports = {
             value: 'Periodicals'
           }]
         }, {
-          tag: '650',
+          tag: 650,
           ind1: ' ',
           ind2: '0',
           subfields: [{
@@ -407,7 +407,7 @@ module.exports = {
             value: 'Periodicals'
           }]
         }, {
-          tag: '650',
+          tag: 650,
           ind1: ' ',
           ind2: '0',
           subfields: [{
@@ -421,7 +421,7 @@ module.exports = {
             value: 'Periodicals'
           }]
         }, {
-          tag: '710',
+          tag: 710,
           ind1: '1',
           ind2: ' ',
           subfields: [{
@@ -435,7 +435,7 @@ module.exports = {
             value: 'Wildlife and Fisheries Staff'
           }]
         }, {
-          tag: '780',
+          tag: 780,
           ind1: '0',
           ind2: '0',
           subfields: [{
@@ -456,7 +456,7 @@ module.exports = {
             value: '(DLC)   75644790'
           }]
         }, {
-          tag: '850',
+          tag: 850,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -480,20 +480,20 @@ module.exports = {
       leader: '76756cmm  2289781 a 4500',
       fields: {
         control: [{
-          tag: '001',
+          tag: 1,
           value: '9876548765'
         }, {
-          tag: '003',
+          tag: 3,
           value: '25314'
         }, {
-          tag: '005',
+          tag: 5,
           value: '19920401095900.0'
         }, {
-          tag: '008',
+          tag: 8,
           value: '870206s1985    miu        da       eng  '
         }],
         variable: [{
-          tag: '040',
+          tag: 40,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -504,7 +504,7 @@ module.exports = {
             value: 'ÛøK'
           }]
         }, {
-          tag: '100',
+          tag: 100,
           ind1: '1',
           ind2: ' ',
           subfields: [{
@@ -512,7 +512,7 @@ module.exports = {
             value: 'Àßhw♫éłł, ^J"øñät*h♫an Ð.'
           }]
         }, {
-          tag: '245',
+          tag: 245,
           ind1: '1',
           ind2: '0',
           subfields: [{
@@ -526,7 +526,7 @@ module.exports = {
             value: 'thê réfëreñ¢e "m"áñägèmëñt♫ sÿßtëm'
           }]
         }, {
-          tag: '250',
+          tag: 250,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -534,7 +534,7 @@ module.exports = {
             value: 'V2.08'
           }]
         }, {
-          tag: '260',
+          tag: 260,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -548,7 +548,7 @@ module.exports = {
             value: 'c1985'
           }]
         }, {
-          tag: '300',
+          tag: 300,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -562,7 +562,7 @@ module.exports = {
             value: '1 màñüäl♫ (107 p. ; 23 cm)'
           }]
         }, {
-          tag: '500',
+          tag: 500,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -570,7 +570,7 @@ module.exports = {
             value: '©oÞýrïght \'âñð\' m@ñúäl ßÿ JøÑÂthàñ Ð.📨Á§hwèłł'
           }]
         }, {
-          tag: '500',
+          tag: 500,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -578,7 +578,7 @@ module.exports = {
             value: 'Çøñtënts✓ ☢f ðíßks ärê *"*iðénþíçàl✓✓✓'
           }]
         }, {
-          tag: '520',
+          tag: 520,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -587,7 +587,7 @@ module.exports = {
                  + 'Þríñt ßìßl♫ï0gràþ╫ìêß ❤❤❤'
           }]
         }, {
-          tag: '538',
+          tag: 538,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -596,7 +596,7 @@ module.exports = {
                  + 'Äþþlè ÏÌç;128K⍮ ÞróÐØS❣; þríñ𝔱ër ♫♫♫ ❄❄❄❄❄❄❄❄❄'
           }]
         }, {
-          tag: '710',
+          tag: 710,
           ind1: '2',
           ind2: ' ',
           subfields: [{
@@ -604,7 +604,7 @@ module.exports = {
             value: '§ëƪñs╫ß⟅è Söf𝔱wàré⟅⟅⟅Ïñ©. ♫'
           }]
         }, {
-          tag: '753',
+          tag: 753,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -612,7 +612,7 @@ module.exports = {
             value: 'Áþþlé ÎÍë 📨📨📨📨📨'
           }]
         }, {
-          tag: '753',
+          tag: 753,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -630,20 +630,20 @@ module.exports = {
       leader: '98724caa  2288888 a 4500',
       fields: {
         control: [{
-          tag: '001',
+          tag: 1,
           value: '45678987654'
         }, {
-          tag: '003',
+          tag: 3,
           value: '918'
         }, {
-          tag: '005',
+          tag: 5,
           value: '19920504100110.5'
         }, {
-          tag: '008',
+          tag: 8,
           value: '860504s1977    mnua          000 0 eng d'
         }],
         variable: [{
-          tag: '040',
+          tag: 40,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -654,7 +654,7 @@ module.exports = {
             value: '\t\t                \n'
           }]
         }, {
-          tag: '043',
+          tag: 43,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -662,7 +662,7 @@ module.exports = {
             value: 'n-us---'
           }]
         }, {
-          tag: '100',
+          tag: 100,
           ind1: '1',
           ind2: ' ',
           subfields: [{
@@ -676,7 +676,7 @@ module.exports = {
             value: '1945-'
           }]
         }, {
-          tag: '245',
+          tag: 245,
           ind1: '1',
           ind2: '0',
           subfields: [{
@@ -687,7 +687,7 @@ module.exports = {
             value: '  \t   \v\v  \f \t \n\n\n\r \n\r\n   '
           }]
         }, {
-          tag: '300',
+          tag: 300,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -701,7 +701,7 @@ module.exports = {
             value: '29 cm'
           }]
         }, {
-          tag: '500',
+          tag: 500,
           ind1: ' ',
           ind2: ' ',
           subfields: [{
@@ -709,7 +709,7 @@ module.exports = {
             value: '  \r\r   '
           }]
         }, {
-          tag: '773',
+          tag: 773,
           ind1: '0',
           ind2: ' ',
           subfields: [{

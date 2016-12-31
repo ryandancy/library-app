@@ -13,8 +13,9 @@ var Character = {
 
 // Control fields -- 00X
 var marcControlField = {
+  _id: false,
   tag: {
-    type: String,
+    type: Number,
     min: 0,
     max: 9,
     required: true
@@ -24,12 +25,14 @@ var marcControlField = {
 
 // Subfields
 var marcSubfield = {
+  _id: false,
   tag: Character,
   value: String
 };
 
 // Variable fields
 var marcVariableField = {
+  _id: false,
   tag: {
     type: Number,
     min: 10,

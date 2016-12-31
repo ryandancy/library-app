@@ -163,7 +163,7 @@ module.exports = (router, baseUri) => {
         var perPage = req.query.per_page;
         query = query.skip(page * perPage).limit(perPage);
       }
-      
+
       // execute the query
       query.exec((err, docs) => {
         if (err) return util.handleDBError(err, res);

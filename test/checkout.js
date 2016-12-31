@@ -29,7 +29,14 @@ template({
     simple1: testCheckouts[0],
     simple2: testCheckouts[1]
   },
-  modifiableStringProperty: false,
+  patchProperties: {
+    string: false,
+    topLevel: {
+      property: 'renewals',
+      value: 87
+    },
+    nested: false
+  },
   generator: num => ({
     dueDate: new Date(2018, 11, 25),
     itemID: ObjectId('123456789012345678901234'),   // filled by pre hook

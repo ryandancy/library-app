@@ -20,6 +20,13 @@ template({
     plural: 'patrons'
   },
   testDocs: testPatrons,
+  patchProperties: {
+    topLevel: {
+      property: 'pic',
+      value: 'http://look-ma-ive-changed-ma-url.io/path/to/pic.png'
+    },
+    nested: false
+  },
   customUnmodifiables: ['checkouts'],
   generator: num => ({
     name: 'GeneratedPatron-' + num,

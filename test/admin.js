@@ -15,6 +15,17 @@ template({
     plural: 'admins'
   },
   testDocs: testAdmins,
+  patchProperties: {
+    topLevel: {
+      property: 'signIn',
+      value: false
+    },
+    nested: {
+      property: 'read',
+      parentProperty: 'item',
+      value: false
+    }
+  },
   generator: num => ({
     name: 'GeneratedTestAdmin-' + num,
     item: {
