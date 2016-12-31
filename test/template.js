@@ -68,6 +68,8 @@ chai.use(chaiSubset);
     - post: a function executed after the database is populated. It's passed the
       original documents, the documents as returned from the database, and a
       callback, done, to be executed when it's done.
+  - additionalTests: a function that takes no arguments, to be executed during
+    the tests inside the global describe() in order to add more tests.
 */
 module.exports = options => {
   if (
@@ -108,6 +110,7 @@ module.exports = options => {
   var generator = options.generator;
   var customBeforeEach = options.beforeEach || false;
   var hooks = options.populateDBHooks || {};
+  var moreTests = options.additionalTests || (() => {});
   
   var patchProps = options.patchProperties;
   var stringProp = patchProps.string === undefined ? 'name' : patchProps.string;
@@ -765,5 +768,7 @@ module.exports = options => {
       
       testIDHandling('delete');
     });
+    
+    moreTests();
   });
 };
