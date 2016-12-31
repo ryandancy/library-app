@@ -9,8 +9,8 @@ var Checkout = require('../models/checkout.js');
 var Item = require('../models/item.js');
 var Patron = require('../models/patron.js');
 
-var oldTestItems = require('./test-docs/item.js');
-var testPatrons = require('./test-docs/patron.js');
+var oldTestItems = Object.values(require('./test-docs/item.js'));
+var testPatrons = Object.values(require('./test-docs/patron.js'));
 var testCheckouts = require('./test-docs/checkout.js');
 
 var testItems = oldTestItems.map(item => {
@@ -44,8 +44,8 @@ template({
     ]).then(() => {
       // Add items and patrons, then update test checkout IDs
       Promise.all([
-        Item.insertMany(Object.values(testItems)),
-        Patron.insertMany(Object.values(testPatrons))
+        Item.insertMany(testItems),
+        Patron.insertMany(testPatrons)
       ]).then(dbDocs => {
         var dbItems = dbDocs[0], dbPatrons = dbDocs[1];
         testDocs.simple1.itemID = dbItems[0]._id;

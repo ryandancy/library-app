@@ -8,7 +8,7 @@ var Patron = require('../models/patron.js');
 var Checkout = require('../models/checkout.js');
 var Item = require('../models/item.js');
 
-var testItems = require('./test-docs/item.js');
+var testItems = Object.values(require('./test-docs/item.js'));
 var testPatrons = require('./test-docs/patron.js');
 var testCheckouts = require('./test-docs/checkout.js');
 
