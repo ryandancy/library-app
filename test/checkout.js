@@ -18,6 +18,14 @@ var testItems = oldTestItems.map(item => {
   return item;
 });
 
+var chai = require('chai');
+var chaiHttp = require('chai-http');
+var chaiSubset = require('chai-subset');
+
+var should = chai.should();
+chai.use(chaiHttp);
+chai.use(chaiSubset);
+
 template({
   path: '/v0/checkouts',
   model: Checkout,
@@ -112,5 +120,51 @@ template({
       }
       Promise.all(promises).then(docs => done(), err => done(Error(err)));
     }
+  },
+  additionalTests: () => {
+    it('updates item and patron after POST /v0/checkouts', done => {
+      Promise.all([
+        Item.create(testItems[0]),
+        Patron.create(testPatrons[0])
+      ]).then(docs => {
+        var item = docs[0], patron = docs[1];
+        should.not.exist(item.checkoutID);
+        item.status.should.equal('in');
+        patron.should.have.property('checkouts').that.is.an('array')
+          .with.lengthOf(0);
+        
+        var checkout = JSON.parse(JSON.stringify(testCheckouts[0]));
+        checkout.itemID = item._id;
+        checkout.patronID = patron._id;
+        
+        chai.request(server)
+        .post('/v0/checkouts')
+        .send(checkout)
+        .end((err, res) => {
+          res.should.have.status(201);
+          res.header.should.have.property('location')
+            .that.match(/^\/v0\/checkouts\/[\da-fA-F]{24}$/);
+          
+          var location = res.header.location;
+          var id = location.slice(location.lastIndexOf('/') + 1);
+          
+          Promise.all([
+            Item.findById(item._id).exec(),
+            Patron.findById(patron._id).exec()
+          ]).then(dbDocs => {
+            var dbItem = dbDocs[0], dbPatron = dbDocs[1];
+
+            should.exist(dbItem.checkoutID);
+            dbItem.checkoutID.toString().should.equal(id);
+            dbItem.status.should.equal('out');
+
+            JSON.parse(JSON.stringify(dbPatron.checkouts))
+              .should.deep.equal([id]);
+
+            done();
+          }, should.not.exist).catch(done);
+        });
+      }, should.not.exist).catch(done);
+    });
   }
 });
