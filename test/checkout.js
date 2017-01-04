@@ -166,5 +166,86 @@ template({
         });
       }, should.not.exist).catch(done);
     });
+    
+    function testChangedXIdInPut({item = false, patron = false} = {}) {
+      return done => {
+        // Add the patron(s) and item(s)
+        Promise.all([
+          Patron.create(patron ? testPatrons.slice(0, 2) : testPatrons[0]),
+          Item.create(item ? testItems.slice(0, 2) : testItems[0])
+        ]).then(docs => {
+          var [patrons, items] = docs;
+          
+          // Add the checkout with the 0th IDs
+          var checkout = JSON.parse(JSON.stringify(testCheckouts[0]));
+          checkout.patronID = (patron ? patrons[0] : patrons)._id;
+          checkout.itemID = (item ? items[0] : items)._id;
+          Checkout.create(checkout, (err, dbCheckout) => {
+            should.not.exist(err);
+            var id = dbCheckout._id;
+            
+            // Update the patron and item
+            Promise.all([
+              Patron.findByIdAndUpdate((patron ? patrons[0] : patrons)._id,
+                {$push: {checkouts: id}}).exec(),
+              Item.findByIdAndUpdate((item ? items[0] : items)._id,
+                {$set: {checkoutID: id}}).exec()
+            ]).then(() => {
+              // Change the patron/item ID
+              if (patron) checkout.patronID = patrons[1]._id;
+              if (item) checkout.itemID = items[1]._id;
+              
+              // Actually make the request
+              chai.request(server)
+              .put(`/v0/checkouts/${id}`)
+              .send(checkout)
+              .end((err, res) => {
+                // Check elementary things
+                should.not.exist(err);
+                res.should.have.status(204);
+                res.body.should.eql({});
+                res.should.have.property('text').that.is.eql('');
+                
+                // Check that the patrons were juggled
+                Promise.all(
+                  (patron ? [
+                    Patron.findById(patrons[0]._id),
+                    Patron.findById(patrons[1]._id)
+                  ] : []).concat(item ? [
+                    Item.findById(items[0]._id),
+                    Item.findById(items[1]._id)
+                  ] : [])
+                ).then(docs => {
+                  if (patron) {
+                    var patrons = docs.slice(0, 2);
+                    patrons[0].should.have.property('checkouts')
+                      .that.is.an('array')
+                      .with.lengthOf(0);
+                    patrons[1].should.have.property('checkouts')
+                      .that.is.an('array')
+                      .with.lengthOf(1)
+                      .and.deep.include.members([id]);
+                  }
+                  if (item) {
+                    var items = patron ? docs.slice(2, 4) : docs.slice(0, 2);
+                    should.not.exist(items[0].checkoutID);
+                    items[1].should.have.property('checkoutID').that.is.eql(id);
+                  }
+                  done();
+                }, should.not.exist).catch(done);
+              });
+            }, should.not.exist).catch(done);
+          });
+        }, should.not.exist).catch(done);
+      };
+    }
+    
+    // TODO merge the shared code in these tests
+    it('handles a changed patron ID in PUT /v0/checkouts/:id',
+      testChangedXIdInPut({item: false, patron: true}));
+    it('handles a changed item ID in PUT /v0/checkouts/:id',
+      testChangedXIdInPut({item: true, patron: false}));
+    it('handles changed item and patron IDs in PUT /v0/checkouts/:id',
+      testChangedXIdInPut({item: true, patron: true}));
   }
 });
