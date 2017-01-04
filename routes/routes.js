@@ -60,7 +60,7 @@ module.exports = (router, baseUri) => {
         // change new item to out
         promises.push(Item.findByIdAndUpdate(
           newCheckout.itemID,
-          {$set: {status: 'out', checkoutID: newCheckout._id}}
+          {$set: {status: 'out', checkoutID: oldCheckout._id}}
         ).exec());
       }
       
@@ -75,7 +75,7 @@ module.exports = (router, baseUri) => {
         // add checkout to new patron
         promises.push(Patron.findByIdAndUpdate(
           newCheckout.patronID,
-          {$push: {checkouts: newCheckout._id}}
+          {$push: {checkouts: oldCheckout._id}} // it's the same ID b/c update
         ).exec());
       }
       
