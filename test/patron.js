@@ -126,6 +126,8 @@ template({
                 if (item.checkoutID) {
                   item.checkoutID.should.not.deep.equal(patron.checkouts[0]);
                   item.checkoutID.should.not.deep.equal(patron.checkouts[1]);
+                } else {
+                  item.status.should.equal('in');
                 }
               }
               

@@ -90,12 +90,7 @@ module.exports = (router, baseUri) => {
           if (item === null) return resolve(); // it doesn't exist
           if (err) return reject(err);
           
-          // if an item is lost we might just be cleaning up
-          // missing is more short-term so it doesn't count
-          if (item.status !== 'lost') {
-            item.status = 'in';
-          }
-          
+          item.status = 'in';
           item.checkoutID = undefined; // for some reason `delete` doesn't work
           
           item.save(err => {
@@ -221,7 +216,7 @@ module.exports = (router, baseUri) => {
             
             Item.findByIdAndUpdate(
               checkout.itemID,
-              {$unset: {checkoutID: ''}}
+              {$unset: {checkoutID: ''}, $set: {status: 'in'}}
             ).exec(err => {
               if (err) return reject(err);
               resolve();

@@ -316,7 +316,7 @@ template({
                   count.should.deep.equal(0);
                   
                   should.not.exist(item.checkoutID);
-                  item.status.should.equal(status === 'lost' ? 'lost' : 'in');
+                  item.status.should.equal('in');
                   
                   patron.should.have.property('checkouts')
                     .that.is.an('array')
