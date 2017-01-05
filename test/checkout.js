@@ -272,5 +272,72 @@ template({
       testChangedXIdInPatch({item: true, patron: false}));
     it('handles changed item and patron IDs in PATCH /v0/checkouts/:id',
       testChangedXIdInPatch({item: true, patron: true}));
+    
+    function testDelete({status = 'in'} = {}) {
+      return done => {
+        // Add the item and patron
+        var itemForDB = JSON.parse(JSON.stringify(testItems[0]));
+        itemForDB.status = status;
+        Promise.all([
+          Item.create(itemForDB),
+          Patron.create(testPatrons[0])
+        ]).then(docs => {
+          var [item, patron] = docs;
+          
+          // Make the checkout
+          var checkout = JSON.parse(JSON.stringify(testCheckouts[0]));
+          checkout.itemID = item._id;
+          checkout.patronID = patron._id;
+          Checkout.create(checkout, (err, dbCheckout) => {
+            should.not.exist(err);
+            var id = dbCheckout._id;
+            
+            // Update the item and patron
+            Promise.all([
+              Item.findByIdAndUpdate(item._id, {$set: {checkoutID: id}}).exec(),
+              Patron.findByIdAndUpdate(patron._id,
+                {$push: {checkouts: id}}).exec()
+            ]).then(() => {
+              // Actually make the request
+              chai.request(server)
+              .delete(`/v0/checkouts/${id}`)
+              .end((err, res) => {
+                should.not.exist(err);
+                res.should.have.status(204);
+                res.body.should.deep.equal({});
+                res.should.have.property('text').that.is.deep.equal('');
+                
+                Promise.all([
+                  Checkout.count({}).exec(),
+                  Item.findById(item._id).exec(),
+                  Patron.findById(patron._id).exec()
+                ]).then(data => {
+                  var [count, item, patron] = data;
+                  count.should.deep.equal(0);
+                  
+                  should.not.exist(item.checkoutID);
+                  item.status.should.equal(status === 'lost' ? 'lost' : 'in');
+                  
+                  patron.should.have.property('checkouts')
+                    .that.is.an('array')
+                    .that.is.not.with.members([id]); // allow other checkouts
+                  
+                  done();
+                }, should.not.exist).catch(done);
+              });
+            }, should.not.exist).catch(done);
+          });
+        }, should.not.exist).catch(done);
+      };
+    }
+    
+    it('updates item[status="in"] and patron on DELETE /v0/checkouts/:id',
+      testDelete());
+    it('updates item[status="out"] and patron on DELETE /v0/checkouts/:id',
+      testDelete({status: 'out'}));
+    it('updates item[status="missing"] and patron on DELETE /v0/checkouts/:id',
+      testDelete({status: 'missing'}));
+    it('updates item[status="lost"] and patron on DELETE /v0/checkouts/:id',
+      testDelete({status: 'lost'}));
   }
 });

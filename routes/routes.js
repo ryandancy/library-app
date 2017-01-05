@@ -84,7 +84,7 @@ module.exports = (router, baseUri) => {
     delete: (req, res, checkout, next) => {
       var promises = [];
       
-      // update item status, remove from patron checkouts
+      // update item status, remove item checkoutID
       promises.push(new Promise((resolve, reject) => {
         Item.findById(checkout.itemID, (err, item) => {
           if (item === null) return resolve(); // it doesn't exist
@@ -95,6 +95,8 @@ module.exports = (router, baseUri) => {
           if (item.status !== 'lost') {
             item.status = 'in';
           }
+          
+          item.checkoutID = undefined; // for some reason `delete` doesn't work
           
           item.save(err => {
             if (err) return reject(err);
