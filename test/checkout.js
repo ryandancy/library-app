@@ -273,7 +273,7 @@ template({
     it('handles changed item and patron IDs in PATCH /v0/checkouts/:id',
       testChangedXIdInPatch({item: true, patron: true}));
     
-    function testDelete({status = 'in'} = {}) {
+    function testDelete({status = 'in', collection = false} = {}) {
       return done => {
         // Add the item and patron
         var itemForDB = JSON.parse(JSON.stringify(testItems[0]));
@@ -300,7 +300,7 @@ template({
             ]).then(() => {
               // Actually make the request
               chai.request(server)
-              .delete(`/v0/checkouts/${id}`)
+              .delete(collection ? '/v0/checkouts' : `/v0/checkouts/${id}`)
               .end((err, res) => {
                 should.not.exist(err);
                 res.should.have.status(204);
@@ -339,5 +339,14 @@ template({
       testDelete({status: 'missing'}));
     it('updates item[status="lost"] and patron on DELETE /v0/checkouts/:id',
       testDelete({status: 'lost'}));
+      
+    it('updates item[status="in"] and patron on DELETE /v0/checkouts',
+      testDelete({collection: true}));
+    it('updates item[status="out"] and patron on DELETE /v0/checkouts',
+      testDelete({status: 'out', collection: true}));
+    it('updates item[status="missing"] and patron on DELETE /v0/checkouts',
+      testDelete({status: 'missing', collection: true}));
+    it('updates item[status="lost"] and patron on DELETE /v0/checkouts',
+      testDelete({status: 'lost', collection: true}));
   }
 });
