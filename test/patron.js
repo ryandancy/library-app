@@ -12,6 +12,14 @@ var testItems = Object.values(require('./test-docs/item.js'));
 var testPatrons = require('./test-docs/patron.js');
 var testCheckouts = require('./test-docs/checkout.js');
 
+var chai = require('chai');
+var chaiHttp = require('chai-http');
+var chaiSubset = require('chai-subset');
+
+var should = chai.should();
+chai.use(chaiHttp);
+chai.use(chaiSubset);
+
 template({
   path: '/v0/patrons',
   model: Patron,
@@ -86,6 +94,46 @@ template({
       }
       
       Promise.all(promises).then(docs => done(), err => done(Error(err)));
+    }
+  },
+  additionalTests: () => {
+    for (let collection = 0; collection < 2; collection++) {
+      // let's just treat `collection` as a boolean cause JS is weird
+      var suffix = collection ? '' : '/:id';
+      it(`deletes checkouts on DELETE /v0/patrons${suffix}`, done => {
+        // Add the patron -- using unicode because 2 checkouts
+        Patron.create(testPatrons.unicode, (err, patron) => {
+          should.not.exist(err);
+          // Actually send the request
+          chai.request(server)
+          .delete(collection ? '/v0/patrons' : `/v0/patrons/${patron._id}`)
+          .end((err, res) => {
+            res.should.have.status(204);
+            res.body.should.deep.equal({});
+            res.should.have.property('text').that.is.deep.equal('');
+            
+            // Verify all the stuff's correct
+            Promise.all([
+              Patron.count({}).exec(),
+              Checkout.count({patronID: patron._id}).exec(),
+              Item.find({}).exec()
+            ]).then(data => {
+              var [patronCount, checkoutCount, items] = data;
+              patronCount.should.deep.equal(0);
+              checkoutCount.should.deep.equal(0);
+              
+              for (var item of items) {
+                if (item.checkoutID) {
+                  item.checkoutID.should.not.deep.equal(patron.checkouts[0]);
+                  item.checkoutID.should.not.deep.equal(patron.checkouts[1]);
+                }
+              }
+              
+              done();
+            }, should.not.exist).catch(done);
+          });
+        });
+      });
     }
   }
 });
