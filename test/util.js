@@ -40,6 +40,8 @@ function populateDB(docs, model, callbackSuccess, callbackErr, hooks = {}) {
   });
 }
 
+exports.populateDB = populateDB;
+
 function getQueryObject(doc) {
   var query = {};
   

@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 var server = require('../server.js');
 var template = require('./template.js');
+var util = require('./util.js');
 
 var Item = require('../models/item.js');
 var Patron = require('../models/patron.js');
@@ -12,6 +13,7 @@ var Checkout = require('../models/checkout.js');
 var testItems = require('./test-docs/item.js');
 var testPatrons = require('./test-docs/patron.js');
 var testCheckouts = require('./test-docs/checkout.js');
+var testMarc = require('./test-docs/marc.js');
 
 var chai = require('chai');
 var chaiHttp = require('chai-http');
@@ -111,5 +113,47 @@ template({
         }, should.not.exist).catch(done);
       });
     }
+    
+    function testMarcGet(accept, item, marc = item.marc) {
+      if (!accept.includes('/')) accept = 'application/' + accept;
+      
+      return done => {
+        util.populateDB(item, Item, (item, dbItems) => {
+          chai.request(server)
+          .get(`/v0/items/${dbItems[0]._id}/marc`)
+          .set('Accept', accept)
+          .end((err, res) => {
+            res.should.have.status(200);
+            if (Object.keys(res.body).length === 0) { // is empty object
+              res.text.should.deep.equal(marc);
+            } else {
+              res.body.should.deep.equal(marc);
+            }
+            done();
+          });
+        }, done);
+      };
+    }
+    
+    describe.only('GET /v0/items/:id/marc', () => {
+      it('can retrieve simple MARC in application/json',
+        testMarcGet('json', testItems.simple1));
+      it('can retrieve simple MARC in application/marc',
+        testMarcGet('marc', testItems.simple1, testMarc.simple1));
+      it('can retrieve another simple MARC in application/json',
+        testMarcGet('json', testItems.simple2));
+      it('can retrieve another simple MARC in application/marc',
+        testMarcGet('marc', testItems.simple2, testMarc.simple2));
+      it('can retrieve unicode MARC in application/json',
+        testMarcGet('json', testItems.unicode));
+      it('can retrieve unicode MARC in application/marc',
+        testMarcGet('marc', testItems.unicode, testMarc.unicode));
+      it('can retrieve whitespace MARC in application/json',
+        testMarcGet('json', testItems.whitespace));
+      it('can retrieve whitespace MARC in application/marc',
+        testMarcGet('marc', testItems.whitespace, testMarc.whitespace));
+      it('prefers application/marc',
+        testMarcGet('*/*', testItems.simple1, testMarc.simple1));
+    });
   }
 });
