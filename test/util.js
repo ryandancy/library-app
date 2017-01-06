@@ -355,6 +355,27 @@ exports.testCollectionDelete = (path, model, docsForDB, hooks) => {
   };
 }
 
+exports.testIDHandling = (path, name, model, hooks, method, example, send) => {
+  it(`404s when trying to get a nonexistant ${name} with an empty DB`,
+    exports.testStatus(path.replace(':id', '123456789012345678901234'), model,
+      404, hooks, [], method, send));
+  it(`404s when trying to get a nonexistant ${name} with a non-empty DB`,
+    exports.testStatus(path.replace(':id', '123456789012345678901234'), model,
+      404, hooks, [example], method, send));
+  it('404s on a nonexistant hex ID',
+    exports.testStatus(path.replace(':id', 'DeadBeefFeedCabFad123456'), model,
+      404, hooks, [], method, send));
+  it('gives a 400 on an invalid ID',
+    exports.testStatus(path.replace(':id', 'invalid-id-because-chars'), model,
+      400, hooks, [], method, send));
+  it('gives a 400 on a too-short ID',
+    exports.testStatus(path.replace(':id', '123'), model,
+      400, hooks, [], method, send));
+  it('gives a 400 on a negative ID',
+    exports.testStatus(path.replace(':id', '-123456789012345678901234'), model,
+      400, hooks, [], method, send));
+}
+
 function cloneObject(obj) {
   // REVIEW there's probably a better way to do this...
   var newObj = {};

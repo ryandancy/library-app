@@ -162,6 +162,9 @@ template({
       it('gives a 406 on an invalid media type',
         util.testStatus(marcPath, Item, 406, {}, [testItems.simple1], 'get',
           undefined, {accept: 'ioauheofasoe7o76'}));
+      
+      util.testIDHandling(marcPath, 'MARC record', Item, {}, 'get',
+        testItems.simple1);
     });
   }
 });

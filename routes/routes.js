@@ -145,6 +145,7 @@ module.exports = (router, baseUri) => {
     if (!util.validate(req, res)) return;
     
     Item.findById(req.params.id, (err, item) => {
+      if (item === null) return res.status(404).send(); // it doesn't exist
       if (err) return util.handleDBError(err, res);
       
       var marc = item.marc;
@@ -178,7 +179,8 @@ module.exports = (router, baseUri) => {
     Item.findByIdAndUpdate(
       req.params.id,
       {$set: {marc: marc}}
-    ).exec(err => {
+    ).exec((err, doc) => {
+      if (doc === null) res.status(404).send(); // it doesn't exist
       if (err) {
         return util.handleDBError(
           err, res, err.name === 'ValidationError' ? 422 : 500);
@@ -191,6 +193,7 @@ module.exports = (router, baseUri) => {
     if (!util.validate(req, res)) return;
     
     Item.findById(req.params.id, (err, item) => {
+      if (item === null) return res.status(404).send(); // it doesn't exist
       if (err) return util.handleDBError(err, res);
       
       item.marc = mergePatch.apply(item.marc, req.body);

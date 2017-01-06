@@ -167,26 +167,6 @@ module.exports = options => {
   
   var unmodTestDocs = filterUnmodifiables(testDocs);
   
-  function testIDHandling(method, send = undefined) {
-    it(`404s when trying to get a nonexistant ${singular} with an empty DB`,
-      util.testStatus(path + '/123456789012345678901234', model, 404, hooks, [],
-        method, send));
-    it(`404s when trying to get a nonexistant ${singular} with a non-empty DB`,
-      util.testStatus(path + '/123456789012345678901234', model, 404, hooks,
-        generateDocs(10), method, send));
-    it('404s on a nonexistant hex ID',
-      util.testStatus(path + '/DeadBeefFeedCabFad123456', model, 404, hooks, [],
-        method, send));
-    it('gives a 400 on an invalid ID',
-      util.testStatus(path + '/invalid-id-because-chars', model, 400, hooks, [],
-        method, send));
-    it('gives a 400 on a too-short ID',
-      util.testStatus(path + '/123', model, 400, hooks, [], method, send));
-    it('gives a 400 on a negative ID',
-      util.testStatus(path + '/-123456789012345678901234', model, 400, hooks,
-        [], method, send));
-  }
-  
   describe(plural, () => {
     beforeEach(done => {
       // Remove ALL the things
@@ -576,7 +556,8 @@ module.exports = options => {
             generateDocs(100)));
       }
       
-      testIDHandling('get');
+      util.testIDHandling(idPath, singular, model, hooks, 'get',
+        testDocs.simple1);
     });
     describe(`PUT ${idPath}`, () => {
       it(`replaces a simple ${singular} with a simple ${singular}`,
@@ -648,7 +629,8 @@ module.exports = options => {
         }
       }
       
-      testIDHandling('put', unmodTestDocs.simple1);
+      util.testIDHandling(idPath, singular, model, hooks, 'put',
+        testDocs.simple1, unmodTestDocs.simple1);
     });
     describe(`PATCH ${idPath}`, () => {
       if (stringProp) {
@@ -744,7 +726,8 @@ module.exports = options => {
         }
       }
       
-      testIDHandling('patch');
+      util.testIDHandling(idPath, singular, model, hooks, 'patch',
+        testDocs.simple1);
     });
     describe(`DELETE ${idPath}`, () => {
       it(`deletes a simple ${singular} with an empty DB`,
@@ -778,7 +761,8 @@ module.exports = options => {
             generateDocs(100)));
       }
       
-      testIDHandling('delete');
+      util.testIDHandling(idPath, singular, model, hooks, 'delete',
+        testDocs.simple1);
     });
     
     moreTests();
