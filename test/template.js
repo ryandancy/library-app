@@ -7,6 +7,13 @@ var mongoose = require('mongoose');
 var util = require('./util.js');
 var server = require('../server.js');
 
+var allModels = [
+  require('../models/admin.js'),
+  require('../models/checkout.js'),
+  require('../models/item.js'),
+  require('../models/patron.js')
+];
+
 var chai = require('chai');
 var chaiHttp = require('chai-http');
 var chaiSubset = require('chai-subset');
@@ -182,7 +189,12 @@ module.exports = options => {
   
   describe(plural, () => {
     beforeEach(done => {
-      model.remove({}, err => done());
+      // Remove ALL the things
+      var promises = [];
+      for (var aModel of allModels) {
+        promises.push(aModel.remove({}).exec());
+      }
+      Promise.all(promises).then(() => done(), done);
     });
     if (customBeforeEach) {
       beforeEach(done => {

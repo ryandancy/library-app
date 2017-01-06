@@ -6,7 +6,20 @@ var server = require('../server.js');
 var template = require('./template.js');
 
 var Item = require('../models/item.js');
+var Patron = require('../models/patron.js');
+var Checkout = require('../models/checkout.js');
+
 var testItems = require('./test-docs/item.js');
+var testPatrons = require('./test-docs/patron.js');
+var testCheckouts = require('./test-docs/checkout.js');
+
+var chai = require('chai');
+var chaiHttp = require('chai-http');
+var chaiSubset = require('chai-subset');
+
+var should = chai.should();
+chai.use(chaiHttp);
+chai.use(chaiSubset);
 
 template({
   path: '/v0/items',
@@ -40,5 +53,63 @@ template({
     },
     barcode: 1234,
     status: 'in'
-  })
+  }),
+  additionalTests: () => {
+    for (let collection = 0; collection < 2; collection++) {
+      // let's just treat collection as a boolean cause JS is weird
+      var suffix = collection ? '' : '/:id';
+      it(`deletes checkout on DELETE /v0/items${suffix}`, done => {
+        // Add the item and patron
+        Promise.all([
+          Item.create(testItems.simple1),
+          Patron.create(testPatrons.simple1)
+        ]).then(docs => {
+          var [item, patron] = docs;
+          
+          // Build and add the checkout
+          var checkoutForDB = JSON.parse(JSON.stringify(testCheckouts[0]));
+          checkoutForDB.itemID = item._id;
+          checkoutForDB.patronID = patron._id;
+          Checkout.create(checkoutForDB, (err, checkout) => {
+            should.not.exist(err);
+            
+            // Update the item and patron
+            Promise.all([
+              Item.findByIdAndUpdate(item._id,
+                {$set: {checkoutID: checkout._id}}).exec(),
+              Patron.findByIdAndUpdate(patron._id,
+                {$push: {checkouts: checkout._id}}).exec()
+            ]).then(() => {
+              // Actually send the request
+              chai.request(server)
+              .delete(collection ? '/v0/items' : `/v0/items/${item._id}`)
+              .end((err, res) => {
+                res.should.have.status(204);
+                res.body.should.deep.equal({});
+                res.should.have.property('text').that.is.deep.equal('');
+                
+                // Verify that all the stuff's correct
+                Promise.all([
+                  Item.count({}).exec(),
+                  Checkout.count({}).exec(),
+                  Patron.findById(patron._id).exec()
+                ]).then(data => {
+                  var [itemCount, checkoutCount, patron] = data;
+                  
+                  itemCount.should.deep.equal(0);
+                  checkoutCount.should.deep.equal(0);
+                  
+                  patron.should.have.property('checkouts')
+                    .that.is.an('array')
+                    .with.lengthOf(0);
+                  
+                  done();
+                }, should.not.exist).catch(done);
+              });
+            }, should.not.exist).catch(done);
+          });
+        }, should.not.exist).catch(done);
+      });
+    }
+  }
 });
