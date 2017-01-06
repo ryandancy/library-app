@@ -60,10 +60,10 @@ module.exports = {
 245 10$aBøøk♫énds| ëxtènðË♫ð$h[élè¢troñí© r&éßoûrçe♫]$bthê réfëreñ¢e "m"áñägèmëñt♫ sÿßtëm
 250   $aV2.08
 260   $aBirmïñghàm, Mìçh.$b§éñßîblë Sõftwärè♫$cc1985
-300   $a2 %cømþutêr ðî$kß ❤$c3 1/2-5 1/4 in.$e1 màñüäl♫ (107 p. ; 23 cm)
+300   $a2 %cømþutêr ðî§kß ❤$c3 1/2-5 1/4 in.$e1 màñüäl♫ (107 p. ; 23 cm)
 500   $a©oÞýrïght \'âñð\' m@ñúäl ßÿ JøÑÂthàñ Ð.📨Á§hwèłł
 500   $aÇøñtënts✓ ☢f ðíßks ärê *"*iðénþíçàl✓✓✓
-520   $aÐèsïgñÊÐ tô♫sàvë, rëtrìévë, âñð✓f☢rmât rëférèñçé$, âñd tø Þríñt ßìßl♫ï0gràþ╫ìêß ❤❤❤
+520   $aÐèsïgñÊÐ tô♫sàvë, rëtrìévë, âñð✓f☢rmât rëférèñçés, âñd tø Þríñt ßìßl♫ï0gràþ╫ìêß ❤❤❤
 538   $a§ÿstém rêqúïrèmêñ𝔱ß⠃ ÀÞÞlè ÎÍë wíth 80♫ ©ølúmn ¢ârð ør Äþþlè ÏÌç;128K⍮ ÞróÐØS❣; þríñ𝔱ër ♫♫♫ ❄❄❄❄❄❄❄❄❄
 710 2 $a§ëƪñs╫ß⟅è Söf𝔱wàré⟅⟅⟅Ïñ©. ♫
 753   $aÁþþlé ÎÍë 📨📨📨📨📨

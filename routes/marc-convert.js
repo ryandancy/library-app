@@ -1,24 +1,23 @@
 // conversion to and from MARC and its JSON representation
 // NOTE: assumes a space after the field name, and fields newline-separated
 
+// left-pad!!1!!11!!1!11!one!!
+function leftPad(str, n, char = '0') {
+  return char.repeat(Math.max(n - new String(str).length, 0)) + str;
+}
+
 exports.jsonToMarc = json => {
   var marc = [json.leader];
   
-  for (var name in json.fields) {
-    if (!json.fields.hasOwnProperty(field)) continue;
+  for (var control of json.fields.control) {
+    marc.push(leftPad(control.tag, 3) + ' ' + control.value);
+  }
+  
+  for (var variable of json.fields.variable) {
+    var field = leftPad(variable.tag, 3) + ' ' + variable.ind1 + variable.ind2;
     
-    var field = name + ' ';
-    var value = json.fields[name];
-    
-    if (typeof value === 'string') {
-      field += value;
-    } else if (typeof value === 'object') {
-      field += value.ind1 + value.ind2;
-      
-      for (var subfield in value) {
-        if (!value.hasOwnProperty(subfield)) continue;
-        field += '$' + subfield + value[subfield];
-      }
+    for (var subfield of variable.subfields) {
+      field += '$' + subfield.tag + subfield.value;
     }
     
     marc.push(field);
@@ -33,26 +32,44 @@ exports.marcToJson = marc => {
   var leader = marc[0];
   marc = marc.slice(1);
   
-  var fields = [];
-  for (var marcField of marc) {
-    var field = {
-      name: marcField.slice(0, 3),
-      ind1: marcField[4],
-      ind2: marcField[5],
-      subfields: []
-    };
+  var controlFields = [];
+  var variableFields = [];
+  
+  for (var field of marc) {
+    var tag = parseInt(field.slice(0, 3), 10);
+    var rest = field.slice(4);
     
-    var subfields = marcField.slice(6);
-    var subfieldRegex = /\$(.)([^\$]*)/g;
-    var groups;
-    while ((groups = subfieldRegex.exec(subfields)) !== null) {
-      field.subfields.push({
-        [groups[0]]: groups[1]
+    if (tag < 10) {
+      controlFields.push({tag: tag, value: rest});
+    } else {
+      var [ind1, ind2] = rest.slice(0, 2);
+      var subfields = [];
+      
+      var subfieldStr = rest.slice(2);
+      var subfieldRegex = /\$(.)(.[^\$]*)/g;
+      var groups;
+      while ((groups = subfieldRegex.exec(subfieldStr)) !== null) {
+        var [, subTag, subVal] = groups;
+        subfields.push({
+          tag: subTag,
+          value: subVal
+        });
+      }
+      
+      variableFields.push({
+        tag: tag,
+        ind1: ind1,
+        ind2: ind2,
+        subfields: subfields
       });
     }
-    
-    fields.push(field);
   }
   
-  return {leader: leader, fields: fields};
+  return {
+    leader: leader,
+    fields: {
+      control: controlFields,
+      variable: variableFields
+    }
+  };
 };

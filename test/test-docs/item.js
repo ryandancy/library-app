@@ -553,7 +553,7 @@ module.exports = {
           ind2: ' ',
           subfields: [{
             tag: 'a',
-            value: '2 %cømþutêr ðî$kß ❤'
+            value: '2 %cømþutêr ðî§kß ❤'
           }, {
             tag: 'c',
             value: '3 1/2-5 1/4 in.'
@@ -583,7 +583,7 @@ module.exports = {
           ind2: ' ',
           subfields: [{
             tag: 'a',
-            value: 'ÐèsïgñÊÐ tô♫sàvë, rëtrìévë, âñð✓f☢rmât rëférèñçé$, âñd tø '
+            value: 'ÐèsïgñÊÐ tô♫sàvë, rëtrìévë, âñð✓f☢rmât rëférèñçés, âñd tø '
                  + 'Þríñt ßìßl♫ï0gràþ╫ìêß ❤❤❤'
           }]
         }, {
