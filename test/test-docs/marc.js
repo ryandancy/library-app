@@ -7,7 +7,7 @@ module.exports = {
 003 87164
 005 19920331092212.7
 007 ta
-008 820305s1991    nyu           001 0 eng
+008 820305s1991    nyu           001 0 eng  ` + `
 020   $a0845348116$c$29.95 (£19.50 U.K.)
 020   $a0845348205 (pbk.)
 040   $aEkG$cOacTY
@@ -16,9 +16,9 @@ module.exports = {
 100 1 $aTerrace, Vincent$d1948-
 245 10$aFifty years of television$ba guide to series and pilots, 1937-1988$cVincent Terrace
 246 1 $a50 years of television
-260   $aNew York$bCornwall Books $cc1991
+260   $aNew York$bCornwall Books$cc1991
 300   $a864 p.$c24 cm
-500   $aIncludes Index
+500   $aIncludes index
 650  0$aTelevision pilot programs$zUnited States$vCatalogs
 650  0$aTelevision serials$zUnited States$vCatalogs`,
   simple2: `09348cas  2200053 a 4500
@@ -26,17 +26,17 @@ module.exports = {
 003 1893
 005 19920716101553.0
 008 791031c19789999dcuar1        0   a0eng d
-010   $a   85649389 $zsc 80000109
+010   $a   85649389 $zsc 80000109 ` + `
 022 0 $a0273-1967
 035   $a(OCoLC)5629434
 040   $aOeAA$cEErsdK$dJJE
 042   $alc$ansdp
 043   $an-us---
-050 00$aSK351$b.U63a
+050 00$aSK361$b.U63a
 082 00$a639.9/2/0973$219
 210 0 $aAnnu. wildl. fish. rep.
 222  0$aAnnual wildlife and fisheries report
-245 00$aAnnual wildlife and fisheries report$cUnited States Department of Agriculture, Forest Service, Wildlife and fisheries
+245 00$aAnnual wildlife and fisheries report$cUnited States Department of Agriculture, Forest Service, Wildlife and Fisheries
 246 14$aWildlife and fish habitat management in the Forest Service
 260   $a[Washington, D.C.]$bWildlife and Fisheries
 300   $av.$bill.$c28 cm
@@ -54,7 +54,7 @@ module.exports = {
 001 9876548765
 003 25314
 005 19920401095900.0
-008 870206s1985    miu        da       eng
+008 870206s1985    miu        da       eng  ` + `
 040   $aÐlàD$cÛøK
 100 1 $aÀßhw♫éłł, ^J"øñät*h♫an Ð.
 245 10$aBøøk♫énds| ëxtènðË♫ð$h[élè¢troñí© r&éßoûrçe♫]$bthê réfëreñ¢e "m"áñägèmëñt♫ sÿßtëm
@@ -73,11 +73,11 @@ module.exports = {
 003 918
 005 19920504100110.5
 008 860504s1977    mnua          000 0 eng d
-040   $a    \t\t  \r\f\v  $c\t\t
+040   $a    \t\t  \r\f\v  $c\t\t                ` + `
 043   $an-us---
 100 1 $a  \f\f\t\t      $q             \t     $d1945-
-245 10$a\t\t       \f\v\v    $c  \t   \v\v  \f \t \r \r
+245 10$a\t\t       \f\v\v    $c  \t   \v\v  \f \t \r \r   ` + `
 300   $ap. 24-34, 36-37, 40-41$bill.$c29 cm
-400   $a  \r\r
-773 0 $7nnas$t\f$gv. 4 no. 4 (July-Aug. 1977)$w(OCoLC)2253666`
+500   $a  \r\r   ` + `
+773 0 $7nnas$t\f$gv. 4, no. 4 (July-Aug. 1977)$w(OCoLC)2253666`
 };
