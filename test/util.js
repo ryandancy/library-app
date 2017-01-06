@@ -235,7 +235,12 @@ exports.testSortableGet = (path, model, testDocs, checker, hooks) => {
   };
 }
 
-exports.testStatus = (path, model, stat, hooks, docs=[], meth='get', send) => {
+// Syntax highlighting broke... *sigh*
+exports.testStatus = (path, model, status, hooks, docs = [],
+    method = 'get', send, heads = {}) => {
+  heads.accept = heads.accept || 'application/json';
+  heads['content-type'] = heads['content-type'] || heads.accept;
+  
   return done => {
     populateDB(Array.from(docs), model, (docs_, dbDocs) => {
       if (path.includes(':id')) {
@@ -243,16 +248,18 @@ exports.testStatus = (path, model, stat, hooks, docs=[], meth='get', send) => {
       }
       
       var request = chai.request(server);
-      request = request[meth](path); // call the relevant HTTP method function
+      request = request[method](path); // call the relevant HTTP method function
       if (send !== undefined) {
         request = request.send(send);
       }
       
-      // Content-Type defaults to x-www-form-urlencoded if the JSON's invalid
-      request.set('content-type', 'application/json')
-      .end((err, res) => {
-        if (res.status === 422 && stat === 404) console.log(res);
-        res.should.have.status(stat);
+      for (var header in heads) {
+        if (!heads.hasOwnProperty(header)) continue;
+        reqeust = request.set(header, heads[header]);
+      }
+      
+      request.end((err, res) => {
+        res.should.have.status(status);
         done();
       });
     }, done, hooks);

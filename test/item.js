@@ -135,7 +135,8 @@ template({
       };
     }
     
-    describe.only('GET /v0/items/:id/marc', () => {
+    var marcPath = '/v0/items/:id/marc';
+    describe('GET /v0/items/:id/marc', () => {
       it('can retrieve simple MARC in application/json',
         testMarcGet('json', testItems.simple1));
       it('can retrieve simple MARC in application/marc',
@@ -154,6 +155,13 @@ template({
         testMarcGet('marc', testItems.whitespace, testMarc.whitespace));
       it('prefers application/marc',
         testMarcGet('*/*', testItems.simple1, testMarc.simple1));
+      
+      it('gives a 406 on a valid media type that\'s not json/marc',
+        util.testStatus(marcPath, Item, 406, {}, [testItems.simple1], 'get',
+          undefined, {accept: 'text/plain'}));
+      it('gives a 406 on an invalid media type',
+        util.testStatus(marcPath, Item, 406, {}, [testItems.simple1], 'get',
+          undefined, {accept: 'ioauheofasoe7o76'}));
     });
   }
 });
