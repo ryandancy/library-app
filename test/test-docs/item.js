@@ -28,7 +28,7 @@ module.exports = {
           ind2: ' ',
           subfields: [{
             tag: 'a',
-            value: 'a0845348116'
+            value: '0845348116'
           }, {
             tag: 'c',
             value: '$29.95 (£19.50 U.K.)'
@@ -287,7 +287,7 @@ module.exports = {
           ind2: '0',
           subfields: [{
             tag: 'a',
-            value: 'Annual wildlife an fisheries report'
+            value: 'Annual wildlife and fisheries report'
           }]
         }, {
           tag: 245,
@@ -648,10 +648,10 @@ module.exports = {
           ind2: ' ',
           subfields: [{
             tag: 'a',
-            value: '    \t\t  \n\n\r\f\v\n  '
+            value: '    \t\t  \r\f\v  '
           }, {
             tag: 'c',
-            value: '\t\t                \n'
+            value: '\t\t                '
           }]
         }, {
           tag: 43,
@@ -667,7 +667,7 @@ module.exports = {
           ind2: ' ',
           subfields: [{
             tag: 'a',
-            value: '  \f\f\t\t\n\n      '
+            value: '  \f\f\t\t      '
           }, {
             tag: 'q',
             value: '             \t     '
@@ -681,10 +681,10 @@ module.exports = {
           ind2: '0',
           subfields: [{
             tag: 'a',
-            value: '\t\t       \f\v\v   \n '
+            value: '\t\t       \f\v\v    '
           }, {
             tag: 'c',
-            value: '  \t   \v\v  \f \t \n\n\n\r \n\r\n   '
+            value: '  \t   \v\v  \f \t \r \r   '
           }]
         }, {
           tag: 300,
@@ -717,7 +717,7 @@ module.exports = {
             value: 'nnas'
           }, {
             tag: 't',
-            value: '\n'
+            value: '\f'
           }, {
             tag: 'g',
             value: 'v. 4, no. 4 (July-Aug. 1977)'
