@@ -169,7 +169,7 @@ module.exports = (router, baseUri) => {
         marc = req.body;
         break;
       case 'application/marc':
-        marc = marcConvert.marcToJson(marc);
+        marc = marcConvert.marcToJson(req.body);
         break;
       default:
         res.status(415).send(['application/marc', 'application/json']);

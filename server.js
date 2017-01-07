@@ -28,6 +28,7 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 app.use(bodyParser.json());
+app.use(bodyParser.text({type: ['text/plain', 'application/marc']}));
 app.use(expressValidator({
   customValidators: {
     notPresent: value => {

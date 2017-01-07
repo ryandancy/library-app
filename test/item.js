@@ -114,8 +114,12 @@ template({
       });
     }
     
+    function castToMediaType(str, defaultType = 'application') {
+      return str.includes('/') ? str : defaultType + '/' + str;
+    }
+    
     function testMarcGet(accept, item, marc = item.marc) {
-      if (!accept.includes('/')) accept = 'application/' + accept;
+      accept = castToMediaType(accept);
       
       return done => {
         util.populateDB(item, Item, (item, dbItems) => {
@@ -165,6 +169,69 @@ template({
       
       util.testIDHandling(marcPath, 'MARC record', Item, {}, 'get',
         testItems.simple1);
+    });
+    
+    function testMarcPut(type, item, marc, jsonMarc = marc) {
+      type = castToMediaType(type);
+      
+      return done => {
+        util.populateDB(item, Item, (item, dbItems) => {
+          chai.request(server)
+          .put(`/v0/items/${dbItems[0]._id}/marc`)
+          .send(marc)
+          .set('Content-Type', type)
+          .end((err, res) => {
+            res.should.have.status(204);
+            res.body.should.deep.equal({});
+            res.should.have.property('text').that.is.deep.equal('');
+            
+            // Verify that it was updated
+            Item.findById(dbItems[0]._id, (err, newItem) => {
+              should.not.exist(err);
+              newItem.marc.should.containSubset(jsonMarc);
+              done();
+            });
+          });
+        }, done);
+      };
+    }
+    
+    describe('PUT /v0/items/:id/marc', () => {
+      it('can replace a simple record with another, json',
+        testMarcPut('json', testItems.simple1, testItems.simple2.marc));
+      it('can replace a simple record with another, marc',
+        testMarcPut('marc', testItems.simple1, testMarc.simple2,
+          testItems.simple2.marc));
+      it('can replace a simple record with a unicode record, json',
+        testMarcPut('json', testItems.simple1, testItems.unicode.marc));
+      it('can replace a simple record with a unicode record, marc',
+        testMarcPut('marc', testItems.simple1, testMarc.unicode,
+          testItems.unicode.marc));
+      it('can replace a simple record with a whitespace record, json',
+        testMarcPut('json', testItems.simple1, testItems.whitespace.marc));
+      it('can replace a simple record with a whitespace record, marc',
+        testMarcPut('marc', testItems.simple1, testMarc.whitespace,
+          testItems.whitespace.marc));
+      it('can replace a unicode record with a simple record, json',
+        testMarcPut('json', testItems.unicode, testItems.simple1.marc));
+      it('can replace a unicode record with a simple record, marc',
+        testMarcPut('marc', testItems.unicode, testMarc.simple1,
+          testItems.simple1.marc));
+      it('can replace a unicode record with a whitespace record, json',
+        testMarcPut('json', testItems.unicode, testItems.whitespace.marc));
+      it('can replace a unicode record with a whitespace record, marc',
+        testMarcPut('marc', testItems.unicode, testMarc.whitespace,
+          testItems.whitespace.marc));
+      it('can replace a whitespace record with a simple record, json',
+        testMarcPut('json', testItems.whitespace, testItems.simple1.marc));
+      it('can replace a whitespace record with a simple record, marc',
+        testMarcPut('marc', testItems.whitespace, testMarc.simple1,
+          testItems.simple1.marc));
+      it('can replace a whitespace record with a unicode record, json',
+        testMarcPut('json', testItems.whitespace, testItems.unicode.marc));
+      it('can replace a whitespace record with a unicode record, marc',
+        testMarcPut('marc', testItems.whitespace, testMarc.unicode,
+          testItems.unicode.marc));
     });
   }
 });
