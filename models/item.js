@@ -64,7 +64,7 @@ var marcSchema = new Schema({
   },
   fields: {
     type: fieldsSchema,
-    required: true,
+    required: true
   }
 }, {_id: false});
 
@@ -76,7 +76,7 @@ var itemSchema = new Schema({
   barcode: reqt.Number,
   status: {
     type: String,
-    enum: ["in", "out", "missing", "lost"],
+    enum: ['in', 'out', 'missing', 'lost'],
     required: true
   },
   checkoutID: ObjectId

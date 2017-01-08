@@ -298,8 +298,8 @@ module.exports = {
             value: 'Annual wildlife and fisheries report'
           }, {
             tag: 'c',
-            value: 'United States Department of Agriculture, Forest Service, ' +
-              'Wildlife and Fisheries'
+            value: 'United States Department of Agriculture, Forest Service, '
+                 + 'Wildlife and Fisheries'
           }]
         }, {
           tag: 246,
@@ -440,8 +440,8 @@ module.exports = {
           ind2: '0',
           subfields: [{
             tag: 'a',
-            value: 'United States. Forest Service. Division of Wildlife ' +
-              'Management.'
+            value: 'United States. Forest Service. Division of Wildlife '
+                 + 'Management.'
           }, {
             tag: 't',
             value: 'Annual wildlife report'

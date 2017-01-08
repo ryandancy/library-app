@@ -107,7 +107,7 @@ template({
         }
       }
       
-      Promise.all(updatePromises).then(docs => done(), err => done(Error(err)));
+      Promise.all(updatePromises).then(() => done(), err => done(Error(err)));
     },
     post: (checkouts, dbCheckouts, done) => {
       // update the checkouts' items' and patrons' checkoutIDs
@@ -118,7 +118,7 @@ template({
         promises.push(Patron.findByIdAndUpdate(
           checkout.patronID, {$push: {checkouts: checkout._id}}));
       }
-      Promise.all(promises).then(docs => done(), err => done(Error(err)));
+      Promise.all(promises).then(() => done(), err => done(Error(err)));
     }
   },
   additionalTests: () => {
@@ -196,8 +196,7 @@ template({
                 var send = sendFunc(patron, item, patrons, items, checkout);
                 
                 // Actually make the request
-                chai.request(server)
-                [method](`/v0/checkouts/${id}`)
+                chai.request(server)[method](`/v0/checkouts/${id}`)
                 .send(send)
                 .end((err, res) => {
                   // Check elementary things
@@ -252,7 +251,7 @@ template({
       });
     
     var testChangedXIdInPatch = getChangedXIdInXTester('patch', 200,
-      (patron, item, patrons, items, checkout) => {
+      (patron, item, patrons, items) => {
         var patch = {};
         if (patron) patch.patronID = patrons[1]._id;
         if (item) patch.itemID = items[1]._id;

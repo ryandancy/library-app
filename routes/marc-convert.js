@@ -3,7 +3,7 @@
 
 // left-pad!!1!!11!!1!11!one!!
 function leftPad(str, n, char = '0') {
-  return char.repeat(Math.max(n - new String(str).length, 0)) + str;
+  return char.repeat(Math.max(n - String(str).length, 0)) + str;
 }
 
 exports.jsonToMarc = json => {

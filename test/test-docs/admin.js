@@ -3,7 +3,7 @@ module.exports = {
     name: 'Testy McTestface',
     item: {
       read: true,
-      write: false,
+      write: false
     },
     checkout: {
       read: false,
@@ -20,7 +20,7 @@ module.exports = {
     name: 'Another Name',
     item: {
       read: false,
-      write: false,
+      write: false
     },
     checkout: {
       read: false,
@@ -37,7 +37,7 @@ module.exports = {
     name: 'Úñí¢öðè ïß ©öół 😃😃😃',
     item: {
       read: true,
-      write: false,
+      write: false
     },
     checkout: {
       read: false,
@@ -54,7 +54,7 @@ module.exports = {
     name: '             \t\t    \n\t       ',
     item: {
       read: true,
-      write: true,
+      write: true
     },
     checkout: {
       read: true,
@@ -66,5 +66,5 @@ module.exports = {
     },
     signIn: true,
     signOut: true
-  },
+  }
 };

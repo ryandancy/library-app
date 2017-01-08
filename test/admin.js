@@ -1,7 +1,6 @@
 process.env.NODE_ENV = 'test';
 
-var mongoose = require('mongoose');
-var server = require('../server.js');
+var server = require('../server.js'); // eslint-disable-line no-unused-vars
 var Admin = require('../models/admin.js');
 var template = require('./template.js');
 
@@ -30,7 +29,7 @@ template({
     name: 'GeneratedTestAdmin-' + num,
     item: {
       read: true,
-      write: true,
+      write: true
     },
     checkout: {
       read: true,

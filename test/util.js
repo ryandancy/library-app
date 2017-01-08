@@ -32,11 +32,7 @@ function populateDB(docs, model, callbackSuccess, callbackErr, hooks = {}) {
         if (err) return callbackErr(Error(err));
         callbackSuccess(docs, dbDocs);
       });
-    }, err => {
-      console.log(err);
-      console.log(JSON.stringify(docs, null, 2));
-      callbackErr(err);
-    });
+    }, callbackErr);
   });
 }
 
@@ -115,7 +111,7 @@ exports.testGet = (path, model, testDocs, hooks) => {
       populateDB(testDocs, model, after, done, hooks);
     }
   };
-}
+};
 
 exports.testResourceGet = (path, model, doc, hooks, dbDocs = []) => {
   return done => {
@@ -136,7 +132,7 @@ exports.testResourceGet = (path, model, doc, hooks, dbDocs = []) => {
       });
     }, done, hooks);
   };
-}
+};
 
 exports.testPut = (path, model, oldDoc, newDoc, hooks, dbDocs = []) => {
   return done => {
@@ -159,7 +155,7 @@ exports.testPut = (path, model, oldDoc, newDoc, hooks, dbDocs = []) => {
       });
     }, done, hooks);
   };
-}
+};
 
 // why you broke, atom lang-javascript syntax highlighter?
 exports.testPatch = (path, model, doc, patch, patchFunc, hooks, dbDocs=[]) => {
@@ -187,7 +183,7 @@ exports.testPatch = (path, model, doc, patch, patchFunc, hooks, dbDocs=[]) => {
       });
     }, done, hooks);
   };
-}
+};
 
 exports.testDelete = (path, model, doc, hooks, dbDocs = []) => {
   return done => {
@@ -209,7 +205,7 @@ exports.testDelete = (path, model, doc, hooks, dbDocs = []) => {
       });
     }, done, hooks);
   };
-}
+};
 
 exports.testSortableGet = (path, model, testDocs, checker, hooks) => {
   return done => {
@@ -233,7 +229,7 @@ exports.testSortableGet = (path, model, testDocs, checker, hooks) => {
       });
     }, done, hooks);
   };
-}
+};
 
 // Syntax highlighting broke... *sigh*
 exports.testStatus = (path, model, status, hooks, docs = [],
@@ -264,13 +260,13 @@ exports.testStatus = (path, model, status, hooks, docs = [],
       });
     }, done, hooks);
   };
-}
+};
 
 exports.testPaging = (path, model, testDocs, values, hooks) => {
   return done => {
-    if (values.maxItems === undefined) values.maxItems = docs.length;
+    if (values.maxItems === undefined) values.maxItems = testDocs.length;
     
-    populateDB(Array.from(testDocs), model, docs => {
+    populateDB(Array.from(testDocs), model, () => {
       chai.request(server)
       .get(path)
       .end((err, res) => {
@@ -291,7 +287,7 @@ exports.testPaging = (path, model, testDocs, values, hooks) => {
       });
     }, done, hooks);
   };
-}
+};
 
 exports.testPost = (path, doc, model, hooks, docsForDB = []) => {
   return done => {
@@ -333,7 +329,7 @@ exports.testPost = (path, doc, model, hooks, docsForDB = []) => {
       });
     }, done, hooks);
   };
-}
+};
 
 exports.testCollectionDelete = (path, model, docsForDB, hooks) => {
   return done => {
@@ -353,7 +349,7 @@ exports.testCollectionDelete = (path, model, docsForDB, hooks) => {
       });
     }, done, hooks);
   };
-}
+};
 
 exports.testIDHandling = (path, name, model, hooks, method, example, send) => {
   it(`404s when trying to get a nonexistant ${name} with an empty DB`,
@@ -374,7 +370,7 @@ exports.testIDHandling = (path, name, model, hooks, method, example, send) => {
   it('gives a 400 on a negative ID',
     exports.testStatus(path.replace(':id', '-123456789012345678901234'), model,
       400, hooks, [], method, send));
-}
+};
 
 function cloneObject(obj) {
   // REVIEW there's probably a better way to do this...
@@ -391,7 +387,7 @@ exports.getObjectMissingProperty = (obj, prop) => {
   var newObj = cloneObject(obj);
   delete newObj[prop];
   return newObj;
-}
+};
 
 exports.generateObjectsMissingOneProperty = function*(obj) {
   for (var prop in obj) {
@@ -412,7 +408,7 @@ exports.generateObjectsMissingOneProperty = function*(obj) {
       };
     }
   }
-}
+};
 
 exports.generateSinglePropertyPatches = function*(obj, value = null) {
   for (var prop in obj) {
@@ -431,4 +427,4 @@ exports.generateSinglePropertyPatches = function*(obj, value = null) {
       };
     }
   }
-}
+};

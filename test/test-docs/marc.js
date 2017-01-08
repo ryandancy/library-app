@@ -1,3 +1,5 @@
+/* eslint max-len: off */
+
 // Translations of the MARC records in ./item.js into MARC format as *should be*
 // output by routes/marc-convert.js (hopefully)
 

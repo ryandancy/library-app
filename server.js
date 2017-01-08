@@ -47,6 +47,6 @@ app.use(baseUri, router);
 
 // start the app
 app.listen(8080);
-console.log('Listening on port 8080');
+console.log('Listening on port 8080'); // eslint-disable-line no-console
 
 module.exports = app;

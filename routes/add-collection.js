@@ -18,7 +18,7 @@ module.exports = (router, baseUri) => {
       req and res are ALWAYS first 2 params, next is ALWAYS last param.
     */
     // make sure default unmodifiables are present
-    for (defaultUnmod of ['created', 'updated', 'id']) {
+    for (var defaultUnmod of ['created', 'updated', 'id']) {
       if (!unmodifiables.includes(defaultUnmod)) {
         unmodifiables.push(defaultUnmod);
       }
@@ -28,7 +28,7 @@ module.exports = (router, baseUri) => {
     // NOTE hopefully this works and doesn't require copying the object
     if (!toInputConverter) {
       toInputConverter = doc => {
-        obj = doc.toObject();
+        var obj = doc.toObject();
         obj.id = obj._id;
         delete obj._id;
         if (obj.hasOwnProperty('__v')) delete obj.__v;
@@ -83,7 +83,7 @@ module.exports = (router, baseUri) => {
     });
     
     // do the hooks
-    methodToCRUD = {
+    var methodToCRUD = {
       POST: 'create',
       GET: 'retrieve',
       PUT: 'update',
@@ -107,10 +107,8 @@ module.exports = (router, baseUri) => {
         return;
       }
       var promises = [];
-      for (param of paramArray) {
-        promises.push(new Promise(
-          (resolve, reject) => hookCaller(param, resolve)
-        ));
+      for (var param of paramArray) {
+        promises.push(new Promise(resolve => hookCaller(param, resolve)));
       }
       Promise.all(promises).then(callback, callback);
     }
@@ -246,7 +244,7 @@ module.exports = (router, baseUri) => {
             model.remove({}, err => {
               if (err) return util.handleDBError(err, res);
               res.status(204).send();
-            })
+            });
           });
       });
     });
@@ -296,7 +294,7 @@ module.exports = (router, baseUri) => {
             if (!newDoc.hasOwnProperty(prop)) continue;
             oldDoc[prop] = newDoc[prop];
           }
-          oldDoc.save((err, doc) => {
+          oldDoc.save(err => {
             if (err) {
               return util.handleDBError(
                 err, res, err.name === 'ValidationError' ? 422 : 500);

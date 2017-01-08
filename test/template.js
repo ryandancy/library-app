@@ -3,9 +3,7 @@
 
 process.env.NODE_ENV = 'test';
 
-var mongoose = require('mongoose');
 var util = require('./util.js');
-var server = require('../server.js');
 
 var allModels = [
   require('../models/admin.js'),
@@ -152,7 +150,7 @@ module.exports = options => {
     return handleWildcard(optionalProps, prop);
   }
   
-  function filterUnmodifiables(object) {
+  function filterUnmodifiables() {
     var resObj = JSON.parse(JSON.stringify(testDocs));
     for (var key in resObj) {
       if (!resObj.hasOwnProperty(key)) continue;
@@ -608,7 +606,7 @@ module.exports = options => {
           'put', '"Hi!"'));
       
       for (var unmod of ['created', 'updated', 'id'].concat(unmodifiables)) {
-        var doc = JSON.parse(JSON.stringify(unmodTestDocs.simple1));
+        let doc = JSON.parse(JSON.stringify(unmodTestDocs.simple1));
         doc[unmod] = unmod === 'id' ? '123456789012345678901234'
           : '2016-10-24T17:00:42-03:00';
         it(`gives a 422 when including "${unmod}"`,
@@ -689,18 +687,18 @@ module.exports = options => {
         }
       }
       it('does nothing with an empty object',
-        util.testPatch(path, model, testDocs.simple1, {}, doc => {}, hooks));
+        util.testPatch(path, model, testDocs.simple1, {}, () => {}, hooks));
       it('ignores nonexistant properties in the patch',
         util.testPatch(path, model, testDocs.simple1, {nonexistant: 3},
-          doc => {}, hooks));
+          () => {}, hooks));
       it('ignores nonexistant nested properties in the patch',
         util.testPatch(path, model, testDocs.simple1,
-          {non: {existant: "I don't exist!"}}, doc => {}, hooks));
+          {non: {existant: "I don't exist!"}}, () => {}, hooks));
       if (nestedParentProp) {
         it('ignores nonexistant nested properties when parent property exists',
           util.testPatch(path, model, testDocs.simple1,
             {[nestedParentProp]: {nonexistant: 'bar'}},
-            doc => {}, hooks));
+            () => {}, hooks));
       }
       if (topLevelProp) {
         it('ignores nonexistant properties combined with existing properties',

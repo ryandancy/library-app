@@ -1,5 +1,4 @@
 var mongoose = require('mongoose');
-var ObjectId = mongoose.Schema.Types.ObjectId;
 var Schema = mongoose.Schema;
 var reqt = require('./util/req-types.js');
 

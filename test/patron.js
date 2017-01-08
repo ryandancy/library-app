@@ -1,6 +1,5 @@
 process.env.NODE_ENV = 'test';
 
-var mongoose = require('mongoose');
 var server = require('../server.js');
 var template = require('./template.js');
 
@@ -65,7 +64,7 @@ template({
               checkout.itemID, {$set: {checkoutID: checkout._id}}).exec());
           }
           
-          Promise.all(promises).then(newItems => {
+          Promise.all(promises).then(() => {
             dbCheckouts.sort((checkout1, checkout2) => {
               var r1 = checkout1.renewals, r2 = checkout2.renewals;
               return r1 > r2 ? 1 : r1 < r2 ? -1 : 0;
@@ -93,7 +92,7 @@ template({
         }
       }
       
-      Promise.all(promises).then(docs => done(), err => done(Error(err)));
+      Promise.all(promises).then(() => done(), err => done(Error(err)));
     }
   },
   additionalTests: () => {
