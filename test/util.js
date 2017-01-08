@@ -255,7 +255,7 @@ exports.testStatus = (path, model, status, hooks, docs = [],
       
       for (var header in heads) {
         if (!heads.hasOwnProperty(header)) continue;
-        reqeust = request.set(header, heads[header]);
+        request = request.set(header, heads[header]);
       }
       
       request.end((err, res) => {

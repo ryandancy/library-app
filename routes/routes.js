@@ -176,16 +176,19 @@ module.exports = (router, baseUri) => {
         return;
     }
     
-    Item.findByIdAndUpdate(
-      req.params.id,
-      {$set: {marc: marc}}
-    ).exec((err, doc) => {
-      if (doc === null) res.status(404).send(); // it doesn't exist
-      if (err) {
-        return util.handleDBError(
-          err, res, err.name === 'ValidationError' ? 422 : 500);
-      }
-      res.status(204).send();
+    // Not using findByIdAndUpdate because it wasn't validating propertly
+    Item.findById(req.params.id, (err, item) => {
+      if (item === null) return res.status(404).send(); // it doesn't exist
+      if (err) return util.handleDBError(err, res);
+      
+      item.marc = marc;
+      item.save(err => {
+        if (err) {
+          return util.handleDBError(
+            err, res, err.name === 'ValidationError' ? 422 : 500);
+        }
+        res.status(204).send();
+      });
     });
   });
   

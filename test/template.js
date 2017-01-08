@@ -703,7 +703,7 @@ module.exports = options => {
             doc => {}, hooks));
       }
       if (topLevelProp) {
-        it('ignores nonexistant properties  combined with existing properties',
+        it('ignores nonexistant properties combined with existing properties',
           util.testPatch(path, model, testDocs.simple1,
             {[topLevelProp]: topLevelValue, nonexistant: 901},
             doc => doc[topLevelProp] = topLevelValue, hooks));

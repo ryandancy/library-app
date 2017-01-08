@@ -15,6 +15,6 @@ var patronSchema = new Schema({
     required: true
   },
   checkouts: [reqt.ObjectId]
-}, {strict: 'throw'});
+});
 
 module.exports = mongoose.model('Patron', patronSchema);

@@ -44,18 +44,34 @@ var marcVariableField = {
   ind2: Character
 };
 
+var fieldsSchema = new Schema({
+  control: {
+    type: [marcControlField],
+    required: true
+  },
+  variable: {
+    type: [marcVariableField],
+    required: true
+  }
+}, {_id: false});
+
+var marcSchema = new Schema({
+  leader: {
+    type: String,
+    minlength: 24,
+    maxlength: 24,
+    required: true
+  },
+  fields: {
+    type: fieldsSchema,
+    required: true,
+  }
+}, {_id: false});
+
 var itemSchema = new Schema({
   marc: {
-    leader: {
-      type: String,
-      minlength: 24,
-      maxlength: 24,
-      required: true
-    },
-    fields: {
-      control: [marcControlField],
-      variable: [marcVariableField]
-    }
+    type: marcSchema,
+    required: true
   },
   barcode: reqt.Number,
   status: {
@@ -64,6 +80,6 @@ var itemSchema = new Schema({
     required: true
   },
   checkoutID: ObjectId
-}, {strict: 'throw'});
+});
 
 module.exports = mongoose.model('Item', itemSchema);

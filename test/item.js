@@ -49,8 +49,19 @@ template({
     marc: {
       leader: '123456789012345678901234',
       fields: {
-        control: [],
-        variable: []
+        control: [{
+          tag: 1,
+          value: '89187647889'
+        }],
+        variable: [{
+          tag: 20,
+          ind1: ' ',
+          ind2: ' ',
+          subfields: [{
+            tag: 'a',
+            value: '0845348116'
+          }]
+        }]
       }
     },
     barcode: 1234,
@@ -113,6 +124,8 @@ template({
         }, should.not.exist).catch(done);
       });
     }
+    
+    var marcHeaders = {accept: 'application/marc'};
     
     function castToMediaType(str, defaultType = 'application') {
       return str.includes('/') ? str : defaultType + '/' + str;
@@ -232,6 +245,240 @@ template({
       it('can replace a whitespace record with a unicode record, marc',
         testMarcPut('marc', testItems.whitespace, testMarc.unicode,
           testItems.unicode.marc));
+      
+      it('gives a 400 on invalid JSON',
+        util.testStatus(marcPath, Item, 400, {}, [testItems.simple1],
+          'put', 'inv??al\'id^7'));
+      it('gives a 400 on strictly invalid JSON (parseable by JSON.parse)',
+        util.testStatus(marcPath, Item, 400, {}, [testItems.simple1],
+          'put', '"invalid"'));
+      it('gives a 422 on invalid MARC',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1],
+          'put', 'i89VA 6líð', marcHeaders));
+      it('gives a 422 on empty MARC',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1],
+          'put', '', marcHeaders));
+      it('gives a 422 on empty object, json',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1],
+          'put', {}));
+      it('treats empty JSON the same as an empty object: 422',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1],
+          'put', {}));
+      it('gives a 422 when missing "leader" (only in JSON)',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1],
+          'put', {fields: {control: [], variable: []}}));
+      it('gives a 422 on an invalid leader, json',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1],
+          'put', {leader: '1234', fields: {control: [], variable: []}}));
+      it('gives a 422 on an invalid leader, marc',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1],
+          'put', '1234\n001 5810733\n003 53255', marcHeaders));
+      it('gives a 422 when missing "fields" (only in JSON)',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1],
+          'put', {leader: '123456789012345678901234'}));
+      it('gives a 422 when missing "fields.control" (only in JSON)',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1],
+          'put', {leader: '123456789012345678901234', fields: {variable: []}}));
+      it('gives a 422 when missing "fields.variable" (only in JSON)',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1],
+          'put', {leader: '123456789012345678901234', fields: {control: []}}));
+      it('gives a 422 when missing "tag" on a variable field',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'put', {
+            leader: '123456789012345678901234',
+            fields: {
+              control: [],
+              variable: [{
+                ind1: ' ',
+                ind2: ' ',
+                subfields: [{
+                  tag: 'a',
+                  value: 'foo'
+                }]
+              }]
+            }
+          }));
+      it('gives a 422 when missing "ind1" on a variable field',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'put', {
+            leader: '123456789012345678901234',
+            fields: {
+              control: [],
+              variable: [{
+                tag: 102,
+                ind2: ' ',
+                subfields: [{
+                  tag: 'a',
+                  value: 'foo'
+                }]
+              }]
+            }
+          }));
+      it('gives a 422 when missing "ind2" on a variable field',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'put', {
+            leader: '123456789012345678901234',
+            fields: {
+              control: [],
+              variable: [{
+                tag: 102,
+                ind1: ' ',
+                subfields: [{
+                  tag: 'a',
+                  value: 'foo'
+                }]
+              }]
+            }
+          }));
+      it('gives a 422 when missing "tag" on a variable subfield',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'put', {
+            leader: '123456789012345678901234',
+            fields: {
+              control: [],
+              variable: [{
+                tag: 102,
+                ind1: ' ',
+                ind2: ' ',
+                subfields: [{
+                  value: 'foo'
+                }]
+              }]
+            }
+          }));
+      it('gives a 422 when missing "value" on a variable subfield',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'put', {
+            leader: '123456789012345678901234',
+            fields: {
+              control: [],
+              variable: [{
+                tag: 102,
+                ind1: ' ',
+                ind2: ' ',
+                subfields: [{
+                  tag: 'a'
+                }]
+              }]
+            }
+          }));
+      it('gives a 422 when "tag" > 999 on a variable field',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'put', {
+            leader: '123456789012345678901234',
+            fields: {
+              control: [],
+              variable: [{
+                tag: 1000,
+                ind1: ' ',
+                ind2: ' ',
+                subfields: [{
+                  tag: 'a',
+                  value: 'abc'
+                }]
+              }]
+            }
+          }));
+      it('gives a 422 when "tag" < 10 on a variable field',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'put', {
+            leader: '123456789012345678901234',
+            fields: {
+              control: [],
+              variable: [{
+                tag: 5,
+                ind1: ' ',
+                ind2: ' ',
+                subfields: [{
+                  tag: 'a',
+                  value: 'abc'
+                }]
+              }]
+            }
+          }));
+      it('gives a 422 when "ind1" is empty on a variable field',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'put', {
+            leader: '123456789012345678901234',
+            fields: {
+              control: [],
+              variable: [{
+                tag: 5,
+                ind1: '',
+                ind2: ' ',
+                subfields: [{
+                  tag: 'a',
+                  value: 'abc'
+                }]
+              }]
+            }
+          }));
+      it('gives a 422 when "ind2" is empty on a variable field',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'put', {
+            leader: '123456789012345678901234',
+            fields: {
+              control: [],
+              variable: [{
+                tag: 5,
+                ind1: ' ',
+                ind2: '',
+                subfields: [{
+                  tag: 'a',
+                  value: 'abc'
+                }]
+              }]
+            }
+          }));
+      it('gives a 422 when "ind1".length > 1 on a variable field',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'put', {
+            leader: '123456789012345678901234',
+            fields: {
+              control: [],
+              variable: [{
+                tag: 5,
+                ind1: '  ',
+                ind2: ' ',
+                subfields: [{
+                  tag: 'a',
+                  value: 'abc'
+                }]
+              }]
+            }
+          }));
+      it('gives a 422 when "ind2".length > 1 on a variable field',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'put', {
+            leader: '123456789012345678901234',
+            fields: {
+              control: [],
+              variable: [{
+                tag: 5,
+                ind1: ' ',
+                ind2: '  ',
+                subfields: [{
+                  tag: 'a',
+                  value: 'abc'
+                }]
+              }]
+            }
+          }));
+      it('gives a 422 when "tag".length > 1 on a variable subfield',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'put', {
+            leader: '123456789012345678901234',
+            fields: {
+              control: [],
+              variable: [{
+                tag: 5,
+                ind1: '  ',
+                ind2: ' ',
+                subfields: [{
+                  tag: 'ab',
+                  value: 'abc'
+                }]
+              }]
+            }
+          }));
+      
+      it('gives a 415 on a valid Content-Type that\'s not marc/json',
+        util.testStatus(marcPath, Item, 415, {}, [testItems.simple1],
+          'put', 'foo', {accept: 'text/plain'}));
+      it('gives a 415 on an invalid Content-Type',
+        util.testStatus(marcPath, Item, 415, {}, [testItems.simple1],
+          'put', 'as?3l', {accept: 'ajoiasjfp8aw677s'}))
+      
+      util.testIDHandling(marcPath, 'MARC record', Item, {}, 'put',
+        testItems.simple1);
     });
   }
 });

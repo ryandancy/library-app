@@ -12,7 +12,7 @@ exports.validate = (req, res, code = 422) => {
 exports.handleDBError = (err, res, code = 500) => {
   if (err) {
     if (err instanceof Error) {
-      err = err.toString();
+      err = err.message;
     }
     res.status(code).send(err);
   }

@@ -325,10 +325,18 @@ module.exports = (router, baseUri) => {
           return res.status(422).json(errors);
         }
         
-        // actually update the doc
         var oldDocCopy = JSON.parse(JSON.stringify(oldDoc));
-        var newDoc = mergePatch.apply(oldDoc, patch);
-        req.hook(req, res, oldDocCopy, newDoc, () => newDoc.save((err, doc) => {
+        var newDoc = mergePatch.apply(
+          JSON.parse(JSON.stringify(oldDoc)), patch);
+        
+        // copy everything from newDoc to oldDoc
+        for (var prop in newDoc) {
+          if (!newDoc.hasOwnProperty(prop)) continue;
+          oldDoc[prop] = newDoc[prop];
+        }
+        
+        // actually update the doc
+        req.hook(req, res, oldDocCopy, oldDoc, () => oldDoc.save((err, doc) => {
           if (err) {
             return util.handleDBError(
               err, res, err.name === 'ValidationError' ? 422 : 500);

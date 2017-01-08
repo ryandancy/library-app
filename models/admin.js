@@ -18,6 +18,6 @@ var adminSchema = new Schema({
   },
   signIn: reqt.Boolean,
   signOut: reqt.Boolean
-}, {strict: 'throw'});
+});
 
 module.exports = mongoose.model('Admin', adminSchema);

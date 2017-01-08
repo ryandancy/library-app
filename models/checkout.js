@@ -13,6 +13,6 @@ var checkoutSchema = new Schema({
     enum: ['onTime', 'late', 'returned', 'lost'],
     required: true
   }
-}, {strict: 'throw'});
+});
 
 module.exports = mongoose.model('Checkout', checkoutSchema);
