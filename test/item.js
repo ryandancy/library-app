@@ -644,6 +644,43 @@ template({
             item.marc.fields.control = testControl;
             item.marc.fields.variable = testVariable;
           }));
+      
+      it('does nothing on an empty object',
+        testMarcPatch(testItems.simple1, {}, item => {}));
+      it('ignores a nonexistant top-level property',
+        testMarcPatch(testItems.simple1, {foo: 'bar'}, item => {}));
+      it('ignores a nonexistant second-level property',
+        testMarcPatch(testItems.simple1, {foo: {bar: 'baz'}}, item => {}));
+      it('ignores a nonexistant property under "fields"',
+        testMarcPatch(testItems.simple1, {fields: {foo: 'bar'}}, item => {}));
+      it('gives a 400 on invalid JSON',
+        util.testStatus(marcPath, Item, 400, {}, [testItems.simple1], 'patch',
+          'in?v*@li**65$%^ð'));
+      it('gives a 400 on strictly invalid JSON (parseable by JSON.parse)',
+        util.testStatus(marcPath, Item, 400, {}, [testItems.simple1], 'patch',
+          '"invalid"'));
+      
+      it('gives a 422 when trying to delete "leader"',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'patch',
+          {leader: null}));
+      it('gives a 422 when trying to delete "fields"',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'patch',
+          {fields: null}));
+      it('gives a 422 when trying to delete "fields.control"',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'patch',
+          {fields: {control: null}}));
+      it('gives a 422 when trying to delete "fields.variable"',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'patch',
+          {fields: {variable: null}}));
+      it('gives a 422 when trying to set "fields.control" to empty',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'patch',
+          {fields: {control: []}}));
+      it('gives a 422 when trying to set "fields.variable" to empty',
+        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'patch',
+          {fields: {variable: []}}));
+      
+      util.testIDHandling(marcPath, 'MARC record', Item, {}, 'patch',
+        testItems.simple1);
     });
   }
 });
