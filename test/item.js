@@ -480,5 +480,170 @@ template({
       util.testIDHandling(marcPath, 'MARC record', Item, {}, 'put',
         testItems.simple1);
     });
+    
+    function testMarcPatch(item, patch, patchApplier) {
+      return done => {
+        util.populateDB(item, Item, (item, dbItems) => {
+          var id = dbItems[0]._id;
+          chai.request(server)
+          .patch(`/v0/items/${id}/marc`)
+          .send(patch)
+          .end((err, res) => {
+            res.should.have.status(200);
+            
+            var newItem = JSON.parse(JSON.stringify(item));
+            patchApplier(newItem);
+            res.body.should.containSubset(newItem.marc);
+            
+            Item.findById(id, (err, item) => {
+              should.not.exist(err);
+              item.toObject().marc.should.containSubset(newItem.marc);
+              done();
+            });
+          });
+        }, done);
+      };
+    }
+    
+    describe('PATCH /v0/items/:id/marc', () => {
+      var testLeader = '123456789012345678901234';
+      var testControl = [{
+        tag: 1,
+        value: '123456'
+      }, {
+        tag: 3,
+        value: '1511'
+      }];
+      var testVariable = [{
+        tag: 20,
+        ind1: ' ',
+        ind2: ' ',
+        subfields: [{
+          tag: 'a',
+          value: 'Smith, Joe'
+        }, {
+          tag: 'b',
+          value: "Joe Smith's Great Antarctic Wildlife Almanac"
+        }]
+      }, {
+        tag: 163,
+        ind1: '2',
+        ind2: ' ',
+        subfields: [{
+          tag: 'a',
+          value: '20 cm'
+        }, {
+          tag: 't',
+          value: '5 pages'
+        }]
+      }];
+      
+      it('can update leader of a simple record',
+        testMarcPatch(testItems.simple1, {leader: testLeader},
+          item => item.marc.leader = testLeader));
+      // REVIEW should we change from json-merge-patch since it doesn't allow
+      // changing an individual item in an array?
+      it('can update all the control fields of a simple record',
+        testMarcPatch(testItems.simple1,
+          {fields: {control: testControl}},
+          item => item.marc.fields.control = testControl));
+      it('can update all the variable fields of a simple record',
+        testMarcPatch(testItems.simple1,
+          {fields: {variable: testVariable}},
+          item => item.marc.fields.variable = testVariable));
+      it('can update all the control AND variable fields of a simple record',
+        testMarcPatch(testItems.simple1,
+          {fields: {control: testControl, variable: testVariable}},
+          item => {
+            item.marc.fields.control = testControl;
+            item.marc.fields.variable = testVariable;
+          }));
+      it('can update the leader and all the control fields of a simple record',
+        testMarcPatch(testItems.simple1,
+          {leader: testLeader, fields: {control: testControl}},
+          item => {
+            item.marc.leader = testLeader;
+            item.marc.fields.control = testControl;
+          }));
+      it('can update ALL the fields of a simple record',
+        testMarcPatch(testItems.simple1, {
+            leader: testLeader,
+            fields: {control: testControl, variable: testVariable}
+          }, item => {
+            item.marc.leader = testLeader;
+            item.marc.fields.control = testControl;
+            item.marc.fields.variable = testVariable;
+          }));
+      
+      it('can update leader of a unicode record',
+        testMarcPatch(testItems.unicode, {leader: testLeader},
+          item => item.marc.leader = testLeader));
+      it('can update all the control fields of a unicode record',
+        testMarcPatch(testItems.unicode,
+          {fields: {control: testControl}},
+          item => item.marc.fields.control = testControl));
+      it('can update all the variable fields of a unicode record',
+        testMarcPatch(testItems.unicode,
+          {fields: {variable: testVariable}},
+          item => item.marc.fields.variable = testVariable));
+      it('can update all the control AND variable fields of a unicode record',
+        testMarcPatch(testItems.unicode,
+          {fields: {control: testControl, variable: testVariable}},
+          item => {
+            item.marc.fields.control = testControl;
+            item.marc.fields.variable = testVariable;
+          }));
+      it('can update the leader and all the control fields of a unicode record',
+        testMarcPatch(testItems.unicode,
+          {leader: testLeader, fields: {control: testControl}},
+          item => {
+            item.marc.leader = testLeader;
+            item.marc.fields.control = testControl;
+          }));
+      it('can update ALL the fields of a unicode record',
+        testMarcPatch(testItems.unicode, {
+            leader: testLeader,
+            fields: {control: testControl, variable: testVariable}
+          }, item => {
+            item.marc.leader = testLeader;
+            item.marc.fields.control = testControl;
+            item.marc.fields.variable = testVariable;
+          }));
+      
+      it('can update leader of a whitespace record',
+        testMarcPatch(testItems.whitespace, {leader: testLeader},
+          item => item.marc.leader = testLeader));
+      it('can update all the control fields of a whitespace record',
+        testMarcPatch(testItems.whitespace,
+          {fields: {control: testControl}},
+          item => item.marc.fields.control = testControl));
+      it('can update all the variable fields of a whitespace record',
+        testMarcPatch(testItems.whitespace,
+          {fields: {variable: testVariable}},
+          item => item.marc.fields.variable = testVariable));
+      it('can update all control and variable fields of a whitespace record',
+        testMarcPatch(testItems.whitespace,
+          {fields: {control: testControl, variable: testVariable}},
+          item => {
+            item.marc.fields.control = testControl;
+            item.marc.fields.variable = testVariable;
+          }));
+      it('can update leader and all control fields of a whitespace record',
+        testMarcPatch(testItems.whitespace,
+          {leader: testLeader, fields: {control: testControl}},
+          item => {
+            item.marc.leader = testLeader;
+            item.marc.fields.control = testControl;
+          }));
+      it('can update ALL the fields of a whitespace record',
+        testMarcPatch(testItems.whitespace, {
+            leader: testLeader,
+            fields: {control: testControl, variable: testVariable}
+          }, item => {
+            item.marc.leader = testLeader;
+            item.marc.fields.control = testControl;
+            item.marc.fields.variable = testVariable;
+          }));
+    });
   }
 });

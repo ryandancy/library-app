@@ -199,13 +199,14 @@ module.exports = (router, baseUri) => {
       if (item === null) return res.status(404).send(); // it doesn't exist
       if (err) return util.handleDBError(err, res);
       
-      item.marc = mergePatch.apply(item.marc, req.body);
+      item.marc = mergePatch.apply(
+        JSON.parse(JSON.stringify(item.marc)), req.body);
       item.save((err, item) => {
         if (err) {
           return util.handleDBError(
             err, res, err.name === 'ValidationError' ? 422 : 500);
         }
-        res.status(200).json(item);
+        res.status(200).json(item.marc);
       });
     });
   });
@@ -218,6 +219,7 @@ module.exports = (router, baseUri) => {
         // remove checkout's item's checkoutID
         promises.push(new Promise((resolve, reject) => {
           Checkout.findById(checkoutID, (err, checkout) => {
+            if (checkout === null) return resolve(); // ignore nonexistant stuff
             if (err) return reject(err);
             
             Item.findByIdAndUpdate(
