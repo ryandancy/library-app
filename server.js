@@ -1,14 +1,14 @@
-var express = require('express');
-var app = express();
-var mongoose = require('mongoose');
-var morgan = require('morgan');
-var bodyParser = require('body-parser');
-var methodOverride = require('method-override');
-var expressValidator = require('express-validator');
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
+const morgan = require('morgan');
+const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
+const expressValidator = require('express-validator');
 
-var config = require('./config.js');
+const config = require('./config.js');
 
-var baseUri = '/v0';
+const baseUri = '/v0';
 
 // use native ES6 promises
 mongoose.Promise = global.Promise;
@@ -38,7 +38,7 @@ app.use(expressValidator({
 }));
 app.use(methodOverride());
 
-var router = express.Router();
+const router = express.Router();
 
 // routes
 require('./routes/routes.js')(router, baseUri);

@@ -2,7 +2,7 @@
 
 // helper function for error validation, returns true if validation passed
 exports.validate = (req, res, code = 422) => {
-  var errors = req.validationErrors();
+  let errors = req.validationErrors();
   if (errors) {
     res.status(code).json(errors);
   }

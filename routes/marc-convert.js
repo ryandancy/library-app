@@ -7,16 +7,16 @@ function leftPad(str, n, char = '0') {
 }
 
 exports.jsonToMarc = json => {
-  var marc = [json.leader];
+  let marc = [json.leader];
   
-  for (var control of json.fields.control) {
+  for (let control of json.fields.control) {
     marc.push(leftPad(control.tag, 3) + ' ' + control.value);
   }
   
-  for (var variable of json.fields.variable) {
-    var field = leftPad(variable.tag, 3) + ' ' + variable.ind1 + variable.ind2;
+  for (let variable of json.fields.variable) {
+    let field = leftPad(variable.tag, 3) + ' ' + variable.ind1 + variable.ind2;
     
-    for (var subfield of variable.subfields) {
+    for (let subfield of variable.subfields) {
       field += '$' + subfield.tag + subfield.value;
     }
     
@@ -29,27 +29,27 @@ exports.jsonToMarc = json => {
 exports.marcToJson = marc => {
   marc = marc.split('\n');
   
-  var leader = marc[0];
+  let leader = marc[0];
   marc = marc.slice(1);
   
-  var controlFields = [];
-  var variableFields = [];
+  let controlFields = [];
+  let variableFields = [];
   
-  for (var field of marc) {
-    var tag = parseInt(field.slice(0, 3), 10);
-    var rest = field.slice(4);
+  for (let field of marc) {
+    let tag = parseInt(field.slice(0, 3), 10);
+    let rest = field.slice(4);
     
     if (tag < 10) {
       controlFields.push({tag: tag, value: rest});
     } else {
-      var [ind1, ind2] = rest.slice(0, 2);
-      var subfields = [];
+      let [ind1, ind2] = rest.slice(0, 2);
+      let subfields = [];
       
-      var subfieldStr = rest.slice(2);
-      var subfieldRegex = /\$(.)(.[^\$]*)/g;
-      var groups;
+      let subfieldStr = rest.slice(2);
+      let subfieldRegex = /\$(.)(.[^\$]*)/g;
+      let groups;
       while ((groups = subfieldRegex.exec(subfieldStr)) !== null) {
-        var [, subTag, subVal] = groups;
+        let [, subTag, subVal] = groups;
         subfields.push({
           tag: subTag,
           value: subVal

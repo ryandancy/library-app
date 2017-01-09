@@ -1,21 +1,21 @@
 process.env.NODE_ENV = 'test';
 
-var server = require('../server.js');
-var template = require('./template.js');
+const server = require('../server.js');
+const template = require('./template.js');
 
-var Patron = require('../models/patron.js');
-var Checkout = require('../models/checkout.js');
-var Item = require('../models/item.js');
+const Patron = require('../models/patron.js');
+const Checkout = require('../models/checkout.js');
+const Item = require('../models/item.js');
 
-var testItems = Object.values(require('./test-docs/item.js'));
-var testPatrons = require('./test-docs/patron.js');
-var testCheckouts = require('./test-docs/checkout.js');
+const testItems = Object.values(require('./test-docs/item.js'));
+const testPatrons = require('./test-docs/patron.js');
+const testCheckouts = require('./test-docs/checkout.js');
 
-var chai = require('chai');
-var chaiHttp = require('chai-http');
-var chaiSubset = require('chai-subset');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const chaiSubset = require('chai-subset');
 
-var should = chai.should();
+const should = chai.should();
 chai.use(chaiHttp);
 chai.use(chaiSubset);
 
@@ -49,8 +49,8 @@ template({
       Item.insertMany(testItems, (err, dbItems) => {
         if (err) return done(Error(err));
         
-        var checkouts = JSON.parse(JSON.stringify(testCheckouts));
-        for (var i = 0; i < checkouts.length; i++) {
+        let checkouts = JSON.parse(JSON.stringify(testCheckouts));
+        for (let i = 0; i < checkouts.length; i++) {
           checkouts[i].itemID = dbItems[i]._id;
         }
         
@@ -58,15 +58,15 @@ template({
           if (err) return done(Error(err));
           
           // update the checkoutIDs on the items with the _ids from dbCheckouts
-          var promises = [];
-          for (var checkout of dbCheckouts) {
+          let promises = [];
+          for (let checkout of dbCheckouts) {
             promises.push(Item.findByIdAndUpdate(
               checkout.itemID, {$set: {checkoutID: checkout._id}}).exec());
           }
           
           Promise.all(promises).then(() => {
             dbCheckouts.sort((checkout1, checkout2) => {
-              var r1 = checkout1.renewals, r2 = checkout2.renewals;
+              let r1 = checkout1.renewals, r2 = checkout2.renewals;
               return r1 > r2 ? 1 : r1 < r2 ? -1 : 0;
             });
             
@@ -84,9 +84,9 @@ template({
   populateDBHooks: {
     post: (patrons, dbPatrons, done) => {
       // update the patrons' checkouts' patronIDs
-      var promises = [];
-      for (var patron of dbPatrons) {
-        for (var checkoutID of patron.checkouts) {
+      let promises = [];
+      for (let patron of dbPatrons) {
+        for (let checkoutID of patron.checkouts) {
           promises.push(Checkout.findByIdAndUpdate(
             checkoutID, {$set: {patronID: patron._id}}).exec());
         }
@@ -98,7 +98,7 @@ template({
   additionalTests: () => {
     for (let collection = 0; collection < 2; collection++) {
       // let's just treat `collection` as a boolean cause JS is weird
-      var suffix = collection ? '' : '/:id';
+      let suffix = collection ? '' : '/:id';
       it(`deletes checkouts on DELETE /v0/patrons${suffix}`, done => {
         // Add the patron -- using unicode because 2 checkouts
         Patron.create(testPatrons.unicode, (err, patron) => {
@@ -117,11 +117,11 @@ template({
               Checkout.count({patronID: patron._id}).exec(),
               Item.find({}).exec()
             ]).then(data => {
-              var [patronCount, checkoutCount, items] = data;
+              let [patronCount, checkoutCount, items] = data;
               patronCount.should.deep.equal(0);
               checkoutCount.should.deep.equal(0);
               
-              for (var item of items) {
+              for (let item of items) {
                 if (item.checkoutID) {
                   item.checkoutID.should.not.deep.equal(patron.checkouts[0]);
                   item.checkoutID.should.not.deep.equal(patron.checkouts[1]);

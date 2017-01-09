@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var reqt = require('./util/req-types.js');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const reqt = require('./util/req-types.js');
 
-var adminSchema = new Schema({
+let adminSchema = new Schema({
   name: reqt.String,
   item: {
     read: reqt.Boolean,

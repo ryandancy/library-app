@@ -1,10 +1,10 @@
 process.env.NODE_ENV = 'test';
 
-var server = require('../server.js'); // eslint-disable-line no-unused-vars
-var Admin = require('../models/admin.js');
-var template = require('./template.js');
+const server = require('../server.js'); // eslint-disable-line no-unused-vars
+const Admin = require('../models/admin.js');
+const template = require('./template.js');
 
-var testAdmins = require('./test-docs/admin.js');
+const testAdmins = require('./test-docs/admin.js');
 
 template({
   path: '/v0/admins',

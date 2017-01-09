@@ -1,29 +1,29 @@
 // Contains utility functions for testing
 
-var mongoose = require('mongoose');
-var ObjectId = mongoose.Types.ObjectId;
-var server = require('../server.js');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
+const server = require('../server.js');
 
-var chai = require('chai');
-var chaiHttp = require('chai-http');
-var chaiSubset = require('chai-subset');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const chaiSubset = require('chai-subset');
 
-var should = chai.should();
+const should = chai.should();
 chai.use(chaiHttp);
 chai.use(chaiSubset);
 
-var coerceToArray = value => Array.isArray(value) ? value : [value];
+const coerceToArray = value => Array.isArray(value) ? value : [value];
 
 function populateDB(docs, model, callbackSuccess, callbackErr, hooks = {}) {
-  var docArr = Array.isArray(docs) ? docs : [docs];
-  var preHook = hooks.pre || ((docs, done) => done());
-  var postHook = hooks.post || ((docs, dbDocs, done) => done());
+  let docArr = Array.isArray(docs) ? docs : [docs];
+  let preHook = hooks.pre || ((docs, done) => done());
+  let postHook = hooks.post || ((docs, dbDocs, done) => done());
   
   preHook(docs, err => {
     if (err) return callbackErr(err);
     
-    var promises = [];
-    for (var doc of docArr) {
+    let promises = [];
+    for (let doc of docArr) {
       promises.push(new model(doc).save());
     }
     
@@ -39,13 +39,13 @@ function populateDB(docs, model, callbackSuccess, callbackErr, hooks = {}) {
 exports.populateDB = populateDB;
 
 function getQueryObject(doc) {
-  var query = {};
+  let query = {};
   
   function generateQuery(root, obj) {
-    for (var prop in obj) {
+    for (let prop in obj) {
       if (!obj.hasOwnProperty(prop)) continue;
       
-      var propAddress = root ? `${root}.${prop}` : prop;
+      let propAddress = root ? `${root}.${prop}` : prop;
       if (typeof obj[prop] === 'object' && !(obj[prop] instanceof ObjectId)) {
         generateQuery(propAddress, obj[prop]);
       } else {
@@ -65,7 +65,7 @@ function baseNoPagingGetResponseCheck(res, testDocs) {
   res.body.should.have.property('maxItems').that.is.equal(testDocs.length);
   res.body.should.have.property('remainingItems').that.is.equal(0);
   
-  var data = res.body.data;
+  let data = res.body.data;
   data.should.have.lengthOf(testDocs.length);
   
   return data;
@@ -92,10 +92,10 @@ exports.testGet = (path, model, testDocs, hooks) => {
       chai.request(server)
       .get(path)
       .end((err, res) => {
-        var data = baseNoPagingGetResponseCheck(res, testDocs);
+        let data = baseNoPagingGetResponseCheck(res, testDocs);
         
-        for (var resDoc of data) {
-          var doc = checkAndSanitizeResponseDoc(resDoc);
+        for (let resDoc of data) {
+          let doc = checkAndSanitizeResponseDoc(resDoc);
           delete doc.created;
           delete doc.updated;
           JSON.parse(JSON.stringify(testDocs)).should.deep.include(doc);
@@ -122,7 +122,7 @@ exports.testResourceGet = (path, model, doc, hooks, dbDocs = []) => {
         res.should.have.status(200);
         res.body.should.be.an('object');
         
-        var resDoc = checkAndSanitizeResponseDoc(res.body);
+        let resDoc = checkAndSanitizeResponseDoc(res.body);
         delete resDoc.created;
         delete resDoc.updated;
         
@@ -137,7 +137,7 @@ exports.testResourceGet = (path, model, doc, hooks, dbDocs = []) => {
 exports.testPut = (path, model, oldDoc, newDoc, hooks, dbDocs = []) => {
   return done => {
     populateDB([oldDoc].concat(Array.from(dbDocs)), model, (docs, dbDocs) => {
-      var id = dbDocs[0]._id;
+      let id = dbDocs[0]._id;
       chai.request(server)
       .put(`${path}/${id}`)
       .send(newDoc)
@@ -161,15 +161,15 @@ exports.testPut = (path, model, oldDoc, newDoc, hooks, dbDocs = []) => {
 exports.testPatch = (path, model, doc, patch, patchFunc, hooks, dbDocs=[]) => {
   return done => {
     populateDB([doc].concat(Array.from(dbDocs)), model, (docs, dbDocs) => {
-      var id = dbDocs[0]._id;
+      let id = dbDocs[0]._id;
       chai.request(server)
       .patch(`${path}/${id}`)
       .send(patch)
       .end((err, res) => {
         res.should.have.status(200);
         
-        var body = JSON.parse(JSON.stringify(res.body));
-        var newDoc = JSON.parse(JSON.stringify(doc));
+        let body = JSON.parse(JSON.stringify(res.body));
+        let newDoc = JSON.parse(JSON.stringify(doc));
         patchFunc(newDoc);
         body.should.containSubset(newDoc);
         body.should.not.have.property('_id');
@@ -188,7 +188,7 @@ exports.testPatch = (path, model, doc, patch, patchFunc, hooks, dbDocs=[]) => {
 exports.testDelete = (path, model, doc, hooks, dbDocs = []) => {
   return done => {
     populateDB([doc].concat(Array.from(dbDocs)), model, (doc_, dbDocs) => {
-      var id = dbDocs[0]._id;
+      let id = dbDocs[0]._id;
       chai.request(server)
       .delete(`${path}/${id}`)
       .end((err, res) => {
@@ -215,10 +215,10 @@ exports.testSortableGet = (path, model, testDocs, checker, hooks) => {
       chai.request(server)
       .get(path)
       .end((err, res) => {
-        var data = baseNoPagingGetResponseCheck(res, testDocs);
+        let data = baseNoPagingGetResponseCheck(res, testDocs);
         
-        var prevDoc = null;
-        for (var doc of data) {
+        let prevDoc = null;
+        for (let doc of data) {
           if (prevDoc !== null) {
             checker(prevDoc, doc);
           }
@@ -243,13 +243,13 @@ exports.testStatus = (path, model, status, hooks, docs = [],
         path = path.replace(':id', dbDocs[0]._id);
       }
       
-      var request = chai.request(server);
+      let request = chai.request(server);
       request = request[method](path); // call the relevant HTTP method function
       if (send !== undefined) {
         request = request.send(send);
       }
       
-      for (var header in heads) {
+      for (let header in heads) {
         if (!heads.hasOwnProperty(header)) continue;
         request = request.set(header, heads[header]);
       }
@@ -300,14 +300,14 @@ exports.testPost = (path, doc, model, hooks, docsForDB = []) => {
         res.body.should.deep.equal({});
         res.should.have.property('text').that.is.equal('');
         
-        var queryStart = path.lastIndexOf('?');
-        var pathRoot = queryStart >= 0 ? path.slice(0, queryStart) : path;
+        let queryStart = path.lastIndexOf('?');
+        let pathRoot = queryStart >= 0 ? path.slice(0, queryStart) : path;
         
         res.header.should.have.property('location')
           .that.match(new RegExp(`^${pathRoot}\\/[\\w\\d]+$`));
         
-        var location = res.header.location;
-        var id = location.slice(location.lastIndexOf('/') + 1);
+        let location = res.header.location;
+        let id = location.slice(location.lastIndexOf('/') + 1);
         
         // check that it was set in the database
         model.findOne(getQueryObject(doc), (err, dbDoc) => {
@@ -315,12 +315,12 @@ exports.testPost = (path, doc, model, hooks, docsForDB = []) => {
           should.exist(dbDoc);
           dbDoc._id.toString().should.equal(id);
           
-          for (var prop in doc) {
+          for (let prop in doc) {
             if (!doc.hasOwnProperty(prop)) continue;
             // HACK: fix doc[prop] printing as [object Object], dbDoc[prop] not
             // this was causing the deep.equal assertion to fail
-            var dbProp = JSON.parse(JSON.stringify(dbDoc[prop]));
-            var docProp = JSON.parse(JSON.stringify(doc[prop]));
+            let dbProp = JSON.parse(JSON.stringify(dbDoc[prop]));
+            let docProp = JSON.parse(JSON.stringify(doc[prop]));
             dbProp.should.deep.equal(docProp);
           }
           
@@ -374,8 +374,8 @@ exports.testIDHandling = (path, name, model, hooks, method, example, send) => {
 
 function cloneObject(obj) {
   // REVIEW there's probably a better way to do this...
-  var newObj = {};
-  for (var prop in obj) {
+  let newObj = {};
+  for (let prop in obj) {
     if (obj.hasOwnProperty(prop)) {
       newObj[prop] = obj[prop];
     }
@@ -384,17 +384,17 @@ function cloneObject(obj) {
 }
 
 exports.getObjectMissingProperty = (obj, prop) => {
-  var newObj = cloneObject(obj);
+  let newObj = cloneObject(obj);
   delete newObj[prop];
   return newObj;
 };
 
 exports.generateObjectsMissingOneProperty = function*(obj) {
-  for (var prop in obj) {
+  for (let prop in obj) {
     if (!obj.hasOwnProperty(prop)) continue;
     if (typeof obj[prop] === 'object' && !(obj[prop] instanceof ObjectId)) {
-      for (var gen of exports.generateObjectsMissingOneProperty(obj[prop])) {
-        var newObj = cloneObject(obj);
+      for (let gen of exports.generateObjectsMissingOneProperty(obj[prop])) {
+        let newObj = cloneObject(obj);
         newObj[prop] = gen.obj;
         yield {
           obj: newObj,
@@ -411,10 +411,10 @@ exports.generateObjectsMissingOneProperty = function*(obj) {
 };
 
 exports.generateSinglePropertyPatches = function*(obj, value = null) {
-  for (var prop in obj) {
+  for (let prop in obj) {
     if (!obj.hasOwnProperty(prop)) continue;
     if (typeof obj[prop] === 'object' && !(obj[prop] instanceof ObjectId)) {
-      for (var gen of exports.generateSinglePropertyPatches(obj[prop], value)) {
+      for (let gen of exports.generateSinglePropertyPatches(obj[prop], value)) {
         yield {
           obj: {[prop]: gen.obj},
           prop: `${prop}.${gen.prop}`

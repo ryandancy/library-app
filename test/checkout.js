@@ -1,28 +1,28 @@
 process.env.NODE_ENV = 'test';
 
-var mongoose = require('mongoose');
-var ObjectId = mongoose.Types.ObjectId;
-var server = require('../server.js');
-var template = require('./template.js');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
+const server = require('../server.js');
+const template = require('./template.js');
 
-var Checkout = require('../models/checkout.js');
-var Item = require('../models/item.js');
-var Patron = require('../models/patron.js');
+const Checkout = require('../models/checkout.js');
+const Item = require('../models/item.js');
+const Patron = require('../models/patron.js');
 
-var oldTestItems = Object.values(require('./test-docs/item.js'));
-var testPatrons = Object.values(require('./test-docs/patron.js'));
-var testCheckouts = require('./test-docs/checkout.js');
+const oldTestItems = Object.values(require('./test-docs/item.js'));
+const testPatrons = Object.values(require('./test-docs/patron.js'));
+const testCheckouts = require('./test-docs/checkout.js');
 
-var testItems = oldTestItems.map(item => {
+const testItems = oldTestItems.map(item => {
   item.status = 'in';
   return item;
 });
 
-var chai = require('chai');
-var chaiHttp = require('chai-http');
-var chaiSubset = require('chai-subset');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const chaiSubset = require('chai-subset');
 
-var should = chai.should();
+const should = chai.should();
 chai.use(chaiHttp);
 chai.use(chaiSubset);
 
@@ -62,7 +62,7 @@ template({
         Item.insertMany(testItems),
         Patron.insertMany(testPatrons)
       ]).then(dbDocs => {
-        var dbItems = dbDocs[0], dbPatrons = dbDocs[1];
+        let dbItems = dbDocs[0], dbPatrons = dbDocs[1];
         testDocs.simple1.itemID = dbItems[0]._id;
         testDocs.simple1.patronID = dbPatrons[0]._id;
         testDocs.simple2.itemID = dbItems[1]._id;
@@ -74,12 +74,12 @@ template({
   populateDBHooks: {
     pre: (checkouts, done) => {
       // Fix references in generated checkouts
-      var updatePromises = [];
+      let updatePromises = [];
       
-      for (var checkout of checkouts) {
+      for (let checkout of checkouts) {
         if (checkout.renewals === 999) {
           // it's a generated checkout -- add an item & patron to reference
-          var refItem = {
+          let refItem = {
             marc: {
               leader: '123456789012345678901234',
               fields: {
@@ -90,7 +90,7 @@ template({
             barcode: checkout.renewals,
             status: 'in'
           };
-          var refPatron = {
+          let refPatron = {
             name: 'GenCheckoutPatron-' + (checkout.renewals - 1000),
             pic: 'http://example.com/checkout-' + (checkout.renewals - 1000)
                + '.jpg',
@@ -111,8 +111,8 @@ template({
     },
     post: (checkouts, dbCheckouts, done) => {
       // update the checkouts' items' and patrons' checkoutIDs
-      var promises = [];
-      for (var checkout of dbCheckouts) {
+      let promises = [];
+      for (let checkout of dbCheckouts) {
         promises.push(Item.findByIdAndUpdate(
           checkout.itemID, {$set: {checkoutID: checkout._id}}));
         promises.push(Patron.findByIdAndUpdate(
@@ -127,13 +127,13 @@ template({
         Item.create(testItems[0]),
         Patron.create(testPatrons[0])
       ]).then(docs => {
-        var item = docs[0], patron = docs[1];
+        let item = docs[0], patron = docs[1];
         should.not.exist(item.checkoutID);
         item.status.should.equal('in');
         patron.should.have.property('checkouts').that.is.an('array')
           .with.lengthOf(0);
         
-        var checkout = JSON.parse(JSON.stringify(testCheckouts[0]));
+        let checkout = JSON.parse(JSON.stringify(testCheckouts[0]));
         checkout.itemID = item._id;
         checkout.patronID = patron._id;
         
@@ -145,14 +145,14 @@ template({
           res.header.should.have.property('location')
             .that.match(/^\/v0\/checkouts\/[\da-fA-F]{24}$/);
           
-          var location = res.header.location;
-          var id = location.slice(location.lastIndexOf('/') + 1);
+          let location = res.header.location;
+          let id = location.slice(location.lastIndexOf('/') + 1);
           
           Promise.all([
             Item.findById(item._id).exec(),
             Patron.findById(patron._id).exec()
           ]).then(dbDocs => {
-            var dbItem = dbDocs[0], dbPatron = dbDocs[1];
+            let dbItem = dbDocs[0], dbPatron = dbDocs[1];
 
             should.exist(dbItem.checkoutID);
             dbItem.checkoutID.toString().should.equal(id);
@@ -175,15 +175,15 @@ template({
             Patron.create(patron ? testPatrons.slice(0, 2) : testPatrons[0]),
             Item.create(item ? testItems.slice(0, 2) : testItems[0])
           ]).then(docs => {
-            var [patrons, items] = docs;
+            let [patrons, items] = docs;
             
             // Add the checkout with the 0th IDs
-            var checkout = JSON.parse(JSON.stringify(testCheckouts[0]));
+            let checkout = JSON.parse(JSON.stringify(testCheckouts[0]));
             checkout.patronID = (patron ? patrons[0] : patrons)._id;
             checkout.itemID = (item ? items[0] : items)._id;
             Checkout.create(checkout, (err, dbCheckout) => {
               should.not.exist(err);
-              var id = dbCheckout._id;
+              let id = dbCheckout._id;
               
               // Update the patron and item
               Promise.all([
@@ -193,7 +193,7 @@ template({
                   {$set: {checkoutID: id}}).exec()
               ]).then(() => {
                 // Prepare the thing to be sent
-                var send = sendFunc(patron, item, patrons, items, checkout);
+                let send = sendFunc(patron, item, patrons, items, checkout);
                 
                 // Actually make the request
                 chai.request(server)[method](`/v0/checkouts/${id}`)
@@ -218,7 +218,7 @@ template({
                     ] : [])
                   ).then(docs => {
                     if (patron) {
-                      var patrons = docs.slice(0, 2);
+                      let patrons = docs.slice(0, 2);
                       patrons[0].should.have.property('checkouts')
                         .that.is.an('array')
                         .with.lengthOf(0);
@@ -228,7 +228,7 @@ template({
                         .and.deep.include.members([id]);
                     }
                     if (item) {
-                      var items = patron ? docs.slice(2, 4) : docs.slice(0, 2);
+                      let items = patron ? docs.slice(2, 4) : docs.slice(0, 2);
                       should.not.exist(items[0].checkoutID);
                       items[1].should.have.property('checkoutID')
                         .that.is.eql(id);
@@ -243,16 +243,16 @@ template({
       };
     }
     
-    var testChangedXIdInPut = getChangedXIdInXTester('put', 204,
+    let testChangedXIdInPut = getChangedXIdInXTester('put', 204,
       (patron, item, patrons, items, checkout) => {
         if (patron) checkout.patronID = patrons[1]._id;
         if (item) checkout.itemID = items[1]._id;
         return checkout;
       });
     
-    var testChangedXIdInPatch = getChangedXIdInXTester('patch', 200,
+    let testChangedXIdInPatch = getChangedXIdInXTester('patch', 200,
       (patron, item, patrons, items) => {
-        var patch = {};
+        let patch = {};
         if (patron) patch.patronID = patrons[1]._id;
         if (item) patch.itemID = items[1]._id;
         return patch;
@@ -275,21 +275,21 @@ template({
     function testDelete({status = 'in', collection = false} = {}) {
       return done => {
         // Add the item and patron
-        var itemForDB = JSON.parse(JSON.stringify(testItems[0]));
+        let itemForDB = JSON.parse(JSON.stringify(testItems[0]));
         itemForDB.status = status;
         Promise.all([
           Item.create(itemForDB),
           Patron.create(testPatrons[0])
         ]).then(docs => {
-          var [item, patron] = docs;
+          let [item, patron] = docs;
           
           // Make the checkout
-          var checkout = JSON.parse(JSON.stringify(testCheckouts[0]));
+          let checkout = JSON.parse(JSON.stringify(testCheckouts[0]));
           checkout.itemID = item._id;
           checkout.patronID = patron._id;
           Checkout.create(checkout, (err, dbCheckout) => {
             should.not.exist(err);
-            var id = dbCheckout._id;
+            let id = dbCheckout._id;
             
             // Update the item and patron
             Promise.all([
@@ -311,7 +311,7 @@ template({
                   Item.findById(item._id).exec(),
                   Patron.findById(patron._id).exec()
                 ]).then(data => {
-                  var [count, item, patron] = data;
+                  let [count, item, patron] = data;
                   count.should.deep.equal(0);
                   
                   should.not.exist(item.checkoutID);

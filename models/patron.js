@@ -1,9 +1,9 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var isUri = require('valid-url').isUri;
-var reqt = require('./util/req-types.js');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const isUri = require('valid-url').isUri;
+const reqt = require('./util/req-types.js');
 
-var patronSchema = new Schema({
+let patronSchema = new Schema({
   name: reqt.String,
   pic: {
     type: String,

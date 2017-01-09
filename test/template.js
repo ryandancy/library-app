@@ -3,20 +3,20 @@
 
 process.env.NODE_ENV = 'test';
 
-var util = require('./util.js');
+const util = require('./util.js');
 
-var allModels = [
+const allModels = [
   require('../models/admin.js'),
   require('../models/checkout.js'),
   require('../models/item.js'),
   require('../models/patron.js')
 ];
 
-var chai = require('chai');
-var chaiHttp = require('chai-http');
-var chaiSubset = require('chai-subset');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const chaiSubset = require('chai-subset');
 
-var should = chai.should();
+const should = chai.should();
 chai.use(chaiHttp);
 chai.use(chaiSubset);
 
@@ -102,39 +102,41 @@ module.exports = options => {
     throw new Error('options parameter is missing some required properties');
   }
   
-  var path = options.path;
-  var idPath = options.idPath || path + '/:id';
-  var model = options.model;
-  var singular = options.name.singular;
-  var plural = options.name.plural || path.slice(path.lastIndexOf('/') + 1);
-  var testDocs = options.testDocs;
-  var allTestDocs = Object.values(testDocs);
-  var optionalProps = options.optionalProperties || [];
-  var ignoreProps = options.ignoredProperties || [];
-  var unmodifiables = options.customUnmodifiables || [];
-  var generator = options.generator;
-  var customBeforeEach = options.beforeEach || false;
-  var hooks = options.populateDBHooks || {};
-  var moreTests = options.additionalTests || (() => {});
+  const path = options.path;
+  const idPath = options.idPath || path + '/:id';
+  const model = options.model;
+  const singular = options.name.singular;
+  const plural = options.name.plural || path.slice(path.lastIndexOf('/') + 1);
+  const testDocs = options.testDocs;
+  const allTestDocs = Object.values(testDocs);
+  const optionalProps = options.optionalProperties || [];
+  const ignoreProps = options.ignoredProperties || [];
+  const unmodifiables = options.customUnmodifiables || [];
+  const generator = options.generator;
+  const customBeforeEach = options.beforeEach || false;
+  const hooks = options.populateDBHooks || {};
+  const moreTests = options.additionalTests || (() => {});
   
-  var patchProps = options.patchProperties;
-  var stringProp = patchProps.string === undefined ? 'name' : patchProps.string;
-  var topLevelProp = patchProps.topLevel ? patchProps.topLevel.property : false;
-  var topLevelValue = patchProps.topLevel ? patchProps.topLevel.value : false;
-  var nestedProp = patchProps.nested ? patchProps.nested.property : false;
-  var nestedValue = patchProps.nested ? patchProps.nested.value : false;
-  var nestedParentProp = patchProps.nested ? patchProps.nested.parentProperty
+  const patchProps = options.patchProperties;
+  const stringProp = patchProps.string === undefined ? 'name'
+    : patchProps.string;
+  const topLevelProp = patchProps.topLevel ? patchProps.topLevel.property
+    : false;
+  const topLevelValue = patchProps.topLevel ? patchProps.topLevel.value : false;
+  const nestedProp = patchProps.nested ? patchProps.nested.property : false;
+  const nestedValue = patchProps.nested ? patchProps.nested.value : false;
+  const nestedParentProp = patchProps.nested ? patchProps.nested.parentProperty
     : false;
   
   function* generateDocs(num) {
-    for (var i = 0; i < num; i++) {
+    for (let i = 0; i < num; i++) {
       yield generator(num);
     }
   }
   
   function handleWildcard(propArr, prop) {
     if (propArr.includes(prop)) return true;
-    for (var aProp of propArr) {
+    for (let aProp of propArr) {
       if (aProp.endsWith('.*') && prop.startsWith(aProp.slice(0, -1))) {
         return true;
       }
@@ -151,10 +153,10 @@ module.exports = options => {
   }
   
   function filterUnmodifiables() {
-    var resObj = JSON.parse(JSON.stringify(testDocs));
-    for (var key in resObj) {
+    let resObj = JSON.parse(JSON.stringify(testDocs));
+    for (let key in resObj) {
       if (!resObj.hasOwnProperty(key)) continue;
-      for (var unmod of unmodifiables) {
+      for (let unmod of unmodifiables) {
         if (resObj[key].hasOwnProperty(unmod)) {
           delete resObj[key][unmod];
         }
@@ -163,13 +165,13 @@ module.exports = options => {
     return resObj;
   }
   
-  var unmodTestDocs = filterUnmodifiables(testDocs);
+  let unmodTestDocs = filterUnmodifiables(testDocs);
   
   describe(plural, () => {
     beforeEach(done => {
       // Remove ALL the things
-      var promises = [];
-      for (var aModel of allModels) {
+      let promises = [];
+      for (let aModel of allModels) {
         promises.push(aModel.remove({}).exec());
       }
       Promise.all(promises).then(() => done(), done);
@@ -177,13 +179,13 @@ module.exports = options => {
     if (customBeforeEach) {
       beforeEach(done => {
         customBeforeEach(() => {
-          var newUnmodTestDocs = filterUnmodifiables(testDocs);
+          let newUnmodTestDocs = filterUnmodifiables(testDocs);
           // this dance is necessary to avoid assigning to unmodTestDocs
           // directly, or to any of its properties, which would not carry over
           // to the tests
-          for (var prop in newUnmodTestDocs) {
+          for (let prop in newUnmodTestDocs) {
             if (!newUnmodTestDocs.hasOwnProperty(prop)) continue;
-            for (var subProp in newUnmodTestDocs[prop]) {
+            for (let subProp in newUnmodTestDocs[prop]) {
               if (!newUnmodTestDocs[prop].hasOwnProperty(subProp)) continue;
               unmodTestDocs[prop][subProp] = newUnmodTestDocs[prop][subProp];
             }
@@ -211,9 +213,9 @@ module.exports = options => {
       it('can retrieve all of them at once',
         util.testGet(path, model, allTestDocs, hooks));
       
-      var createdAscSort = (doc, doc2) =>
+      let createdAscSort = (doc, doc2) =>
         new Date(doc.created).should.be.at.most(new Date(doc2.created));
-      var createdDescSort = (doc, doc2) =>
+      let createdDescSort = (doc, doc2) =>
         new Date(doc.created).should.be.at.least(new Date(doc2.created));
       it('defaults to sorting ascending by created date',
         util.testSortableGet(path, model, allTestDocs, createdAscSort, hooks));
@@ -234,9 +236,9 @@ module.exports = options => {
           allTestDocs, createdDescSort, hooks));
       
       if (Object.keys(model.schema.path).includes('name')) {
-        var nameAscSort = (doc, doc2) =>
+        let nameAscSort = (doc, doc2) =>
           doc.name.should.be.at.most(doc2.name);
-        var nameDescSort = (doc, doc2) =>
+        let nameDescSort = (doc, doc2) =>
           doc.name.should.be.at.least(doc2.name);
         it('can sort ascending by name lexicographically',
           util.testSortableGet(path + '?sort_by=name', model, allTestDocs,
@@ -258,8 +260,8 @@ module.exports = options => {
             hooks));
       }
       
-      var idAscSort = (doc, doc2) => doc.id.should.be.below(doc2.id);
-      var idDescSort = (doc, doc2) => doc.id.should.be.above(doc2.id);
+      let idAscSort = (doc, doc2) => doc.id.should.be.below(doc2.id);
+      let idDescSort = (doc, doc2) => doc.id.should.be.above(doc2.id);
       it('can sort ascending by ID',
         util.testSortableGet(path + '?sort_by=id', model, allTestDocs,
           idAscSort, hooks));
@@ -493,7 +495,7 @@ module.exports = options => {
         util.testStatus(path, model, 422, hooks, [], 'post',
           Array.from(generateDocs(5))));
       
-      for (var doc of util.generateObjectsMissingOneProperty(
+      for (let doc of util.generateObjectsMissingOneProperty(
           unmodTestDocs.simple1)) {
         if (isIgnored(doc.prop)) continue;
         if (isOptional(doc.prop)) {
@@ -605,7 +607,7 @@ module.exports = options => {
         util.testStatus(idPath, model, 400, hooks, [testDocs.simple1],
           'put', '"Hi!"'));
       
-      for (var unmod of ['created', 'updated', 'id'].concat(unmodifiables)) {
+      for (let unmod of ['created', 'updated', 'id'].concat(unmodifiables)) {
         let doc = JSON.parse(JSON.stringify(unmodTestDocs.simple1));
         doc[unmod] = unmod === 'id' ? '123456789012345678901234'
           : '2016-10-24T17:00:42-03:00';
@@ -614,7 +616,7 @@ module.exports = options => {
             'put', doc));
       }
       
-      for (var doc of util.generateObjectsMissingOneProperty(
+      for (let doc of util.generateObjectsMissingOneProperty(
             testDocs.simple1)) {
         if (isIgnored(doc.prop)) continue;
         if (isOptional(doc.prop)) {
@@ -714,7 +716,7 @@ module.exports = options => {
         util.testStatus(idPath, model, 400, hooks, [testDocs.simple1],
           'patch', '"invalid"'));
       
-      for (var patch of util.generateSinglePropertyPatches(
+      for (let patch of util.generateSinglePropertyPatches(
           unmodTestDocs.simple1)) {
         if (isIgnored(patch.prop)) continue;
         if (!isOptional(patch.prop)) {

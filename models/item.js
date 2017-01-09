@@ -1,10 +1,10 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var ObjectId = mongoose.Schema.Types.ObjectId;
-var reqt = require('./util/req-types.js');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = mongoose.Schema.Types.ObjectId;
+const reqt = require('./util/req-types.js');
 
 // Helper schema to avoid repetition
-var Character = {
+let Character = {
   type: String,
   minlength: 1,
   maxlength: 1,
@@ -12,7 +12,7 @@ var Character = {
 };
 
 // Control fields -- 00X
-var marcControlField = {
+let marcControlField = {
   _id: false,
   tag: {
     type: Number,
@@ -24,14 +24,14 @@ var marcControlField = {
 };
 
 // Subfields
-var marcSubfield = {
+let marcSubfield = {
   _id: false,
   tag: Character,
   value: String
 };
 
 // Variable fields
-var marcVariableField = {
+let marcVariableField = {
   _id: false,
   tag: {
     type: Number,
@@ -44,7 +44,7 @@ var marcVariableField = {
   ind2: Character
 };
 
-var fieldsSchema = new Schema({
+let fieldsSchema = new Schema({
   control: {
     type: [marcControlField],
     required: true
@@ -55,7 +55,7 @@ var fieldsSchema = new Schema({
   }
 }, {_id: false});
 
-var marcSchema = new Schema({
+let marcSchema = new Schema({
   leader: {
     type: String,
     minlength: 24,
@@ -68,7 +68,7 @@ var marcSchema = new Schema({
   }
 }, {_id: false});
 
-var itemSchema = new Schema({
+let itemSchema = new Schema({
   marc: {
     type: marcSchema,
     required: true

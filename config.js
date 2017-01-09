@@ -1,6 +1,6 @@
 // determine configuration (i.e. database location) based on environment
-var env = process.env.NODE_ENV || 'development';
-var config;
+let env = process.env.NODE_ENV || 'development';
+let config;
 switch (env) {
   case 'production':
     config = {

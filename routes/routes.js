@@ -1,22 +1,22 @@
-var mergePatch = require('json-merge-patch');
+const mergePatch = require('json-merge-patch');
 
-var util = require('./util.js');
-var addCollectionFunc = require('./add-collection.js');
-var marcConvert = require('./marc-convert.js');
+const util = require('./util.js');
+const addCollectionFunc = require('./add-collection.js');
+const marcConvert = require('./marc-convert.js');
 
-var Admin = require('../models/admin.js');
-var Checkout = require('../models/checkout.js');
-var Item = require('../models/item.js');
-var Patron = require('../models/patron.js');
+const Admin = require('../models/admin.js');
+const Checkout = require('../models/checkout.js');
+const Item = require('../models/item.js');
+const Patron = require('../models/patron.js');
 
 module.exports = (router, baseUri) => {
-  var addCollection = addCollectionFunc(router, baseUri);
+  const addCollection = addCollectionFunc(router, baseUri);
   
   addCollection(Admin, 'admins');
   
   addCollection(Checkout, 'checkouts', {
     create: (req, res, checkout, next) => {
-      var promises = [];
+      let promises = [];
       
       // update item status, make sure item's not checked out already
       promises.push(new Promise((resolve, reject) => {
@@ -47,7 +47,7 @@ module.exports = (router, baseUri) => {
       Promise.all(promises).then(next, err => util.handleDBError(err, res));
     },
     update: (req, res, oldCheckout, newCheckout, next) => {
-      var promises = [];
+      let promises = [];
       
       // handle changed item ID
       if (oldCheckout.itemID !== newCheckout.itemID) {
@@ -82,7 +82,7 @@ module.exports = (router, baseUri) => {
       Promise.all(promises).then(next, err => util.handleDBError(err, res));
     },
     delete: (req, res, checkout, next) => {
-      var promises = [];
+      let promises = [];
       
       // update item status, remove item checkoutID
       promises.push(new Promise((resolve, reject) => {
@@ -113,7 +113,7 @@ module.exports = (router, baseUri) => {
   
   addCollection(Item, 'items', {
     delete: (req, res, item, next) => {
-      var promises = [];
+      let promises = [];
       
       if (item.checkoutID !== undefined) {
         // remove checkout from checkout's patron's checkouts
@@ -139,7 +139,7 @@ module.exports = (router, baseUri) => {
     }
   }, ['checkoutID']);
   
-  var marcPath = '/items/:id/marc';
+  let marcPath = '/items/:id/marc';
   
   router.get(marcPath, (req, res) => {
     if (!util.validate(req, res)) return;
@@ -148,7 +148,7 @@ module.exports = (router, baseUri) => {
       if (item === null) return res.status(404).send(); // it doesn't exist
       if (err) return util.handleDBError(err, res);
       
-      var marc = item.marc;
+      let marc = item.marc;
       
       if (req.accepts('application/marc')) {
         res.status(200).send(marcConvert.jsonToMarc(marc));
@@ -163,7 +163,7 @@ module.exports = (router, baseUri) => {
   router.put(marcPath, (req, res) => {
     if (!util.validate(req, res)) return;
     
-    var marc;
+    let marc;
     switch (req.get('Content-Type')) {
       case 'application/json':
         marc = req.body;
@@ -213,7 +213,7 @@ module.exports = (router, baseUri) => {
   
   addCollection(Patron, 'patrons', {
     delete: (req, res, patron, next) => {
-      var promises = [];
+      let promises = [];
       
       for (let checkoutID of patron.checkouts) {
         // remove checkout's item's checkoutID

@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var reqt = require('./util/req-types.js');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const reqt = require('./util/req-types.js');
 
-var checkoutSchema = new Schema({
+let checkoutSchema = new Schema({
   dueDate: reqt.Date,
   itemID: reqt.ObjectId,
   patronID: reqt.ObjectId,

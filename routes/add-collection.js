@@ -1,6 +1,6 @@
-var mongoose = require('mongoose');
-var mergePatch = require('json-merge-patch');
-var util = require('./util.js');
+const mongoose = require('mongoose');
+const mergePatch = require('json-merge-patch');
+const util = require('./util.js');
 
 // TODO clean up the parameters on addCollection
 module.exports = (router, baseUri) => {
@@ -18,7 +18,7 @@ module.exports = (router, baseUri) => {
       req and res are ALWAYS first 2 params, next is ALWAYS last param.
     */
     // make sure default unmodifiables are present
-    for (var defaultUnmod of ['created', 'updated', 'id']) {
+    for (let defaultUnmod of ['created', 'updated', 'id']) {
       if (!unmodifiables.includes(defaultUnmod)) {
         unmodifiables.push(defaultUnmod);
       }
@@ -28,7 +28,7 @@ module.exports = (router, baseUri) => {
     // NOTE hopefully this works and doesn't require copying the object
     if (!toInputConverter) {
       toInputConverter = doc => {
-        var obj = doc.toObject();
+        let obj = doc.toObject();
         obj.id = obj._id;
         delete obj._id;
         if (obj.hasOwnProperty('__v')) delete obj.__v;
@@ -47,15 +47,15 @@ module.exports = (router, baseUri) => {
       };
     }
     
-    var collectionPath = `/${name}`;
-    var resourcePath = `${collectionPath}/:id`;
+    let collectionPath = `/${name}`;
+    let resourcePath = `${collectionPath}/:id`;
     
     // MIDDLEWARE
     
     // make sure unmodifiables aren't present in a POST/PUT/PATCH request
     router.use(collectionPath, (req, res, next) => {
       if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
-        for (var unmod of unmodifiables) {
+        for (let unmod of unmodifiables) {
           req.checkBody(unmod, unmod + ' is unmodifiable and cannot be present')
              .notPresent();
         }
@@ -83,7 +83,7 @@ module.exports = (router, baseUri) => {
     });
     
     // do the hooks
-    var methodToCRUD = {
+    let methodToCRUD = {
       POST: 'create',
       GET: 'retrieve',
       PUT: 'update',
@@ -91,8 +91,8 @@ module.exports = (router, baseUri) => {
       DELETE: 'delete'
     };
     router.use(collectionPath, (req, res, next) => {
-      var crud = methodToCRUD[req.method];
-      var hook = hooks[crud];
+      let crud = methodToCRUD[req.method];
+      let hook = hooks[crud];
       req.hook = hook || function() {
         // next is always last arg, call it
         arguments[arguments.length - 1]();
@@ -106,8 +106,8 @@ module.exports = (router, baseUri) => {
         callback();
         return;
       }
-      var promises = [];
-      for (var param of paramArray) {
+      let promises = [];
+      for (let param of paramArray) {
         promises.push(new Promise(resolve => hookCaller(param, resolve)));
       }
       Promise.all(promises).then(callback, callback);
@@ -118,8 +118,8 @@ module.exports = (router, baseUri) => {
     // get a list of all things
     router.get(collectionPath, (req, res) => {
       // create objs of query params to internal representations to keep it DRY
-      var sortByObj = {'created': 'created', 'name': 'name', 'id': '_id'};
-      var sortDirObj = {'asc': 1, 'desc': -1};
+      let sortByObj = {'created': 'created', 'name': 'name', 'id': '_id'};
+      let sortDirObj = {'asc': 1, 'desc': -1};
       
       if (!Object.keys(model.schema.path).includes('name')) {
         delete sortByObj.name;
@@ -150,15 +150,15 @@ module.exports = (router, baseUri) => {
       if (!util.validate(req, res)) return;
       
       // map params to internal representations
-      var sortBy = sortByObj[req.query.sort_by];
-      var sortDir = sortDirObj[req.query.direction];
+      let sortBy = sortByObj[req.query.sort_by];
+      let sortDir = sortDirObj[req.query.direction];
       
       // set up the query
       // IDEA use mongoose-paginate or mongoose-range-paginate to paginate?
-      var query = model.find().sort([[sortBy, sortDir]]);
+      let query = model.find().sort([[sortBy, sortDir]]);
       if (pageable) {
-        var page = req.query.page;
-        var perPage = req.query.per_page;
+        let page = req.query.page;
+        let perPage = req.query.per_page;
         query = query.skip(page * perPage).limit(perPage);
       }
 
@@ -169,13 +169,13 @@ module.exports = (router, baseUri) => {
           docs,
           (doc, next) => req.hook(req, res, doc, next),
           () => {
-            var outgoingDocs = docs.map(toInputConverter);
+            let outgoingDocs = docs.map(toInputConverter);
             if (pageable) {
               model.count({}, (err, count) => {
                 if (err) return util.handleDBError(err, res);
                 
-                var start = req.query.page * req.query.per_page;
-                var end = Math.min(start + req.query.per_page - 1, count - 1);
+                let start = req.query.page * req.query.per_page;
+                let end = Math.min(start + req.query.per_page - 1, count - 1);
                 
                 if (start >= count && count > 0) {
                   res.status(404);
@@ -183,7 +183,7 @@ module.exports = (router, baseUri) => {
                   return res.end();
                 }
                 
-                var partial = outgoingDocs.length < count;
+                let partial = outgoingDocs.length < count;
                 
                 // 206 is "Partial Content", used if we're not returning the
                 // entire collection; 200 is for the entire collection
@@ -213,7 +213,7 @@ module.exports = (router, baseUri) => {
       if (!util.validate(req, res)) return;
       
       // make the new thing
-      var newDoc = toDBConverter(req.body);
+      let newDoc = toDBConverter(req.body);
       req.hook(req, res, newDoc, () => {
         model.create(newDoc, (err, doc) => {
           if (err) {
@@ -253,7 +253,7 @@ module.exports = (router, baseUri) => {
     router.get(resourcePath, (req, res) => {
       if (!util.validate(req, res)) return;
       
-      var id = req.params.id;
+      let id = req.params.id;
       model.findById(id, (err, doc) => {
         if (err) return util.handleDBError(err, res);
         if (doc === null) return res.status(404).end(); // it doesn't exist
@@ -267,12 +267,12 @@ module.exports = (router, baseUri) => {
     router.put(resourcePath, (req, res) => {
       if (!util.validate(req, res)) return;
       
-      var id = req.params.id;
-      var mask = toDBConverter(req.body);
+      let id = req.params.id;
+      let mask = toDBConverter(req.body);
       
       // make sure the new thing's valid as a whole
       // REVIEW there's probably something wrong about using `hydrate` this way
-      var errors = model.hydrate(mask).validateSync();
+      let errors = model.hydrate(mask).validateSync();
       if (errors) {
         return res.status(422).json(errors);
       }
@@ -282,15 +282,15 @@ module.exports = (router, baseUri) => {
         if (err) return util.handleDBError(err, res);
         if (oldDoc === null) return res.status(404).end(); // it doesn't exist
         
-        var newDoc = {};
-        for (var prop in mask) {
+        let newDoc = {};
+        for (let prop in mask) {
           if (!mask.hasOwnProperty(prop) || prop === '_id') continue;
           newDoc[prop] = oldDoc.hasOwnProperty(prop) ? oldDoc[prop]
             : mask[prop];
         }
         
         req.hook(req, res, oldDoc, newDoc, () => {
-          for (var prop in newDoc) {
+          for (let prop in newDoc) {
             if (!newDoc.hasOwnProperty(prop)) continue;
             oldDoc[prop] = newDoc[prop];
           }
@@ -309,26 +309,26 @@ module.exports = (router, baseUri) => {
     router.patch(resourcePath, (req, res) => {
       if (!util.validate(req, res)) return;
       
-      var id = req.params.id;
+      let id = req.params.id;
       model.findById(id, (err, oldDoc) => {
         if (err) return util.handleDBError(err, res);
         if (oldDoc === null) return res.status(404).end(); // it doesn't exist
         
         // validate the patch
         // REVIEW the hydrate() abuse
-        var patch = toDBConverter(req.body, false);
-        var newDocObj = mergePatch.apply(oldDoc.toObject(), patch);
-        var errors = model.hydrate(newDocObj).validateSync();
+        let patch = toDBConverter(req.body, false);
+        let newDocObj = mergePatch.apply(oldDoc.toObject(), patch);
+        let errors = model.hydrate(newDocObj).validateSync();
         if (errors) {
           return res.status(422).json(errors);
         }
         
-        var oldDocCopy = JSON.parse(JSON.stringify(oldDoc));
-        var newDoc = mergePatch.apply(
+        let oldDocCopy = JSON.parse(JSON.stringify(oldDoc));
+        let newDoc = mergePatch.apply(
           JSON.parse(JSON.stringify(oldDoc)), patch);
         
         // copy everything from newDoc to oldDoc
-        for (var prop in newDoc) {
+        for (let prop in newDoc) {
           if (!newDoc.hasOwnProperty(prop)) continue;
           oldDoc[prop] = newDoc[prop];
         }
@@ -348,7 +348,7 @@ module.exports = (router, baseUri) => {
     router.delete(resourcePath, (req, res) => {
       if (!util.validate(req, res)) return;
       
-      var id = req.params.id;
+      let id = req.params.id;
       model.findById(id, (err, doc) => {
         if (err) return util.handleDBError(err, res);
         if (doc === null) return res.status(404).end(); // it doesn't exist

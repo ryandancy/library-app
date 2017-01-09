@@ -1,23 +1,23 @@
 process.env.NODE_ENV = 'test';
 
-var server = require('../server.js');
-var template = require('./template.js');
-var util = require('./util.js');
+const server = require('../server.js');
+const template = require('./template.js');
+const util = require('./util.js');
 
-var Item = require('../models/item.js');
-var Patron = require('../models/patron.js');
-var Checkout = require('../models/checkout.js');
+const Item = require('../models/item.js');
+const Patron = require('../models/patron.js');
+const Checkout = require('../models/checkout.js');
 
-var testItems = require('./test-docs/item.js');
-var testPatrons = require('./test-docs/patron.js');
-var testCheckouts = require('./test-docs/checkout.js');
-var testMarc = require('./test-docs/marc.js');
+const testItems = require('./test-docs/item.js');
+const testPatrons = require('./test-docs/patron.js');
+const testCheckouts = require('./test-docs/checkout.js');
+const testMarc = require('./test-docs/marc.js');
 
-var chai = require('chai');
-var chaiHttp = require('chai-http');
-var chaiSubset = require('chai-subset');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const chaiSubset = require('chai-subset');
 
-var should = chai.should();
+const should = chai.should();
 chai.use(chaiHttp);
 chai.use(chaiSubset);
 
@@ -68,17 +68,17 @@ template({
   additionalTests: () => {
     for (let collection = 0; collection < 2; collection++) {
       // let's just treat collection as a boolean cause JS is weird
-      var suffix = collection ? '' : '/:id';
+      let suffix = collection ? '' : '/:id';
       it(`deletes checkout on DELETE /v0/items${suffix}`, done => {
         // Add the item and patron
         Promise.all([
           Item.create(testItems.simple1),
           Patron.create(testPatrons.simple1)
         ]).then(docs => {
-          var [item, patron] = docs;
+          let [item, patron] = docs;
           
           // Build and add the checkout
-          var checkoutForDB = JSON.parse(JSON.stringify(testCheckouts[0]));
+          let checkoutForDB = JSON.parse(JSON.stringify(testCheckouts[0]));
           checkoutForDB.itemID = item._id;
           checkoutForDB.patronID = patron._id;
           Checkout.create(checkoutForDB, (err, checkout) => {
@@ -105,7 +105,7 @@ template({
                   Checkout.count({}).exec(),
                   Patron.findById(patron._id).exec()
                 ]).then(data => {
-                  var [itemCount, checkoutCount, patron] = data;
+                  let [itemCount, checkoutCount, patron] = data;
                   
                   itemCount.should.deep.equal(0);
                   checkoutCount.should.deep.equal(0);
@@ -123,7 +123,7 @@ template({
       });
     }
     
-    var marcHeaders = {accept: 'application/marc'};
+    let marcHeaders = {accept: 'application/marc'};
     
     function castToMediaType(str, defaultType = 'application') {
       return str.includes('/') ? str : defaultType + '/' + str;
@@ -150,7 +150,7 @@ template({
       };
     }
     
-    var marcPath = '/v0/items/:id/marc';
+    let marcPath = '/v0/items/:id/marc';
     describe('GET /v0/items/:id/marc', () => {
       it('can retrieve simple MARC in application/json',
         testMarcGet('json', testItems.simple1));
@@ -482,14 +482,14 @@ template({
     function testMarcPatch(item, patch, patchApplier) {
       return done => {
         util.populateDB(item, Item, (item, dbItems) => {
-          var id = dbItems[0]._id;
+          let id = dbItems[0]._id;
           chai.request(server)
           .patch(`/v0/items/${id}/marc`)
           .send(patch)
           .end((err, res) => {
             res.should.have.status(200);
             
-            var newItem = JSON.parse(JSON.stringify(item));
+            let newItem = JSON.parse(JSON.stringify(item));
             patchApplier(newItem);
             res.body.should.containSubset(newItem.marc);
             
@@ -504,15 +504,15 @@ template({
     }
     
     describe('PATCH /v0/items/:id/marc', () => {
-      var testLeader = '123456789012345678901234';
-      var testControl = [{
+      let testLeader = '123456789012345678901234';
+      let testControl = [{
         tag: 1,
         value: '123456'
       }, {
         tag: 3,
         value: '1511'
       }];
-      var testVariable = [{
+      let testVariable = [{
         tag: 20,
         ind1: ' ',
         ind2: ' ',

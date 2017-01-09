@@ -1,10 +1,10 @@
-var mongoose = require('mongoose');
-var ObjectId = mongoose.Types.ObjectId;
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 // HACK using the renewals to keep track of which checkout is which
 // NOTE using a placeholder ObjectId because the real one must be filled at
 // runtime by a beforeEach hook
-var placeholderObjectId = ObjectId('123456789012345678901234');
+let placeholderObjectId = ObjectId('123456789012345678901234');
 module.exports = [{
   dueDate: new Date(2017, 5, 16),
   itemID: placeholderObjectId,
