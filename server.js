@@ -45,6 +45,11 @@ require('./routes/routes.js')(router, baseUri);
 
 app.use(baseUri, router);
 
+// serve the HTML to any endpoint
+app.get('*', (req, res) => {
+  res.sendFile('public/index.html', {root: __dirname});
+});
+
 // start the app
 app.listen(8080);
 console.log('Listening on port 8080'); // eslint-disable-line no-console
