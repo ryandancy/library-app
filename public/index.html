@@ -28,12 +28,33 @@
               ng-show="addPatronForm.$valid">
           </form>
           
+          <div class="pagination">
+            Page {{ patronCtrl.page + 1 }} / {{ patronCtrl.maxPage + 1 }}
+            (Patrons {{ patronCtrl.lowIndex + 1 }} -
+            {{ patronCtrl.highIndex + 1 }} / {{ patronCtrl.numPatrons }})
+          </div>
+          
           <ul ng-if="patronCtrl.patrons">
             <li ng-repeat="patron in patronCtrl.patrons">
               <img ng-src="{{ patron.pic }}" alt="{{ patron.name }}'s picture">
               <a href="#" class="name">{{ patron.name }}</a>
             </li>
           </ul>
+          
+          <nav>
+            <a href="#" ng-if="patronCtrl.page > 0"
+                ng-click="patronCtrl.getPatrons(patronCtrl.page - 1)">
+              &lt;&lt; Previous
+            </a>
+            <a href="#" ng-repeat="n in [] | range: patronCtrl.maxPage + 1"
+                ng-click="patronCtrl.getPatrons(n)">
+              {{ n }}
+            </a>
+            <a href="#" ng-if="patronCtrl.page < patronCtrl.maxPage"
+                ng-click="patronCtrl.getPatrons(patronCtrl.page + 1)">
+              Next &gt;&gt;
+            </a>
+          </nav>
         </div>
       </tab>
     </tabset>

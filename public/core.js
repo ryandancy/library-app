@@ -44,12 +44,35 @@ angular.module('app', [])
     };
   }
 }))
+.filter('range', () => (input, total) => {
+  total = parseInt(total);
+  
+  for (let i = 0; i < total; i++) {
+    input.push(i);
+  }
+  
+  return input;
+})
 .controller('PatronCtrl', function($scope, $http) {
   // GET the patrons and put in this.patrons
-  this.getPatrons = () => {
-    $http.get('/v0/patrons')
+  this.getPatrons = (page = 0) => {
+    this.page = page;
+    
+    $http.get(`/v0/patrons?page=${page}`)
     .then(res => {
+      let perPage = 30;
+      
       this.patrons = res.data.data;
+      this.numPatrons = res.data.maxItems;
+      this.maxPage = Math.round(res.data.maxItems / perPage);
+      
+      if (res.status === 206) {
+        let range = res.headers('Range').split('/')[0];
+        let [low, high] = range.split('-');
+        
+        this.lowIndex = parseInt(low);
+        this.highIndex = parseInt(high);
+      }
     }, () => {
       this.patrons = []; // Error!
     });
