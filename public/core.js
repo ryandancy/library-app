@@ -46,10 +46,40 @@ angular.module('app', [])
 }))
 .controller('PatronCtrl', function($scope, $http) {
   // GET the patrons and put in this.patrons
-  $http.get('/v0/patrons')
-  .then(res => {
-    this.patrons = res.data.data;
-  }, () => {
-    this.patrons = []; // Error!
-  });
+  this.getPatrons = () => {
+    $http.get('/v0/patrons')
+    .then(res => {
+      this.patrons = res.data.data;
+    }, () => {
+      this.patrons = []; // Error!
+    });
+  };
+  this.getPatrons();
+  
+  // Handle adding a new patron
+  // TODO more error handling
+  
+  this.adding = false;
+  this.patron = {};
+  
+  this.startAdd = () => {
+    this.adding = true;
+  };
+  
+  this.abortAdd = () => {
+    this.adding = false;
+  };
+  
+  this.clearAdd = () => {
+    this.patron = {}; // BUG only clears valid fields...
+  };
+  
+  this.doAdd = () => {
+    $http.post('/v0/patrons', this.patron)
+    .then(() => {
+      this.adding = false;
+      this.patron = {};
+      this.getPatrons();
+    }, () => {});
+  };
 });
