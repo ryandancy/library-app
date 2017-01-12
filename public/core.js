@@ -44,6 +44,12 @@ angular.module('app', [])
     };
   }
 }))
-.controller('main', ($scope, $http) => {
-  
+.controller('PatronCtrl', function($scope, $http) {
+  // GET the patrons and put in this.patrons
+  $http.get('/v0/patrons')
+  .then(res => {
+    this.patrons = res.data.data;
+  }, () => {
+    this.patrons = []; // Error!
+  });
 });

@@ -5,8 +5,21 @@
     <title>Library App</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
   </head>
-  <body ng-controller="main">
-    
+  <body>
+    <tabset>
+      <tab heading="Patron">
+        <div ng-controller="PatronCtrl as patronCtrl">
+          <input type="button" name="add-patron" value="Add a Patron">
+          
+          <ul ng-if="!!patronCtrl.patrons">
+            <li ng-repeat="patron in patronCtrl.patrons">
+              <img ng-src="{{ patron.pic }}" alt="{{ patron.name }}'s picture">
+              <a href="#" class="name">{{ patron.name }}</a>
+            </li>
+          </ul>
+        </div>
+      </tab>
+    </tabset>
     <script src="core.js" charset="utf-8"></script>
   </body>
 </html>
