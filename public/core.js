@@ -54,17 +54,17 @@ angular.module('app', [])
   return input;
 })
 .controller('PatronCtrl', function($scope, $http) {
+  let perPage = 30;
+  
   // GET the patrons and put in this.patrons
   this.getPatrons = (page = 0) => {
     this.page = page;
     
     $http.get(`/v0/patrons?page=${page}`)
     .then(res => {
-      let perPage = 30;
-      
       this.patrons = res.data.data;
       this.numPatrons = res.data.maxItems;
-      this.maxPage = Math.round(res.data.maxItems / perPage);
+      this.maxPage = Math.ceil(res.data.maxItems / perPage) - 1;
       
       if (res.status === 206) {
         let range = res.headers('Range').split('/')[0];
@@ -72,6 +72,9 @@ angular.module('app', [])
         
         this.lowIndex = parseInt(low);
         this.highIndex = parseInt(high);
+      } else {
+        this.lowIndex = 0;
+        this.highIndex = this.numPatrons - 1;
       }
     }, () => {
       this.patrons = []; // Error!
@@ -132,6 +135,23 @@ angular.module('app', [])
       this.editing = false;
       this.editPatron = {};
       this.getPatrons(this.page);
+    }, () => {});
+  };
+  
+  // Handle deleting a patron
+  
+  this.delPatron = () => {
+    $http.delete(`/v0/patrons/${this.editing.id}`)
+    .then(() => {
+      this.editing = false;
+      this.editPatron = {};
+      
+      if ((this.numPatrons - 1) % perPage === 0 && this.page === this.maxPage
+          && this.page > 0) {
+        this.getPatrons(this.page - 1);
+      } else {
+        this.getPatrons(this.page);
+      }
     }, () => {});
   };
 });
