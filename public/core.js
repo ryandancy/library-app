@@ -102,7 +102,36 @@ angular.module('app', [])
     .then(() => {
       this.adding = false;
       this.patron = {};
-      this.getPatrons();
+      this.getPatrons(this.page);
+    }, () => {});
+  };
+  
+  // Handle editing patrons
+  
+  const PATRON_UNMODIFIABLES = ['created', 'updated', 'id', 'checkouts'];
+  
+  this.editing = null;
+  this.editPatron = {};
+  
+  this.toggleEdit = patron => {
+    if (this.editing) {
+      this.editing = null;
+    } else {
+      this.editing = patron;
+    }
+    
+    this.editPatron = angular.copy(patron);
+    for (let unmod of PATRON_UNMODIFIABLES) {
+      delete this.editPatron[unmod];
+    }
+  };
+  
+  this.saveEdit = () => {
+    $http.put(`/v0/patrons/${this.editing.id}`, this.editPatron)
+    .then(() => {
+      this.editing = false;
+      this.editPatron = {};
+      this.getPatrons(this.page);
     }, () => {});
   };
 });

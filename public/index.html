@@ -37,7 +37,23 @@
           <ul ng-if="patronCtrl.patrons">
             <li ng-repeat="patron in patronCtrl.patrons">
               <img ng-src="{{ patron.pic }}" alt="{{ patron.name }}'s picture">
-              <a href="#" class="name">{{ patron.name }}</a>
+              
+              <a href="#" class="name" ng-click="patronCtrl.toggleEdit(patron)">
+                {{ patron.name }}
+              </a>
+              
+              <form name="editPatronForm" ng-if="patronCtrl.editing === patron">
+                <label for="edit-patron-pic">Picture URL:</label>
+                <input type="text" id="edit-patron-pic"
+                  ng-model="patronCtrl.editPatron.pic">
+                
+                <label for="edit-patron-name">Patron name:</label>
+                <input type="text" id="edit-patron-name"
+                  ng-model="patronCtrl.editPatron.name">
+                
+                <input type="button" value="Save"
+                  ng-click="patronCtrl.saveEdit()">
+              </form>
             </li>
           </ul>
           
