@@ -38,7 +38,6 @@ rules:
     - always
   # This works with continue!
   guard-for-in: error
-  no-alert: error
   no-div-regex: error
   no-empty-pattern: error
   no-eq-null: error

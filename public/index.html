@@ -9,7 +9,7 @@
     <tabset>
       <tab heading="Patron">
         <div ng-controller="PatronCtrl as patronCtrl">
-          <input type="button" name="add-patron" value="Add a Patron"
+          <input type="button" value="Add a Patron"
             ng-if="!patronCtrl.adding" ng-click="patronCtrl.startAdd()">
           
           <form name="addPatronForm" ng-if="patronCtrl.adding">
@@ -28,7 +28,10 @@
               ng-show="addPatronForm.$valid">
           </form>
           
-          <div class="pagination">
+          <input type="button" value="Delete All Patrons"
+            ng-click="patronCtrl.delAll()" ng-if="patronCtrl.numPatrons > 0">
+          
+          <div class="pagination" ng-if="patronCtrl.maxPage > 0">
             Page {{ patronCtrl.page + 1 }} / {{ patronCtrl.maxPage + 1 }}
             (Patrons {{ patronCtrl.lowIndex + 1 }} -
             {{ patronCtrl.highIndex + 1 }} / {{ patronCtrl.numPatrons }})

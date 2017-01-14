@@ -154,4 +154,19 @@ angular.module('app', [])
       }
     }, () => {});
   };
+  
+  // Handle deleting ALL THE THINGS
+  this.delAll = () => {
+    let seriously = confirm('This will delete ALL PATRONS! '
+      + 'This cannot be undone! Are you sure you want to do this?');
+    if (!seriously) return;
+    
+    let honestly = confirm('Are you REALLY sure you want to do this?');
+    if (!honestly) return;
+    
+    $http.delete('/v0/patrons')
+    .then(() => {
+      this.getPatrons(0);
+    }, () => {});
+  };
 });
