@@ -46,14 +46,18 @@
               </a>
               
               <form name="editPatronForm" ng-if="patronCtrl.editing === patron">
-                <label for="edit-patron-pic">Picture URL:</label>
-                <input type="text" id="edit-patron-pic"
-                  ng-model="patronCtrl.editPatron.pic">
+                <div class="field">
+                  <label for="edit-patron-pic">Picture URL:</label>
+                  <input type="text" id="edit-patron-pic"
+                    ng-model="patronCtrl.editPatron.pic">
+                </div>
                 
-                <label for="edit-patron-name">Patron name:</label>
-                <input type="text" id="edit-patron-name"
-                  ng-model="patronCtrl.editPatron.name">
-                
+                <div class="field">
+                  <label for="edit-patron-name">Patron name:</label>
+                  <input type="text" id="edit-patron-name"
+                    ng-model="patronCtrl.editPatron.name">
+                </div>
+
                 <input type="button" value="Save"
                   ng-click="patronCtrl.saveEdit()">
                 <input type="button" value="Delete"
