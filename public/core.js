@@ -57,7 +57,7 @@ angular.module('app', [])
   let perPage = 30;
   
   // GET the patrons and put in this.patrons
-  this.getPatrons = (page = 0) => {
+  this.getPatrons = (page = 0, callback) => {
     this.page = page;
     
     $http.get(`/v0/patrons?page=${page}`)
@@ -76,6 +76,8 @@ angular.module('app', [])
         this.lowIndex = 0;
         this.highIndex = this.numPatrons - 1;
       }
+      
+      if (callback) callback();
     }, () => {
       this.patrons = []; // Error!
     });
@@ -109,32 +111,45 @@ angular.module('app', [])
     }, () => {});
   };
   
-  // Handle editing patrons
+  // Handle showing and editing patrons
   
   const PATRON_UNMODIFIABLES = ['created', 'updated', 'id', 'checkouts'];
   
+  this.showing = [];
   this.editing = null;
   this.editPatron = {};
   
-  this.toggleEdit = patron => {
-    if (this.editing) {
-      this.editing = null;
+  this.toggleShow = patron => {
+    if (this.showing.includes(patron)) {
+      this.showing = this.showing.filter(p => p !== patron);
     } else {
-      this.editing = patron;
+      this.showing.push(patron);
     }
-    
+  };
+  
+  this.startEdit = patron => {
+    this.editing = patron;
     this.editPatron = angular.copy(patron);
     for (let unmod of PATRON_UNMODIFIABLES) {
       delete this.editPatron[unmod];
     }
   };
   
+  this.abortEdit = () => {
+    this.editing = null;
+  };
+  
   this.saveEdit = () => {
     $http.put(`/v0/patrons/${this.editing.id}`, this.editPatron)
     .then(() => {
+      let oldIndex = this.patrons.indexOf(this.editing);
+      this.showing = this.showing.splice(oldIndex, 1);
+      
       this.editing = false;
       this.editPatron = {};
-      this.getPatrons(this.page);
+      this.getPatrons(this.page, () => {
+        this.showing.push(this.patrons[oldIndex]);
+      });
     }, () => {});
   };
   
