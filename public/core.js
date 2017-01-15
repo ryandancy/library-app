@@ -54,17 +54,21 @@ angular.module('app', [])
   return input;
 })
 .controller('PatronCtrl', function($scope, $http) {
-  let perPage = 30;
+  this.perPage = 30;
+  
+  let computeMaxPage = () => {
+    return Math.ceil(this.numPatrons / this.perPage) - 1;
+  };
   
   // GET the patrons and put in this.patrons
   this.getPatrons = (page = 0, callback) => {
     this.page = page;
     
-    $http.get(`/v0/patrons?page=${page}`)
+    $http.get(`/v0/patrons?page=${page}&per_page=${this.perPage}`)
     .then(res => {
       this.patrons = res.data.data;
       this.numPatrons = res.data.maxItems;
-      this.maxPage = Math.ceil(res.data.maxItems / perPage) - 1;
+      this.maxPage = computeMaxPage();
       
       if (res.status === 206) {
         let range = res.headers('Range').split('/')[0];
@@ -83,6 +87,12 @@ angular.module('app', [])
     });
   };
   this.getPatrons();
+  
+  this.changePerPage = perPage => {
+    this.perPage = perPage;
+    let newPage = Math.min(this.page, computeMaxPage());
+    this.getPatrons(newPage);
+  };
   
   // Handle adding a new patron
   // TODO more error handling
@@ -161,7 +171,8 @@ angular.module('app', [])
       this.editing = false;
       this.editPatron = {};
       
-      if ((this.numPatrons - 1) % perPage === 0 && this.page === this.maxPage
+      if ((this.numPatrons - 1) % this.perPage === 0
+          && this.page === this.maxPage
           && this.page > 0) {
         this.getPatrons(this.page - 1);
       } else {

@@ -37,6 +37,14 @@
             {{ patronCtrl.highIndex + 1 }} / {{ patronCtrl.numPatrons }})
           </div>
           
+          <div class="per-page-select">
+            Patrons per page:
+            <a href="" ng-click="patronCtrl.changePerPage(n)"
+                ng-repeat="n in [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]">
+              {{ n }}
+            </a>
+          </div>
+          
           <ul ng-if="patronCtrl.patrons">
             <li ng-repeat="patron in patronCtrl.patrons">
               <img ng-src="{{ patron.pic }}" alt="{{ patron.name }}'s picture">
