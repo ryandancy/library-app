@@ -45,6 +45,18 @@
             </a>
           </div>
           
+          <div class="sort-select">
+            <div class="sort-by-select">
+              Sort by:
+              <!-- HACK using sortBy[0] to add separators -->
+              <a href="" ng-click="patronCtrl.changeSortBy(sortBy[1])"
+                  ng-repeat="sortBy in [['Date created |', 'created'],
+                    ['Name |', 'name'], ['ID', 'id']]">
+                {{ sortBy[0] }}
+              </a>
+            </div>
+          </div>
+          
           <ul ng-if="patronCtrl.patrons">
             <li ng-repeat="patron in patronCtrl.patrons">
               <img ng-src="{{ patron.pic }}" alt="{{ patron.name }}'s picture">

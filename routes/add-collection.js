@@ -121,7 +121,7 @@ module.exports = (router, baseUri) => {
       let sortByObj = {'created': 'created', 'name': 'name', 'id': '_id'};
       let sortDirObj = {'asc': 1, 'desc': -1};
       
-      if (!Object.keys(model.schema.path).includes('name')) {
+      if (!Object.keys(model.schema.paths).includes('name')) {
         delete sortByObj.name;
       }
       
