@@ -56,6 +56,7 @@ angular.module('app', [])
 .controller('PatronCtrl', function($scope, $http) {
   this.perPage = 30;
   this.sortBy = 'created';
+  this.sortDir = 'asc';
   
   let computeMaxPage = () => {
     return Math.ceil(this.numPatrons / this.perPage) - 1;
@@ -66,7 +67,7 @@ angular.module('app', [])
     this.page = page;
     
     $http.get(`/v0/patrons?page=${page}&per_page=${this.perPage}`
-            + `&sort_by=${this.sortBy}`)
+            + `&sort_by=${this.sortBy}&direction=${this.sortDir}`)
     .then(res => {
       this.patrons = res.data.data;
       this.numPatrons = res.data.maxItems;
@@ -100,6 +101,11 @@ angular.module('app', [])
   
   this.changeSortBy = sortBy => {
     this.sortBy = sortBy;
+    this.getPatrons(this.page);
+  };
+  
+  this.changeSortDir = sortDir => {
+    this.sortDir = sortDir;
     this.getPatrons(this.page);
   };
   

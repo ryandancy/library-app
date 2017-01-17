@@ -55,6 +55,13 @@
                 {{ sortBy[0] }}
               </a>
             </div>
+            <div class="sort-dir-select">
+              Sorting direction:
+              <a href="" ng-click="patronCtrl.changeSortDir('asc')">
+                Ascending</a> |
+              <a href="" ng-click="patronCtrl.changeSortDir('desc')">
+                Descending</a>
+            </div>
           </div>
           
           <ul ng-if="patronCtrl.patrons">
