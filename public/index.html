@@ -15,12 +15,10 @@
           <form name="addPatronForm" ng-if="patronCtrl.adding">
             <!-- TODO allow a pic to be uploaded -->
             <label for="patron-pic">Picture URL:</label>
-            <input type="url" id="patron-pic"
-              ng-model="patronCtrl.patron.pic" required>
+            <input type="url" id="patron-pic" ng-model="patronCtrl.patron.pic" required>
             
             <label for="patron-name">Patron name:</label>
-            <input type="text" id="patron-name"
-              ng-model="patronCtrl.patron.name" required>
+            <input type="text" id="patron-name" ng-model="patronCtrl.patron.name" required>
             
             <input type="button" value="Close" ng-click="patronCtrl.abortAdd()">
             <input type="button" value="Clear" ng-click="patronCtrl.clearAdd()">
@@ -57,10 +55,8 @@
             </div>
             <div class="sort-dir-select">
               Sorting direction:
-              <a href="" ng-click="patronCtrl.changeSortDir('asc')">
-                Ascending</a> |
-              <a href="" ng-click="patronCtrl.changeSortDir('desc')">
-                Descending</a>
+              <a href="" ng-click="patronCtrl.changeSortDir('asc')">Ascending</a> |
+              <a href="" ng-click="patronCtrl.changeSortDir('desc')">Descending</a>
             </div>
           </div>
           
@@ -81,31 +77,24 @@
                   Patron name: {{ patron.name }}
                 </div>
                 
-                <input type="button" value="Edit"
-                  ng-click="patronCtrl.startEdit(patron)">
-                <input type="button" value="Close"
-                  ng-click="patronCtrl.toggleShow(patron)">
+                <input type="button" value="Edit" ng-click="patronCtrl.startEdit(patron)">
+                <input type="button" value="Close" ng-click="patronCtrl.toggleShow(patron)">
               </div>
               
               <form name="editPatronForm" ng-if="patronCtrl.editing === patron">
                 <div class="field">
                   <label for="edit-patron-pic">Picture URL:</label>
-                  <input type="text" id="edit-patron-pic"
-                    ng-model="patronCtrl.editPatron.pic">
+                  <input type="text" id="edit-patron-pic" ng-model="patronCtrl.editPatron.pic">
                 </div>
                 
                 <div class="field">
                   <label for="edit-patron-name">Patron name:</label>
-                  <input type="text" id="edit-patron-name"
-                    ng-model="patronCtrl.editPatron.name">
+                  <input type="text" id="edit-patron-name" ng-model="patronCtrl.editPatron.name">
                 </div>
 
-                <input type="button" value="Save"
-                  ng-click="patronCtrl.saveEdit()">
-                <input type="button" value="Delete"
-                  ng-click="patronCtrl.delPatron()">
-                <input type="button" value="Cancel"
-                  ng-click="patronCtrl.abortEdit()">
+                <input type="button" value="Save" ng-click="patronCtrl.saveEdit()">
+                <input type="button" value="Delete" ng-click="patronCtrl.delPatron()">
+                <input type="button" value="Cancel" ng-click="patronCtrl.abortEdit()">
               </form>
             </li>
           </ul>
@@ -116,8 +105,7 @@
               &lt;&lt; Previous
             </a>
             <a href="#" ng-repeat="n in [] | range: patronCtrl.maxPage + 1"
-                ng-if="patronCtrl.maxPage > 0"
-                ng-click="patronCtrl.getPatrons(n)">
+                ng-if="patronCtrl.maxPage > 0" ng-click="patronCtrl.getPatrons(n)">
               {{ n + 1 }}
             </a>
             <a href="#" ng-if="patronCtrl.page < patronCtrl.maxPage"
