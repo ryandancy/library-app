@@ -10,5 +10,9 @@ angular.module('libraryApp', ['ngRoute'])
   .when('/patrons/add', {
     templateUrl: 'add-patron.html',
     controller: 'AddPatronCtrl as addPatronCtrl'
+  })
+  .when('/patrons/:id', {
+    templateUrl: 'show-patron.html',
+    controller: 'ShowPatronCtrl as showPatronCtrl'
   });
 });

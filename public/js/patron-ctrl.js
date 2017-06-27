@@ -57,66 +57,6 @@ angular.module('libraryApp')
     this.getPatrons(this.page);
   };
   
-  // Handle showing and editing patrons
-  
-  const PATRON_UNMODIFIABLES = ['created', 'updated', 'id', 'checkouts'];
-  
-  this.showing = [];
-  this.editing = null;
-  this.editPatron = {};
-  
-  this.toggleShow = patron => {
-    if (this.showing.includes(patron)) {
-      this.showing = this.showing.filter(p => p !== patron);
-    } else {
-      this.showing.push(patron);
-    }
-  };
-  
-  this.startEdit = patron => {
-    this.editing = patron;
-    this.editPatron = angular.copy(patron);
-    for (let unmod of PATRON_UNMODIFIABLES) {
-      delete this.editPatron[unmod];
-    }
-  };
-  
-  this.abortEdit = () => {
-    this.editing = null;
-  };
-  
-  this.saveEdit = () => {
-    $http.put(`/v0/patrons/${this.editing.id}`, this.editPatron)
-    .then(() => {
-      let oldIndex = this.patrons.indexOf(this.editing);
-      this.showing = this.showing.splice(oldIndex, 1);
-      
-      this.editing = false;
-      this.editPatron = {};
-      this.getPatrons(this.page, () => {
-        this.showing.push(this.patrons[oldIndex]);
-      });
-    }, () => {});
-  };
-  
-  // Handle deleting a patron
-  
-  this.delPatron = () => {
-    $http.delete(`/v0/patrons/${this.editing.id}`)
-    .then(() => {
-      this.editing = false;
-      this.editPatron = {};
-      
-      if ((this.numPatrons - 1) % this.perPage === 0
-          && this.page === this.maxPage
-          && this.page > 0) {
-        this.getPatrons(this.page - 1);
-      } else {
-        this.getPatrons(this.page);
-      }
-    }, () => {});
-  };
-  
   // Handle deleting ALL THE THINGS
   this.delAll = () => {
     let seriously = confirm('This will delete ALL PATRONS! '

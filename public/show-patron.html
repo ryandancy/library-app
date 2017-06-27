@@ -1,0 +1,32 @@
+<div class="patron-title">
+  <img ng-src="{{ showPatronCtrl.patron.pic }}" alt="{{ showPatronCtrl.patron.name }}'s picture">
+  {{ showPatronCtrl.patron.name }}
+</div>
+
+<div class="properties" ng-if="!showPatronCtrl.editing">
+  <div class="property">
+    Picture URL: {{ showPatronCtrl.patron.pic }}
+  </div>
+  <div class="property">
+    Patron name: {{ showPatronCtrl.patron.name }}
+  </div>
+  
+  <input type="button" value="Edit" ng-click="showPatronCtrl.startEdit()">
+  <input type="button" value="Close" ng-click="showPatronCtrl.back()">
+  <input type="button" value="Delete" ng-click="showPatronCtrl.delPatron()">
+</div>
+
+<form name="editPatronForm" ng-if="showPatronCtrl.editing">
+  <div class="field">
+    <label for="edit-patron-pic">Picture URL:</label>
+    <input type="text" id="edit-patron-pic" ng-model="showPatronCtrl.editPatron.pic">
+  </div>
+  
+  <div class="field">
+    <label for="edit-patron-name">Patron name:</label>
+    <input type="text" id="edit-patron-name" ng-model="showPatronCtrl.editPatron.name">
+  </div>
+
+  <input type="button" value="Save" ng-click="showPatronCtrl.saveEdit()">
+  <input type="button" value="Cancel" ng-click="showPatronCtrl.abortEdit()">
+</form>

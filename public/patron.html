@@ -34,38 +34,9 @@
   <li ng-repeat="patron in patronCtrl.patrons">
     <img ng-src="{{ patron.pic }}" alt="{{ patron.name }}'s picture">
     
-    <a href="" class="name" ng-click="patronCtrl.toggleShow(patron)">
+    <a href="#!patrons/{{ patron.id }}" class="name">
       {{ patron.name }}
     </a>
-    
-    <div class="properties" ng-if="patronCtrl.showing.includes(patron)
-        && patronCtrl.editing !== patron">
-      <div class="property">
-        Picture URL: {{ patron.pic }}
-      </div>
-      <div class="property">
-        Patron name: {{ patron.name }}
-      </div>
-      
-      <input type="button" value="Edit" ng-click="patronCtrl.startEdit(patron)">
-      <input type="button" value="Close" ng-click="patronCtrl.toggleShow(patron)">
-    </div>
-    
-    <form name="editPatronForm" ng-if="patronCtrl.editing === patron">
-      <div class="field">
-        <label for="edit-patron-pic">Picture URL:</label>
-        <input type="text" id="edit-patron-pic" ng-model="patronCtrl.editPatron.pic">
-      </div>
-      
-      <div class="field">
-        <label for="edit-patron-name">Patron name:</label>
-        <input type="text" id="edit-patron-name" ng-model="patronCtrl.editPatron.name">
-      </div>
-
-      <input type="button" value="Save" ng-click="patronCtrl.saveEdit()">
-      <input type="button" value="Delete" ng-click="patronCtrl.delPatron()">
-      <input type="button" value="Cancel" ng-click="patronCtrl.abortEdit()">
-    </form>
   </li>
 </ul>
 
