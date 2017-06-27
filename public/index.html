@@ -4,15 +4,17 @@
     <meta charset="utf-8">
     <title>Library App</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-route.js"></script>
   </head>
   <body>
-    <tabset>
-      <ng-include src="'patron.html'">
-    </tabset>
+    <ul>
+      <li><a href="#!patrons">Patrons</a></li>
+    </ul>
+    
+    <ng-view></ng-view>
     
     <script src="js/app.js" charset="utf-8"></script>
     <script src="js/filters.js" charset="utf-8"></script>
-    <script src="js/tab.js" charset="utf-8"></script>
     <script src="js/patron-ctrl.js" charset="utf-8"></script>
   </body>
 </html>
