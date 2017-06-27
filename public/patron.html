@@ -41,14 +41,14 @@
 </ul>
 
 <nav>
-  <a href="#" ng-if="patronCtrl.page > 0" ng-click="patronCtrl.getPatrons(patronCtrl.page - 1)">
+  <a href="" ng-if="patronCtrl.page > 0" ng-click="patronCtrl.getPatrons(patronCtrl.page - 1)">
     &lt;&lt; Previous
   </a>
-  <a href="#" ng-repeat="n in [] | range: patronCtrl.maxPage + 1" ng-if="patronCtrl.maxPage > 0"
+  <a href="" ng-repeat="n in [] | range: patronCtrl.maxPage + 1" ng-if="patronCtrl.maxPage > 0"
       ng-click="patronCtrl.getPatrons(n)">
     {{ n + 1 }}
   </a>
-  <a href="#" ng-if="patronCtrl.page < patronCtrl.maxPage"
+  <a href="" ng-if="patronCtrl.page < patronCtrl.maxPage"
       ng-click="patronCtrl.getPatrons(patronCtrl.page + 1)">
     Next &gt;&gt;
   </a>
