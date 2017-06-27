@@ -1,6 +1,6 @@
 /* global angular */
 
-angular.module('app', [])
+angular.module('libraryApp', [])
 .directive('tab', () => ({
   restrict: 'E',
   transclude: true,
