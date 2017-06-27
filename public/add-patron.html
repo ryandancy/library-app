@@ -1,0 +1,12 @@
+<form name="addPatronForm">
+  <!-- TODO allow a pic to be uploaded -->
+  <label for="patron-pic">Picture URL:</label>
+  <input type="url" id="patron-pic" ng-model="addPatronCtrl.patron.pic" required>
+  
+  <label for="patron-name">Patron name:</label>
+  <input type="text" id="patron-name" ng-model="addPatronCtrl.patron.name" required>
+  
+  <input type="button" value="Back" ng-click="addPatronCtrl.abort()">
+  <input type="button" value="Clear" ng-click="addPatronCtrl.clear()">
+  <input type="button" value="Save" ng-click="addPatronCtrl.doAdd()" ng-show="addPatronForm.$valid">
+</form>

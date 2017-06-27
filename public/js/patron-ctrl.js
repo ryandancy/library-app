@@ -57,33 +57,6 @@ angular.module('libraryApp')
     this.getPatrons(this.page);
   };
   
-  // Handle adding a new patron
-  // TODO more error handling
-  
-  this.adding = false;
-  this.patron = {};
-  
-  this.startAdd = () => {
-    this.adding = true;
-  };
-  
-  this.abortAdd = () => {
-    this.adding = false;
-  };
-  
-  this.clearAdd = () => {
-    this.patron = {}; // BUG only clears valid fields...
-  };
-  
-  this.doAdd = () => {
-    $http.post('/v0/patrons', this.patron)
-    .then(() => {
-      this.adding = false;
-      this.patron = {};
-      this.getPatrons(this.page);
-    }, () => {});
-  };
-  
   // Handle showing and editing patrons
   
   const PATRON_UNMODIFIABLES = ['created', 'updated', 'id', 'checkouts'];

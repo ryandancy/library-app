@@ -1,21 +1,4 @@
-<input type="button" value="Add a Patron" ng-if="!patronCtrl.adding"
-  ng-click="patronCtrl.startAdd()">
-
-<form name="addPatronForm" ng-if="patronCtrl.adding">
-  <!-- TODO allow a pic to be uploaded -->
-  <label for="patron-pic">Picture URL:</label>
-  <input type="url" id="patron-pic" ng-model="patronCtrl.patron.pic" required>
-  
-  <label for="patron-name">Patron name:</label>
-  <input type="text" id="patron-name" ng-model="patronCtrl.patron.name" required>
-  
-  <input type="button" value="Close" ng-click="patronCtrl.abortAdd()">
-  <input type="button" value="Clear" ng-click="patronCtrl.clearAdd()">
-  <input type="button" value="Save" ng-click="patronCtrl.doAdd()" ng-show="addPatronForm.$valid">
-</form>
-
-<input type="button" value="Delete All Patrons"
-  ng-click="patronCtrl.delAll()" ng-if="patronCtrl.numPatrons > 0">
+<a href="#!patrons/add">Add a Patron</a>
 
 <div class="pagination" ng-if="patronCtrl.maxPage > 0">
   Page {{ patronCtrl.page + 1 }} / {{ patronCtrl.maxPage + 1 }}
@@ -99,3 +82,6 @@
     Next &gt;&gt;
   </a>
 </nav>
+
+<input type="button" value="Delete All Patrons"
+  ng-click="patronCtrl.delAll()" ng-if="patronCtrl.numPatrons > 0">
