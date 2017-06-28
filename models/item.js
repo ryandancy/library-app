@@ -79,6 +79,14 @@ let itemSchema = new Schema({
     enum: ['in', 'out', 'missing', 'lost'],
     required: true
   },
+  title: reqt.String,
+  subtitle: String,
+  author: reqt.String,
+  edition: String,
+  publisher: reqt.String,
+  pubPlace: String,
+  pubYear: Number,
+  isbn: Number,
   checkoutID: ObjectId
 });
 

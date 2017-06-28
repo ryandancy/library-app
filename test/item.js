@@ -41,9 +41,11 @@ template({
       value: '098765432109876543210987'
     }
   },
-  optionalProperties: ['checkoutID'],
+  optionalProperties: [
+    'checkoutID', 'subtitle', 'edition', 'pubPlace', 'pubYear', 'isbn'
+  ],
   ignoredProperties: ['marc.fields.control.*', 'marc.fields.variable.*'],
-  generator: () => ({
+  generator: num => ({
     marc: {
       leader: '123456789012345678901234',
       fields: {
@@ -62,8 +64,11 @@ template({
         }]
       }
     },
-    barcode: 1234,
-    status: 'in'
+    barcode: 10000 + num,
+    status: 'in',
+    title: `Generated Item #${num}`,
+    author: 'Schmoe, Joe',
+    publisher: 'Generator, Inc'
   }),
   additionalTests: () => {
     for (let collection = 0; collection < 2; collection++) {

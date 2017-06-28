@@ -172,7 +172,13 @@ module.exports = {
       }
     },
     barcode: 45871389531,
-    status: 'in'
+    status: 'in',
+    title: 'Fifty Years of Television',
+    author: 'Vincent Terrace',
+    publisher: 'Cornwall Books',
+    pubPlace: 'New York',
+    pubYear: 1991,
+    isbn: 845348205
   },
   simple2: {
     marc: {
@@ -473,7 +479,13 @@ module.exports = {
       }
     },
     barcode: 8913876178,
-    status: 'out'
+    status: 'out',
+    title: 'Annual Fisheries and Wildlife Report',
+    subtitle: 'Wildlife and Fish Management in the Forest Service',
+    author: 'Forest Service Staff',
+    publisher: 'United States Department of Agriculture, Forest Service, '
+             + 'Wildlife and Fisheries',
+    pubYear: 1983
   },
   unicode: { // ZALGO, HE COMES
     marc: {
@@ -623,7 +635,10 @@ module.exports = {
       }
     },
     barcode: 983763193413,
-    status: 'missing'
+    status: 'missing',
+    title: 'Bøøk♫énds| ëxtènðË♫ð',
+    author: 'Àßhw♫éłł, ^J"øñät*h♫an Ð.',
+    publisher: '§ëƪñs╫ß⟅è Söf𝔱wàré⟅⟅⟅Ïñ©. ♫'
   },
   whitespace: {
     marc: {
@@ -729,6 +744,14 @@ module.exports = {
       }
     },
     barcode: 876545678,
-    status: 'in'
+    status: 'in',
+    title: '  \f\f\t \t\t  \v',
+    subtitle: '\v\v\v\v\v\t            \n\n',
+    author: '\n',
+    edition: '                     \t\n\n\n\n',
+    publisher: '\n\n',
+    pubPlace: '\t\t       \r\r\n\t     ',
+    pubYear: 1,
+    isbn: 2222222222
   }
 };
