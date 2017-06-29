@@ -14,5 +14,9 @@ angular.module('libraryApp', ['ngRoute'])
   .when('/patrons/:id', {
     templateUrl: 'show-patron.html',
     controller: 'ShowPatronCtrl as showPatronCtrl'
+  })
+  .when('/items', {
+    templateUrl: 'item.html',
+    controller: 'ItemCtrl as itemCtrl'
   });
 });

@@ -1,0 +1,58 @@
+<!-- TODO this is *very* similar to patron.html - combine/use template -->
+
+<!-- TODO /items/add -->
+
+<div class="pagination" ng-if="itemCtrl.maxPage > 0">
+  Page {{ itemCtrl.page + 1 }} / {{ itemCtrl.maxPage + 1 }}
+  (Items {{ itemCtrl.lowIndex + 1 }} - {{ itemCtrl.highIndex + 1 }} / {{ itemCtrl.numItems }})
+</div>
+
+<div class="per-page-select">
+  Items per page:
+  <a href="" ng-click="itemCtrl.changePerPage(n)"
+      ng-repeat="n in [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]">
+    {{ n }}
+  </a>
+</div>
+
+<div class="sort-select">
+  <div class="sort-by-select">
+    Sort by:
+    <!-- HACK using sortBy[0] to add separators -->
+    <a href="" ng-click="itemCtrl.changeSortBy(sortBy[1])"
+        ng-repeat="sortBy in [['Date created |', 'created'], ['Name |', 'name'], ['ID', 'id']]">
+      {{ sortBy[0] }}
+    </a>
+  </div>
+  <div class="sort-dir-select">
+    Sorting direction:
+    <a href="" ng-click="itemCtrl.changeSortDir('asc')">Ascending</a> |
+    <a href="" ng-click="itemCtrl.changeSortDir('desc')">Descending</a>
+  </div>
+</div>
+
+<ul ng-if="itemCtrl.items">
+  <li ng-repeat="item in itemCtrl.items">
+    <!-- TODO book cover images -->
+    <!-- TODO /items/:id -->
+    <span class="item-title">{{ item.title }}</span> by
+    <span class="item-author">{{ item.author }}</span>
+  </li>
+</ul>
+
+<nav>
+  <a href="" ng-if="itemCtrl.page > 0" ng-click="itemCtrl.getItems(itemCtrl.page - 1)">
+    &lt;&lt; Previous
+  </a>
+  <a href="" ng-repeat="n in [] | range: itemCtrl.maxPage + 1" ng-if="itemCtrl.maxPage > 0"
+      ng-click="itemCtrl.getItems(n)">
+    {{ n + 1 }}
+  </a>
+  <a href="" ng-if="itemCtrl.page < itemCtrl.maxPage"
+      ng-click="itemCtrl.getItems(itemCtrl.page + 1)">
+    Next &gt;&gt;
+  </a>
+</nav>
+
+<input type="button" value="Delete All Items"
+  ng-click="itemCtrl.delAll()" ng-if="itemCtrl.numItems > 0">
