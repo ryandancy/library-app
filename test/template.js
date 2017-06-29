@@ -235,7 +235,7 @@ module.exports = options => {
         util.testSortableGet(path + '?sort_by=created&direction=desc', model,
           allTestDocs, createdDescSort, hooks));
       
-      if (Object.keys(model.schema.path).includes('name')) {
+      if (model.schema.path('name')) {
         let nameAscSort = (doc, doc2) =>
           doc.name.should.be.at.most(doc2.name);
         let nameDescSort = (doc, doc2) =>
