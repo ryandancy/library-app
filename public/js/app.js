@@ -1,7 +1,7 @@
 /* global angular */
 
 angular.module('libraryApp', ['ngRoute'])
-.config(function($routeProvider) {
+.config($routeProvider => {
   $routeProvider
   .when('/patrons', {
     templateUrl: 'patron.html',
