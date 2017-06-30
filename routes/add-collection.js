@@ -92,10 +92,19 @@ module.exports = (router, baseUri) => {
     };
     router.use(collectionPath, (req, res, next) => {
       let crud = methodToCRUD[req.method];
-      let hook = hooks[crud];
-      req.hook = hook || function() {
+      let hook = hooks[crud] || function() {
         // next is always last arg, call it
         arguments[arguments.length - 1]();
+      };
+      // This mess is to allow hooks to pass a new document to next() and it'll
+      // be used as the new documents; however, if they pass nothing, this mess
+      // makes it so that the original document is used. TODO make less ugly?
+      req.hook = function() {
+        let hookNext = arguments[arguments.length - 1];
+        let doc = arguments[arguments.length - 2]; // HACK assuming doc position
+        hook(...Array.prototype.slice.call(arguments, 0, -1), newDoc => {
+          hookNext(doc === undefined ? newDoc : doc);
+        });
       };
       next();
     });
@@ -163,12 +172,12 @@ module.exports = (router, baseUri) => {
       }
 
       // execute the query
-      query.exec((err, docs) => {
+      query.exec((err, preHooksDocs) => {
         if (err) return util.handleDBError(err, res);
         handleBatchHook(
-          docs,
+          preHooksDocs,
           (doc, next) => req.hook(req, res, doc, next),
-          () => {
+          docs => {
             let outgoingDocs = docs.map(toInputConverter);
             if (pageable) {
               model.count({}, (err, count) => {
@@ -213,8 +222,8 @@ module.exports = (router, baseUri) => {
       if (!util.validate(req, res)) return;
       
       // make the new thing
-      let newDoc = toDBConverter(req.body);
-      req.hook(req, res, newDoc, () => {
+      let newPreHookDoc = toDBConverter(req.body);
+      req.hook(req, res, newPreHookDoc, newDoc => {
         model.create(newDoc, (err, doc) => {
           if (err) {
             return util.handleDBError(err, res,
@@ -257,8 +266,8 @@ module.exports = (router, baseUri) => {
       model.findById(id, (err, doc) => {
         if (err) return util.handleDBError(err, res);
         if (doc === null) return res.status(404).end(); // it doesn't exist
-        req.hook(req, res, doc, () => {
-          res.status(200).json(toInputConverter(doc));
+        req.hook(req, res, doc, realDoc => {
+          res.status(200).json(toInputConverter(realDoc));
         });
       });
     });
@@ -289,10 +298,10 @@ module.exports = (router, baseUri) => {
             : mask[prop];
         }
         
-        req.hook(req, res, oldDoc, newDoc, () => {
-          for (let prop in newDoc) {
-            if (!newDoc.hasOwnProperty(prop)) continue;
-            oldDoc[prop] = newDoc[prop];
+        req.hook(req, res, oldDoc, newDoc, realNewDoc => {
+          for (let prop in realNewDoc) {
+            if (!realNewDoc.hasOwnProperty(prop)) continue;
+            oldDoc[prop] = realNewDoc[prop];
           }
           oldDoc.save(err => {
             if (err) {
@@ -334,13 +343,14 @@ module.exports = (router, baseUri) => {
         }
         
         // actually update the doc
-        req.hook(req, res, oldDocCopy, oldDoc, () => oldDoc.save((err, doc) => {
-          if (err) {
-            return util.handleDBError(
-              err, res, err.name === 'ValidationError' ? 422 : 500);
-          }
-          res.status(200).json(toInputConverter(doc));
-        }));
+        req.hook(req, res, oldDocCopy, oldDoc, realDoc => realDoc.save(
+          (err, doc) => {
+            if (err) {
+              return util.handleDBError(
+                err, res, err.name === 'ValidationError' ? 422 : 500);
+            }
+            res.status(200).json(toInputConverter(doc));
+          }));
       });
     });
     
@@ -352,7 +362,7 @@ module.exports = (router, baseUri) => {
       model.findById(id, (err, doc) => {
         if (err) return util.handleDBError(err, res);
         if (doc === null) return res.status(404).end(); // it doesn't exist
-        req.hook(req, res, doc, () => doc.remove(err => {
+        req.hook(req, res, doc, doc2 => doc2.remove(err => {
           if (err) return util.handleDBError(err, res);
           res.status(204).send();
         }));
