@@ -103,7 +103,7 @@ module.exports = (router, baseUri) => {
         let hookNext = arguments[arguments.length - 1];
         let doc = arguments[arguments.length - 2]; // HACK assuming doc position
         hook(...Array.prototype.slice.call(arguments, 0, -1), newDoc => {
-          hookNext(doc === undefined ? newDoc : doc);
+          hookNext(newDoc === undefined ? doc : newDoc);
         });
       };
       next();
