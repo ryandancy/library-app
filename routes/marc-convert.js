@@ -27,7 +27,7 @@ exports.jsonToMarc = json => {
 };
 
 exports.marcToJson = marc => {
-  marc = marc.split('\n');
+  marc = marc.split(/\r?\n/);
   
   let leader = marc[0];
   marc = marc.slice(1);
