@@ -44,7 +44,9 @@ module.exports = (router, baseUri) => {
         {$push: {checkouts: checkout._id}}
       ).exec());
       
-      Promise.all(promises).then(next, err => util.handleDBError(err, res));
+      Promise.all(promises).then(
+        () => next(),
+        err => util.handleDBError(err, res));
     },
     update: (req, res, oldCheckout, newCheckout, next) => {
       let promises = [];
@@ -79,7 +81,9 @@ module.exports = (router, baseUri) => {
         ).exec());
       }
       
-      Promise.all(promises).then(next, err => util.handleDBError(err, res));
+      Promise.all(promises).then(
+        () => next(),
+        err => util.handleDBError(err, res));
     },
     delete: (req, res, checkout, next) => {
       let promises = [];
@@ -107,7 +111,9 @@ module.exports = (router, baseUri) => {
         {$pull: {checkouts: checkout._id}}
       ).exec());
       
-      Promise.all(promises).then(next, err => util.handleDBError(err, res));
+      Promise.all(promises).then(
+        () => next(),
+        err => util.handleDBError(err, res));
     }
   });
   
@@ -230,7 +236,9 @@ module.exports = (router, baseUri) => {
         promises.push(Checkout.findByIdAndRemove(item.checkoutID).exec());
       }
       
-      Promise.all(promises).then(next, err => util.handleDBError(err, res));
+      Promise.all(promises).then(
+        () => next(),
+        err => util.handleDBError(err, res));
     }
   }, ['checkoutID']);
   
@@ -331,7 +339,9 @@ module.exports = (router, baseUri) => {
         promises.push(Checkout.findByIdAndRemove(checkoutID).exec());
       }
       
-      Promise.all(promises).then(next, err => util.handleDBError(err, res));
+      Promise.all(promises).then(
+        () => next(),
+        err => util.handleDBError(err, res));
     }
   }, ['checkouts']);
 };
