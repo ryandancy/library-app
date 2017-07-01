@@ -128,7 +128,10 @@ template({
       });
     }
     
-    let marcHeaders = {accept: 'application/marc'};
+    let marcHeaders = {
+      accept: 'application/marc',
+      'content-type': 'application/marc'
+    };
     
     function castToMediaType(str, defaultType = 'application') {
       return str.includes('/') ? str : defaultType + '/' + str;

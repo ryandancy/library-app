@@ -289,11 +289,12 @@ exports.testPaging = (path, model, testDocs, values, hooks) => {
   };
 };
 
-exports.testPost = (path, doc, model, hooks, docsForDB = []) => {
+exports.testPost = (path, doc, model, hooks, docsForDB = [], headers = {}) => {
   return done => {
     populateDB(Array.from(docsForDB), model, () => {
       chai.request(server)
       .post(path)
+      .set(headers)
       .send(doc)
       .end((err, res) => {
         res.should.have.status(201);
