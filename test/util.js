@@ -289,13 +289,17 @@ exports.testPaging = (path, model, testDocs, values, hooks) => {
   };
 };
 
-exports.testPost = (path, doc, model, hooks, docsForDB = [], headers = {}) => {
+// poor syntax highlighter can't even handle a teensy weensy line break, aww
+exports.testPost = (path, doc, model, hooks,
+    docsForDB = [], headers = {}, sendDoc) => {
+  if (sendDoc === undefined) sendDoc = doc;
+  
   return done => {
     populateDB(Array.from(docsForDB), model, () => {
       chai.request(server)
       .post(path)
       .set(headers)
-      .send(doc)
+      .send(sendDoc)
       .end((err, res) => {
         res.should.have.status(201);
         res.body.should.deep.equal({});
