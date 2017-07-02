@@ -139,7 +139,7 @@ template({
       return util.testPost('/v0/items', item, Item, {}, db, marcHeaders, marc);
     }
     
-    describe('POST /v0/items; Content-Type=application/marc', () => {
+    describe.only('POST /v0/items; Content-Type=application/marc', () => {
       it('creates an item from MARC',
         testItemPostWithMarc(testItems.simple1, testMarc.simple1));
       it('creates an item from MARC with unicode',
@@ -158,26 +158,30 @@ template({
           generateDocs(100)));
       
       let path = '/v0/items';
-      it('gives a 400 on *obviously* syntatically invalid input',
-        util.testStatus(path, Item, 400, {}, [], 'post', "I'm invalid MARC!",
+      // NOTE: the MARC parser will interpret literally any string as MARC
+      // Therefore no 400s are given, only 422s
+      it('gives a 422 on parseable but *really* invalid input',
+        util.testStatus(path, Item, 422, {}, [], 'post', "I'm invalid MARC!",
           marcHeaders));
-      it('gives a 400 on less obviously syntatically invalid input',
-        util.testStatus(path, Item, 400, {}, [], 'post',
-          '12345678901234567890\n200  QZ\n38412$aHi!\nFJDIS\nI am invalid',
+      it('gives a 422 on less obviously invalid input',
+        util.testStatus(path, Item, 422, {}, [], 'post',
+          '123456789012345678901234\n200  QZ\n38412$aHi!\nFJDIS\nI am invalid',
           marcHeaders));
-      it('gives a 400 on the empty string as input',
-        util.testStatus(path, Item, 400, {}, [], 'post', '', marcHeaders));
-      it('gives a 400 on an empty object as input',
-        util.testStatus(path, Item, 400, {}, [], 'post', {}, marcHeaders));
-      it('gives a 400 on a non-empty object as input',
-        util.testStatus(path, Item, 400, {}, [], 'post', {'foo': 'bar'},
+      it('gives a 422 on the empty string as input',
+        util.testStatus(path, Item, 422, {}, [], 'post', '', marcHeaders));
+      // NOTE: all the objects must be strings because superagent can't handle
+      // objects with Content-Type !== application/json
+      it('gives a 422 on an empty object as input',
+        util.testStatus(path, Item, 422, {}, [], 'post', '{}', marcHeaders));
+      it('gives a 422 on a non-empty object as input',
+        util.testStatus(path, Item, 422, {}, [], 'post', '{"foo": "bar"}',
           marcHeaders));
-      it('gives a 400 on a MARC-JSON-ish object as input',
-        util.testStatus(path, Item, 400, {}, [], 'post', testItems.simple1.marc,
-          marcHeaders));
-      it('gives a 400 on an array of valid MARCs as input',
-        util.testStatus(path, Item, 400, {}, [], 'post',
-          [testMarc.simple1, testMarc.simple2], marcHeaders));
+      it('gives a 422 on a MARC-JSON-ish object as input',
+        util.testStatus(path, Item, 422, {}, [], 'post',
+          JSON.stringify(testItems.simple1.marc), marcHeaders));
+      it('gives a 422 on an array of valid MARCs as input',
+        util.testStatus(path, Item, 422, {}, [], 'post',
+          JSON.stringify([testMarc.simple1, testMarc.simple2]), marcHeaders));
       
       // TODO find some way to make this not look so ugly
       it('works fine with all optional + required properties and only that',

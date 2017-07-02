@@ -122,7 +122,14 @@ module.exports = (router, baseUri) => {
     create: (req, res, marc, next) => {
       if (req.get('Content-Type') !== 'application/marc') return next();
       
-      let jsonMarc = marcConvert.marcToJson(marc);
+      let jsonMarc;
+      try {
+        jsonMarc = marcConvert.marcToJson(marc);
+      } catch (err) {
+        res.status(400).json({msg: err});
+        return;
+      }
+      
       let item = {marc: jsonMarc, status: 'in'};
       
       function findSubfield(field, subfield) {

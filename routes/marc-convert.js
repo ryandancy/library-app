@@ -27,6 +27,11 @@ exports.jsonToMarc = json => {
 };
 
 exports.marcToJson = marc => {
+  // make sure it's actually a string
+  if (typeof marc !== 'string') {
+    throw 'MARC must be a string';
+  }
+  
   marc = marc.split(/\r?\n/);
   
   let leader = marc[0];
