@@ -21,6 +21,32 @@ const should = chai.should();
 chai.use(chaiHttp);
 chai.use(chaiSubset);
 
+let generateDocs = num => ({
+  marc: {
+    leader: '123456789012345678901234',
+    fields: {
+      control: [{
+        tag: 1,
+        value: '89187647889'
+      }],
+      variable: [{
+        tag: 20,
+        ind1: ' ',
+        ind2: ' ',
+        subfields: [{
+          tag: 'a',
+          value: '0845348116'
+        }]
+      }]
+    }
+  },
+  barcode: 10000 + num,
+  status: 'in',
+  title: `Generated Item #${num}`,
+  author: 'Schmoe, Joe',
+  publisher: 'Generator, Inc'
+});
+
 template({
   path: '/v0/items',
   model: Item,
@@ -45,31 +71,7 @@ template({
     'checkoutID', 'subtitle', 'edition', 'pubPlace', 'pubYear', 'isbn'
   ],
   ignoredProperties: ['marc.fields.control.*', 'marc.fields.variable.*'],
-  generator: num => ({
-    marc: {
-      leader: '123456789012345678901234',
-      fields: {
-        control: [{
-          tag: 1,
-          value: '89187647889'
-        }],
-        variable: [{
-          tag: 20,
-          ind1: ' ',
-          ind2: ' ',
-          subfields: [{
-            tag: 'a',
-            value: '0845348116'
-          }]
-        }]
-      }
-    },
-    barcode: 10000 + num,
-    status: 'in',
-    title: `Generated Item #${num}`,
-    author: 'Schmoe, Joe',
-    publisher: 'Generator, Inc'
-  }),
+  generator: generateDocs,
   additionalTests: () => {
     for (let collection = 0; collection < 2; collection++) {
       // let's just treat collection as a boolean cause JS is weird
@@ -132,6 +134,128 @@ template({
       accept: 'application/marc',
       'content-type': 'application/marc'
     };
+    
+    function testItemPostWithMarc(item, marc, db = []) {
+      return util.testPost('/v0/items', item, Item, {}, db, marcHeaders, marc);
+    }
+    
+    describe('POST /v0/items; Content-Type=application/marc', () => {
+      it('creates an item from MARC',
+        testItemPostWithMarc(testItems.simple1, testMarc.simple1));
+      it('creates an item from MARC with unicode',
+        testItemPostWithMarc(testItems.unicode, testMarc.unicode));
+      it('creates an item from MARC with whitespace',
+        testItemPostWithMarc(testItems.whitespace, testMarc.whitespace));
+      
+      it("creates an item from MARC when there's already an item in the DB",
+        testItemPostWithMarc(testItems.simple1, testMarc.simple1,
+          testItems.simple2));
+      it("creates an item from MARC when there's already an identical one",
+        testItemPostWithMarc(testItems.simple1, testMarc.simple1,
+          testItems.simple1));
+      it("creates an item from MARC when there's already 100 items in the DB",
+        testItemPostWithMarc(testItems.simple1, testMarc.simple1,
+          generateDocs(100)));
+      
+      let path = '/v0/items';
+      it('gives a 400 on *obviously* syntatically invalid input',
+        util.testStatus(path, Item, 400, {}, [], 'post', "I'm invalid MARC!",
+          marcHeaders));
+      it('gives a 400 on less obviously syntatically invalid input',
+        util.testStatus(path, Item, 400, {}, [], 'post',
+          '12345678901234567890\n200  QZ\n38412$aHi!\nFJDIS\nI am invalid',
+          marcHeaders));
+      it('gives a 400 on the empty string as input',
+        util.testStatus(path, Item, 400, {}, [], 'post', '', marcHeaders));
+      it('gives a 400 on an empty object as input',
+        util.testStatus(path, Item, 400, {}, [], 'post', {}, marcHeaders));
+      it('gives a 400 on a non-empty object as input',
+        util.testStatus(path, Item, 400, {}, [], 'post', {'foo': 'bar'},
+          marcHeaders));
+      it('gives a 400 on a MARC-JSON-ish object as input',
+        util.testStatus(path, Item, 400, {}, [], 'post', testItems.simple1.marc,
+          marcHeaders));
+      it('gives a 400 on an array of valid MARCs as input',
+        util.testStatus(path, Item, 400, {}, [], 'post',
+          [testMarc.simple1, testMarc.simple2], marcHeaders));
+      
+      // TODO find some way to make this not look so ugly
+      it('works fine with all optional + required properties and only that',
+        util.testStatus(path, Item, 201, {}, [], 'post',
+`05463nam  2200075 a 4500
+020  $a1234567890
+100  $aSchmoe, Joe
+245  $aMy Book$ba Book of Bookiness
+250  $a2nd edition
+260  $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
+      it('works fine with bare minimum required properties',
+        util.testStatus(path, Item, 201, {}, [], 'post',
+`05463nam  2200075 a 4500
+100  $aSchmoe, joe
+245  $aMy Book
+260  $bSchmoe Publishing`, marcHeaders));
+      it('works fine when missing "isbn"',
+        util.testStatus(path, Item, 201, {}, [], 'post',
+`05463nam  2200075 a 4500
+100  $aSchmoe, Joe
+245  $aMy Book$ba Book of Bookiness
+250  $a2nd edition
+260  $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
+      it('works fine when missing "subtitle"',
+        util.testStatus(path, Item, 201, {}, [], 'post',
+`05463nam  2200075 a 4500
+020  $a1234567890
+100  $aSchmoe, Joe
+245  $aMy Book
+250  $a2nd edition
+260  $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
+      it('works fine when missing "edition"',
+        util.testStatus(path, Item, 201, {}, [], 'post',
+`05463nam  2200075 a 4500
+020  $a1234567890
+100  $aSchmoe, Joe
+245  $aMy Book$ba Book of Bookiness
+260  $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
+      it('works fine when missing "pubPlace"',
+        util.testStatus(path, Item, 201, {}, [], 'post',
+`05463nam  2200075 a 4500
+020  $a1234567890
+100  $aSchmoe, Joe
+245  $aMy Book$ba Book of Bookiness
+250  $a2nd edition
+260  $bSchmoe Publishing$c1938`, marcHeaders));
+      it('works fine when missing "pubYear"',
+        util.testStatus(path, Item, 201, {}, [], 'post',
+`05463nam  2200075 a 4500
+020  $a1234567890
+100  $aSchmoe, Joe
+245  $aMy Book$ba Book of Bookiness
+250  $a2nd edition
+260  $aDjibouti, Djibouti$bSchmoe Publishing`, marcHeaders));
+      it('gives a 422 when missing "author"',
+        util.testStatus(path, Item, 422, {}, [], 'post',
+`05463nam  2200075 a 4500
+020  $a1234567890
+245  $aMy Book$ba Book of Bookiness
+250  $a2nd edition
+260  $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
+      it('gives a 422 when missing "title"',
+        util.testStatus(path, Item, 422, {}, [], 'post',
+`05463nam  2200075 a 4500
+020  $a1234567890
+100  $aSchmoe, Joe
+245  $ba Book of Bookiness
+250  $a2nd edition
+260  $aDjibouti, Djibouti$bSchmoe Publishing$c1938`));
+      it('gives a 422 when missing "publisher"',
+        util.testStatus(path, Item, 422, {}, [], 'post',
+`05463nam  2200075 a 4500
+020  $a1234567890
+100  $aSchmoe, Joe
+245  $aMy Book$ba Book of Bookiness
+250  $a2nd edition
+260  $aDjibouti, Djibouti$c1938`));
+    });
     
     function castToMediaType(str, defaultType = 'application') {
       return str.includes('/') ? str : defaultType + '/' + str;
