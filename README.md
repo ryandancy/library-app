@@ -5,5 +5,5 @@ A simple Node.js/AngularJS (eventually) webapp for the management of a school
 instead, "admins" check out items for them.
 
 Currently just a RESTful HTTP server, but will eventually include an AngularJS
-frontend. Run `node server.js` to run the server, or `npm test` to run all 670+
+frontend. Run `node server.js` to run the server, or `npm test` to run all 710+
 tests.

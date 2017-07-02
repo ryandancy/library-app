@@ -139,7 +139,7 @@ template({
       return util.testPost('/v0/items', item, Item, {}, db, marcHeaders, marc);
     }
     
-    describe.only('POST /v0/items; Content-Type=application/marc', () => {
+    describe('POST /v0/items; Content-Type=application/marc', () => {
       it('creates an item from MARC',
         testItemPostWithMarc(testItems.simple1, testMarc.simple1));
       it('creates an item from MARC with unicode',
@@ -187,78 +187,88 @@ template({
       it('works fine with all optional + required properties and only that',
         util.testStatus(path, Item, 201, {}, [], 'post',
 `05463nam  2200075 a 4500
-020  $a1234567890
-100  $aSchmoe, Joe
-245  $aMy Book$ba Book of Bookiness
-250  $a2nd edition
-260  $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
+001 89187647889
+020   $a1234567890
+100   $aSchmoe, Joe
+245   $aMy Book$ba Book of Bookiness
+250   $a2nd edition
+260   $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
       it('works fine with bare minimum required properties',
         util.testStatus(path, Item, 201, {}, [], 'post',
 `05463nam  2200075 a 4500
-100  $aSchmoe, joe
-245  $aMy Book
-260  $bSchmoe Publishing`, marcHeaders));
+001 89187647889
+100   $aSchmoe, joe
+245   $aMy Book
+260   $bSchmoe Publishing`, marcHeaders));
       it('works fine when missing "isbn"',
         util.testStatus(path, Item, 201, {}, [], 'post',
 `05463nam  2200075 a 4500
-100  $aSchmoe, Joe
-245  $aMy Book$ba Book of Bookiness
-250  $a2nd edition
-260  $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
+001 89187647889
+100   $aSchmoe, Joe
+245   $aMy Book$ba Book of Bookiness
+250   $a2nd edition
+260   $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
       it('works fine when missing "subtitle"',
         util.testStatus(path, Item, 201, {}, [], 'post',
 `05463nam  2200075 a 4500
-020  $a1234567890
-100  $aSchmoe, Joe
-245  $aMy Book
-250  $a2nd edition
-260  $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
+001 89187647889
+020   $a1234567890
+100   $aSchmoe, Joe
+245   $aMy Book
+250   $a2nd edition
+260   $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
       it('works fine when missing "edition"',
         util.testStatus(path, Item, 201, {}, [], 'post',
 `05463nam  2200075 a 4500
-020  $a1234567890
-100  $aSchmoe, Joe
-245  $aMy Book$ba Book of Bookiness
-260  $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
+001 89187647889
+020   $a1234567890
+100   $aSchmoe, Joe
+245   $aMy Book$ba Book of Bookiness
+260   $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
       it('works fine when missing "pubPlace"',
         util.testStatus(path, Item, 201, {}, [], 'post',
 `05463nam  2200075 a 4500
-020  $a1234567890
-100  $aSchmoe, Joe
-245  $aMy Book$ba Book of Bookiness
-250  $a2nd edition
-260  $bSchmoe Publishing$c1938`, marcHeaders));
+001 89187647889
+020   $a1234567890
+100   $aSchmoe, Joe
+245   $aMy Book$ba Book of Bookiness
+250   $a2nd edition
+260   $bSchmoe Publishing$c1938`, marcHeaders));
       it('works fine when missing "pubYear"',
         util.testStatus(path, Item, 201, {}, [], 'post',
 `05463nam  2200075 a 4500
-020  $a1234567890
-100  $aSchmoe, Joe
-245  $aMy Book$ba Book of Bookiness
-250  $a2nd edition
-260  $aDjibouti, Djibouti$bSchmoe Publishing`, marcHeaders));
+001 89187647889
+020   $a1234567890
+100   $aSchmoe, Joe
+245   $aMy Book$ba Book of Bookiness
+250   $a2nd edition
+260   $aDjibouti, Djibouti$bSchmoe Publishing`, marcHeaders));
       it('gives a 422 when missing "author"',
         util.testStatus(path, Item, 422, {}, [], 'post',
 `05463nam  2200075 a 4500
-020  $a1234567890
-245  $aMy Book$ba Book of Bookiness
-250  $a2nd edition
-260  $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
+001 89187647889
+020   $a1234567890
+245   $aMy Book$ba Book of Bookiness
+250   $a2nd edition
+260   $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
       it('gives a 422 when missing "title"',
         util.testStatus(path, Item, 422, {}, [], 'post',
 `05463nam  2200075 a 4500
-020  $a1234567890
-100  $aSchmoe, Joe
-245  $ba Book of Bookiness
-250  $a2nd edition
-260  $aDjibouti, Djibouti$bSchmoe Publishing$c1938`));
+001 89187647889
+020   $a1234567890
+100   $aSchmoe, Joe
+245   $ba Book of Bookiness
+250   $a2nd edition
+260   $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
       it('gives a 422 when missing "publisher"',
         util.testStatus(path, Item, 422, {}, [], 'post',
 `05463nam  2200075 a 4500
-020  $a1234567890
-100  $aSchmoe, Joe
-245  $aMy Book$ba Book of Bookiness
-250  $a2nd edition
-260  $aDjibouti, Djibouti$c1938`));
+001 89187647889
+020   $a1234567890
+100   $aSchmoe, Joe
+245   $aMy Book$ba Book of Bookiness
+250   $a2nd edition
+260   $aDjibouti, Djibouti$c1938`, marcHeaders));
     });
     
     function castToMediaType(str, defaultType = 'application') {
