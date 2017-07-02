@@ -36,6 +36,7 @@ module.exports = {
 043   $an-us---
 050 00$aSK361$b.U63a
 082 00$a639.9/2/0973$219
+100 1 $aUnited States Forest Service, Division of Wildlife Management
 210 0 $aAnnu. wildl. fish. rep.
 222  0$aAnnual wildlife and fisheries report
 245 00$aAnnual wildlife and fisheries report$cUnited States Department of Agriculture, Forest Service, Wildlife and Fisheries
@@ -79,6 +80,7 @@ module.exports = {
 043   $an-us---
 100 1 $a  \f\f\t\t      $q             \t     $d1945-
 245 10$a\t\t       \f\v\v    $c  \t   \v\v  \f \t \r \r   ` + `
+260   $b \v
 300   $ap. 24-34, 36-37, 40-41$bill.$c29 cm
 500   $a  \r\r   ` + `
 773 0 $7nnas$t\f$gv. 4, no. 4 (July-Aug. 1977)$w(OCoLC)2253666`

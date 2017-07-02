@@ -177,11 +177,13 @@ module.exports = (router, baseUri) => {
               && !(name === 'pubPlace' && subf === '[S.1.]')) {
             if (numeric) {
               // This mess is to try to extract numbers from crap like 'c1991x'
+              let num;
               for (let i = 0; i < subf.length; i++) {
-                subf = parseInt(subf.slice(i), 10);
-                if (!isNaN(subf)) break;
+                num = parseInt(subf.slice(i), 10);
+                if (!isNaN(num)) break;
               }
-              if (isNaN(subf)) continue;
+              if (isNaN(num)) continue;
+              subf = num;
             }
             item[name] = subf;
           }
@@ -204,10 +206,7 @@ module.exports = (router, baseUri) => {
       }
       
       barcode *= 2662816691; // magic numbers are always a good idea, right?
-      barcode += Math.floor(Math.abs(Math.random()) * 1000000);
       barcode %= 10000000000; // hopefully 10 digits is what we want?
-      barcode = barcode.toString();
-      barcode = '0'.repeat(10 - barcode.length) + barcode; // pad to 10 digits
       
       item.barcode = barcode;
       

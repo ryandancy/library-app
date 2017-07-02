@@ -171,14 +171,15 @@ module.exports = {
         }]
       }
     },
-    barcode: 45871389531,
+    barcode: 945225961,
     status: 'in',
-    title: 'Fifty Years of Television',
-    author: 'Vincent Terrace',
+    title: 'Fifty years of television',
+    subtitle: 'a guide to series and pilots, 1937-1988',
+    author: 'Terrace, Vincent',
     publisher: 'Cornwall Books',
     pubPlace: 'New York',
     pubYear: 1991,
-    isbn: 845348205
+    isbn: 845348116
   },
   simple2: {
     marc: {
@@ -278,6 +279,15 @@ module.exports = {
           }, {
             tag: '2',
             value: '19'
+          }]
+        }, {
+          tag: 100,
+          ind1: '1',
+          ind2: ' ',
+          subfields: [{
+            tag: 'a',
+            value: 'United States Forest Service, '
+                 + 'Division of Wildlife Management'
           }]
         }, {
           tag: 210,
@@ -478,11 +488,11 @@ module.exports = {
         }]
       }
     },
-    barcode: 8913876178,
+    barcode: 219814630,
     status: 'out',
     title: 'Annual Fisheries and Wildlife Report',
     subtitle: 'Wildlife and Fish Management in the Forest Service',
-    author: 'Forest Service Staff',
+    author: 'United States Forest Service, Division of Wildlife Management',
     publisher: 'United States Department of Agriculture, Forest Service, '
              + 'Wildlife and Fisheries',
     pubYear: 1983
@@ -634,11 +644,15 @@ module.exports = {
         }]
       }
     },
-    barcode: 983763193413,
-    status: 'missing',
+    barcode: 8406072106,
+    status: 'in',
     title: 'Bøøk♫énds| ëxtènðË♫ð',
+    subtitle: 'thê réfëreñ¢e "m"áñägèmëñt♫ sÿßtëm',
+    edition: 'V2.08',
     author: 'Àßhw♫éłł, ^J"øñät*h♫an Ð.',
-    publisher: '§ëƪñs╫ß⟅è Söf𝔱wàré⟅⟅⟅Ïñ©. ♫'
+    publisher: '§éñßîblë Sõftwärè♫',
+    pubPlace: 'Birmïñghàm, Mìçh.',
+    pubYear: 1985
   },
   whitespace: {
     marc: {
@@ -702,6 +716,14 @@ module.exports = {
             value: '  \t   \v\v  \f \t \r \r   '
           }]
         }, {
+          tag: 260,
+          ind1: ' ',
+          ind2: ' ',
+          subfields: [{
+            tag: 'b',
+            value: ' \v'
+          }]
+        }, {
           tag: 300,
           ind1: ' ',
           ind2: ' ',
@@ -743,15 +765,10 @@ module.exports = {
         }]
       }
     },
-    barcode: 876545678,
+    barcode: 3798434795,
     status: 'in',
-    title: '  \f\f\t \t\t  \v',
-    subtitle: '\v\v\v\v\v\t            \n\n',
-    author: '\n',
-    edition: '                     \t\n\n\n\n',
-    publisher: '\n\n',
-    pubPlace: '\t\t       \r\r\n\t     ',
-    pubYear: 1,
-    isbn: 2222222222
+    title: '\t\t       \f\v\v    ',
+    author: '  \f\f\t\t      ',
+    publisher: ' \v'
   }
 };
