@@ -136,6 +136,70 @@ template({
       'content-type': 'application/marc'
     };
     
+    it('generates record length to replace ????? in the leader', done => {
+      let item = {
+        marc: {
+          leader: '?????nam  2200024   4500',
+          fields: {
+            control: [],
+            variable: [{
+              tag: 100,
+              ind1: '1',
+              ind2: ' ',
+              subfields: [{
+                tag: 'a',
+                value: 'Split, Banana'
+              }]
+            }, {
+              tag: 245,
+              ind1: ' ',
+              ind2: ' ',
+              subfields: [{
+                tag: 'a',
+                value: "Please Don't Eat Banana Splits"
+              }]
+            }, {
+              tag: 260,
+              ind1: ' ',
+              ind2: ' ',
+              subfields: [{
+                tag: 'b',
+                value: 'Banana Split Publishing Co.'
+              }]
+            }]
+          }
+        },
+        barcode: 981723498,
+        status: 'out',
+        title: "Please Don't Eat Banana Splits",
+        author: 'Split, Banana',
+        publisher: 'Banana Split Publishing Co.',
+        itemType: 'language material'
+      };
+      
+      let marc = `?????nam  2200024   4500
+100 1 $aSplit, Banana
+245   $aPlease Don't Eat Banana Splits
+260   $bBanana Split Publishing Co.`;
+      
+      chai.request(server)
+      .post('/v0/items')
+      .send(item)
+      .end((err, res) => {
+        res.should.have.status(201);
+        
+        let location = res.header.location;
+        let id = location.slice(location.lastIndexOf('/') + 1);
+        
+        Item.findById(id, (err, dbItem) => {
+          should.not.exist(err);
+          let dbLength = parseInt(dbItem.marc.leader.slice(0, 5), 10);
+          dbLength.should.equal(marc.length);
+          done();
+        });
+      });
+    });
+    
     function testItemPostWithMarc(item, marc, db = []) {
       return util.testPost('/v0/items', item, Item, {}, db, marcHeaders, marc);
     }

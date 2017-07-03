@@ -120,7 +120,25 @@ module.exports = (router, baseUri) => {
   addCollection(Item, 'items', {
     // Parse MARC and convert to item format
     create: (req, res, marc, next) => {
-      if (req.get('Content-Type') !== 'application/marc') return next();
+      if (req.get('Content-Type') === 'application/json') {
+        try {
+          let item = marc; // a more appropriate name
+          
+          // generate leader length field if signaled by '?' in leader[4]
+          if (item.marc.leader[4] === '?') {
+            let marcRaw = marcConvert.jsonToMarc(item.marc);
+            let len = marcRaw.length.toString();
+            len = '0'.repeat(5 - len.length) + len;
+            item.marc.leader = len + item.marc.leader.slice(5);
+          }
+          
+          return next(item);
+        } catch (e) {
+          return next(); // let add-collection.js send the 422
+        }
+      } else if (req.get('Content-Type') !== 'application/marc') {
+        return next();
+      }
       
       let jsonMarc;
       try {
