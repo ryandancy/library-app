@@ -244,6 +244,15 @@ template({
 245   $aMy Book$ba Book of Bookiness
 250   $a2nd edition
 260   $aDjibouti, Djibouti$bSchmoe Publishing`, marcHeaders));
+      it('works fine with non-"language material" itemType',
+        util.testStatus(path, Item, 201, {}, [], 'post',
+`05463nom  2200075 a 4500
+001 89187647889
+020   $a1234567890
+100   $aSchmoe, Joe
+245   $aMy Book$ba Book of Bookiness
+250   $a2nd edition
+260   $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
       it('gives a 422 when missing "author"',
         util.testStatus(path, Item, 422, {}, [], 'post',
 `05463nam  2200075 a 4500
@@ -270,6 +279,15 @@ template({
 245   $aMy Book$ba Book of Bookiness
 250   $a2nd edition
 260   $aDjibouti, Djibouti$c1938`, marcHeaders));
+      it('gives a 422 with a nonstandard itemType',
+        util.testStatus(path, Item, 422, {}, [], 'post',
+`05463nqm  2200075 a 4500
+001 89187647889
+020   $a1234567890
+100   $aSchmoe, Joe
+245   $aMy Book$ba Book of Bookiness
+250   $a2nd edition
+260   $aDjibouti, Djibouti$bSchmoe Publishing$c1938`, marcHeaders));
     });
     
     function castToMediaType(str, defaultType = 'application') {
