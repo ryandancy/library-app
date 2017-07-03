@@ -409,6 +409,13 @@ template({
         testMarcPut('marc', testItems.whitespace, testMarc.unicode,
           testItems.unicode.marc));
       
+      it('gives a 204 when missing "fields.control" (only in JSON)',
+        util.testStatus(marcPath, Item, 204, {}, [testItems.simple1],
+          'put', {leader: '123456789012345678901234', fields: {variable: []}}));
+      it('gives a 204 when missing "fields.variable" (only in JSON)',
+        util.testStatus(marcPath, Item, 204, {}, [testItems.simple1],
+          'put', {leader: '123456789012345678901234', fields: {control: []}}));
+      
       it('gives a 400 on invalid JSON',
         util.testStatus(marcPath, Item, 400, {}, [testItems.simple1],
           'put', 'inv??al\'id^7'));
@@ -439,12 +446,6 @@ template({
       it('gives a 422 when missing "fields" (only in JSON)',
         util.testStatus(marcPath, Item, 422, {}, [testItems.simple1],
           'put', {leader: '123456789012345678901234'}));
-      it('gives a 422 when missing "fields.control" (only in JSON)',
-        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1],
-          'put', {leader: '123456789012345678901234', fields: {variable: []}}));
-      it('gives a 422 when missing "fields.variable" (only in JSON)',
-        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1],
-          'put', {leader: '123456789012345678901234', fields: {control: []}}));
       it('gives a 422 when missing "tag" on a variable field',
         util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'put', {
           leader: '123456789012345678901234',
@@ -829,17 +830,12 @@ template({
       it('gives a 422 when trying to delete "fields"',
         util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'patch',
           {fields: null}));
-      it('gives a 422 when trying to delete "fields.control"',
-        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'patch',
-          {fields: {control: null}}));
-      it('gives a 422 when trying to delete "fields.variable"',
-        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'patch',
-          {fields: {variable: null}}));
-      it('gives a 422 when trying to set "fields.control" to empty',
-        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'patch',
+      
+      it('gives a 200 when trying to set "fields.control" to empty',
+        util.testStatus(marcPath, Item, 200, {}, [testItems.simple1], 'patch',
           {fields: {control: []}}));
-      it('gives a 422 when trying to set "fields.variable" to empty',
-        util.testStatus(marcPath, Item, 422, {}, [testItems.simple1], 'patch',
+      it('gives a 200 when trying to set "fields.variable" to empty',
+        util.testStatus(marcPath, Item, 200, {}, [testItems.simple1], 'patch',
           {fields: {variable: []}}));
       
       util.testIDHandling(marcPath, 'MARC record', Item, {}, 'patch',

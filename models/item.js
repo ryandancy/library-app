@@ -27,7 +27,7 @@ let marcControlField = {
 let marcSubfield = {
   _id: false,
   tag: Character,
-  value: String
+  value: reqt.String
 };
 
 // Variable fields
@@ -45,14 +45,8 @@ let marcVariableField = {
 };
 
 let fieldsSchema = new Schema({
-  control: {
-    type: [marcControlField],
-    required: true
-  },
-  variable: {
-    type: [marcVariableField],
-    required: true
-  }
+  control: [marcControlField],
+  variable: [marcVariableField]
 }, {_id: false});
 
 let marcSchema = new Schema({
