@@ -120,7 +120,7 @@ module.exports = (router, baseUri) => {
   addCollection(Item, 'items', {
     // Parse MARC and convert to item format
     create: (req, res, marc, next) => {
-      if (req.get('Content-Type') === 'application/json') {
+      if (/application\/json;?/.test(req.get('Content-Type'))) {
         try {
           let item = marc; // a more appropriate name
           
@@ -136,7 +136,7 @@ module.exports = (router, baseUri) => {
         } catch (e) {
           return next(); // let add-collection.js send the 422
         }
-      } else if (req.get('Content-Type') !== 'application/marc') {
+      } else if (!/application\/marc;?/.test(req.get('Content-Type'))) {
         return next();
       }
       

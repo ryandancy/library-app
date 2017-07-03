@@ -88,9 +88,27 @@ angular.module('libraryApp')
     
     this.item.status = 'in';
     
-    // FIXME FIXME FIXME FIXME FIXME FIXME Generate a leader!!!!!!!!!!!
-    // FIXME FIXME FIXME FIXME This one is just for testing, FIX IT!!!!
-    this.item.marc.leader = '123456789012345678901234';
+    let itemTypeMap = {
+      'language material': 'a',
+      'notated music': 'c',
+      'manuscript notated music': 'd',
+      'cartographic material': 'e',
+      'manuscript cartographic material': 'f',
+      'projected medium': 'g',
+      'nonmusical sound recording': 'i',
+      'musical sound recording': 'j',
+      'two-dimensional nonprojectable graphic': 'k',
+      'computer file': 'm',
+      'kit': 'o',
+      'mixed materials': 'p',
+      'three-dimensional artifact or naturally occuring object': 'r',
+      'manuscript language material': 't'
+    };
+    
+    let typeChar = itemTypeMap[this.item.itemType];
+    
+    // ????? will be replaced by length server-side
+    this.item.marc.leader = `?????n${typeChar}m  2200024   4500`;
     
     $http.post('/v0/items', this.item)
     .then(this.abort, () => {});
