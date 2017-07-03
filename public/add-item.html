@@ -1,0 +1,112 @@
+<form>
+  Item input type:
+  <ul>
+    <li><input type="radio" ng-model="inputType" value="form" name="input-method">
+      Form input
+    </input></li>
+    <li><input type="radio" ng-model="inputType" value="marc" name="input-method">
+      Raw MARC input
+    </input></li>
+  </ul>
+</form>
+
+<form ng-show="inputType === 'form'">
+  <!-- For some reason Angular will only remove models when empty if the input is required,
+       that's why addItemCtrl.checkRemove() is necessary -->
+  <label for="author">Author:</label>
+  <input type="text" id="author" ng-model="addItemCtrl.item.author" required>
+  
+  <label for="title">Title:</label>
+  <input type="text" id="title" ng-model="addItemCtrl.item.title" required>
+  
+  <label for="subtitle">Subtitle:</label>
+  <input type="text" id="subtitle" ng-model="addItemCtrl.item.subtitle"
+    ng-change="addItemCtrl.checkRemove('subtitle')">
+  
+  <label for="edition">Edition:</label>
+  <input type="text" id="edition" ng-model="addItemCtrl.item.edition"
+    ng-change="addItemCtrl.checkRemove('edition')">
+  
+  <label for="publisher">Publisher:</label>
+  <input type="text" id="publisher" ng-model="addItemCtrl.item.publisher" required>
+  
+  <label for="pubPlace">Place of publishing:</label>
+  <input type="text" id="pubPlace" ng-model="addItemCtrl.item.pubPlace"
+    ng-change="addItemCtrl.checkRemove('pubPlace')">
+  
+  <label for="pubYear">Year of publishing:</label>
+  <input type="number" id="pubYear" ng-model="addItemCtrl.item.pubYear"
+    ng-change="addItemCtrl.checkRemove('pubYear')">
+  
+  <label for="isbn">ISBN:</label>
+  <input type="number" id="isbn" ng-model="addItemCtrl.item.isbn"
+    ng-change="addItemCtrl.checkRemove('isbn')">
+  
+  <label for="barcode">Barcode:</label>
+  <input type="number" id="barcode" ng-model="addItemCtrl.item.barcode" required>
+  
+  <div id="marc-form">
+    MARC:
+    <!-- TODO: instead of having warnings and then overwriting MARC fields with the values entered
+         above, make unmodifiable MARC fields automagically and link them to the above.
+         (In other words: be smarter!) -->
+    <div class="control-fields">
+      <div class="control-field" ng-repeat="field in addItemCtrl.item.marc.fields.control">
+        <input type="number" ng-model="field.tag">: <input type="text" ng-model="field.value">
+        <input type="button" value="Delete"
+          ng-click="addItemCtrl.item.marc.fields.control.splice($index, 1)">
+      </div>
+      
+      <input type="button" value="New Control Field"
+        ng-click="addItemCtrl.item.marc.fields.control.push({tag: '', value: ''})">
+    </div>
+    <div class="variable-fields">
+      <div class="variable-field" ng-repeat="field in addItemCtrl.item.marc.fields.variable">
+        <label for="tag">Tag:</label>
+        <input type="number" id="tag" ng-model="field.tag">
+        
+        <!-- warnings! -->
+        <span class="warning" ng-show="+field.tag === data[0]"
+              ng-repeat="data in addItemCtrl.marcOverwrite">
+          Warning: subfield ${{ data[1] }} will be overwritten by the '{{ data[2] }}' field
+          above{{ data[4] ? '.' : ', if it is not empty.' }}
+        </span>
+        
+        <label for="ind1">Indicator 1:</label>
+        <input type="text" id="ind1" ng-model="field.ind1" ng-maxlength="1">
+        
+        <label for="ind2">Indicator 2:</label>
+        <input type="text" id="ind2" ng-model="field.ind2" ng-maxlength="1">
+        
+        <div class="subfields" ng-repeat="subfield in field.subfields">
+          $<input type="text" ng-model="subfield.tag" ng-maxlength="1">:
+          <input type="text" ng-model="subfield.value">
+          
+          <input type="button" value="Delete" ng-click="field.subfields.splice($index, 1)">
+        </div>
+        
+        <input type="button" value="New Subfield"
+          ng-click="field.subfields.push({tag: '', value: ''})">
+        
+        <input type="button" value="Delete"
+          ng-click="addItemCtrl.item.marc.fields.variable.splice($index, 1)">
+      </div>
+      
+      <input type="button" value="New Variable Field"
+        ng-click="addItemCtrl.item.marc.fields.variable.push(
+          {tag: '', ind1: '', ind2: '', subfields: []})">
+    </div>
+  </div>
+  
+  <input type="button" value="Clear" ng-click="addItemCtrl.item = {}">
+  <input type="button" value="Save" ng-click="addItemCtrl.saveForm()">
+</form>
+
+<form ng-show="inputType === 'marc'">
+  <label for="marc-input">Enter MARC record:</label>
+  <textarea id="marc-input" ng-model="marc"></textarea>
+  <input type="button" value="Clear" ng-click="marc = ''">
+  <input type="button" value="Save" ng-click="addItemCtrl.saveMarc(marc)">
+</form>
+
+<input type="button" value="Back" ng-click="addItemCtrl.abort()">

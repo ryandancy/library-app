@@ -18,5 +18,9 @@ angular.module('libraryApp', ['ngRoute'])
   .when('/items', {
     templateUrl: 'item.html',
     controller: 'ItemCtrl as itemCtrl'
+  })
+  .when('/items/add', {
+    templateUrl: 'add-item.html',
+    controller: 'AddItemCtrl as addItemCtrl'
   });
 });
