@@ -142,6 +142,7 @@ module.exports = (router, baseUri) => {
       
       /*
         Necessary information is found in the following MARC fields:
+        - leader[6]: itemType (mapping)
         - 020$a: ISBN
         - 100$a: author
         - 245$a: title
@@ -196,6 +197,29 @@ module.exports = (router, baseUri) => {
           }
         }
       }
+      
+      // Get the itemType from the leader
+      
+      let itemTypeMap = {
+        'a': 'language material',
+        'c': 'notated music',
+        'd': 'manuscript notated music',
+        'e': 'cartographic material',
+        'f': 'manuscript cartographic material',
+        'g': 'projected medium',
+        'i': 'nonmusical sound recording',
+        'j': 'musical sound recording',
+        'k': 'two-dimensional nonprojectable graphic',
+        'm': 'computer file',
+        'o': 'kit',
+        'p': 'mixed materials',
+        'r': 'three-dimensional artifact or naturally occuring object',
+        't': 'manuscript language material'
+      };
+      
+      // I'm sure it's fine if itemType === undefined if leader[6] is something
+      // weird and non-standard, right?
+      item.itemType = itemTypeMap[jsonMarc.leader[6]];
       
       // Generate a barcode -- REVIEW should we even be generating barcodes???
       // HACK this is possibly the worst hashing algorithm ever devised

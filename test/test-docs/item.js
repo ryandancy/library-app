@@ -179,7 +179,8 @@ module.exports = {
     publisher: 'Cornwall Books',
     pubPlace: 'New York',
     pubYear: 1991,
-    isbn: 845348116
+    isbn: 845348116,
+    itemType: 'language material'
   },
   simple2: {
     marc: {
@@ -495,7 +496,8 @@ module.exports = {
     author: 'United States Forest Service, Division of Wildlife Management',
     publisher: 'United States Department of Agriculture, Forest Service, '
              + 'Wildlife and Fisheries',
-    pubYear: 1983
+    pubYear: 1983,
+    itemType: 'language material'
   },
   unicode: { // ZALGO, HE COMES
     marc: {
@@ -652,7 +654,8 @@ module.exports = {
     author: 'Àßhw♫éłł, ^J"øñät*h♫an Ð.',
     publisher: '§éñßîblë Sõftwärè♫',
     pubPlace: 'Birmïñghàm, Mìçh.',
-    pubYear: 1985
+    pubYear: 1985,
+    itemType: 'computer file'
   },
   whitespace: {
     marc: {
@@ -769,6 +772,7 @@ module.exports = {
     status: 'in',
     title: '\t\t       \f\v\v    ',
     author: '  \f\f\t\t      ',
-    publisher: ' \v'
+    publisher: ' \v',
+    itemType: 'language material'
   }
 };

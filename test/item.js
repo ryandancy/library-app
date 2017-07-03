@@ -44,7 +44,8 @@ let generateDocs = num => ({
   status: 'in',
   title: `Generated Item #${num}`,
   author: 'Schmoe, Joe',
-  publisher: 'Generator, Inc'
+  publisher: 'Generator, Inc',
+  itemType: 'language material'
 });
 
 template({

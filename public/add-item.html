@@ -45,6 +45,28 @@
   <label for="barcode">Barcode:</label>
   <input type="number" id="barcode" ng-model="addItemCtrl.item.barcode" required>
   
+  <label for="itemType">Item type:</label>
+  <select id="itemType" ng-model="addItemCtrl.item.itemType" required>
+    <option ng-repeat="itemType in [
+      'language material',
+      'notated music',
+      'manuscript notated music',
+      'cartographic material',
+      'manuscript cartographic material',
+      'projected medium',
+      'nonmusical sound recording',
+      'musical sound recording',
+      'two-dimensional nonprojectable graphic',
+      'computer file',
+      'kit',
+      'mixed materials',
+      'three-dimensional artifact or naturally occuring object',
+      'manuscript language material'
+    ]" value="{{ itemType }}">{{ itemType }}</option>
+  </select>
+  
+  <pre>{{ addItemCtrl.item }}</pre>
+  
   <div id="marc-form">
     MARC:
     <!-- TODO: instead of having warnings and then overwriting MARC fields with the values entered
@@ -98,7 +120,8 @@
     </div>
   </div>
   
-  <input type="button" value="Clear" ng-click="addItemCtrl.item = {}">
+  <input type="button" value="Clear" ng-click="addItemCtrl.item =
+    {marc: {fields: {control: [], variable: []}}}">
   <input type="button" value="Save" ng-click="addItemCtrl.saveForm()">
 </form>
 

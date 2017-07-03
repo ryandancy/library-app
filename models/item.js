@@ -87,6 +87,27 @@ let itemSchema = new Schema({
   pubPlace: String,
   pubYear: Number,
   isbn: Number,
+  itemType: {
+    type: String,
+    // types as defined by character position 06 in MARC leader
+    enum: [
+      'language material',
+      'notated music',
+      'manuscript notated music',
+      'cartographic material',
+      'manuscript cartographic material',
+      'projected medium',
+      'nonmusical sound recording',
+      'musical sound recording',
+      'two-dimensional nonprojectable graphic',
+      'computer file',
+      'kit',
+      'mixed materials',
+      'three-dimensional artifact or naturally occuring object',
+      'manuscript language material'
+    ],
+    required: true
+  },
   checkoutID: ObjectId
 });
 
