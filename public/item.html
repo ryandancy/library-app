@@ -34,9 +34,10 @@
 <ul ng-if="itemCtrl.items">
   <li ng-repeat="item in itemCtrl.items">
     <!-- TODO book cover images -->
-    <!-- TODO /items/:id -->
-    <span class="item-title">{{ item.title }}</span> by
-    <span class="item-author">{{ item.author }}</span>
+    <a href="#!/items/{{ item.id }}">
+      <span class="item-title">{{ item.title }}</span> by
+      <span class="item-author">{{ item.author }}</span>
+    </a>
   </li>
 </ul>
 

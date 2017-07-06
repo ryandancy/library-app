@@ -22,5 +22,9 @@ angular.module('libraryApp', ['ngRoute'])
   .when('/items/add', {
     templateUrl: 'add-item.html',
     controller: 'AddItemCtrl as addItemCtrl'
+  })
+  .when('/items/:id', {
+    templateUrl: 'show-item.html',
+    controller: 'ShowItemCtrl as showItemCtrl'
   });
 });

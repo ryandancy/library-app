@@ -1,0 +1,38 @@
+<!-- TODO item covers/images/whatever -->
+
+<div class="item-title">
+  {{ showItemCtrl.item.title }} by {{ showItemCtrl.item.author }}
+</div>
+
+<div class="properties" ng-show="!showItemCtrl.editing">
+  <div class="property">
+    Title: {{ showItemCtrl.item.title }}
+  </div>
+  <div class="property" ng-show="showItemCtrl.item.subtitle !== undefined">
+    Subtitle: {{ showItemCtrl.item.subtitle }}
+  </div>
+  <div class="property">
+    Author: {{ showItemCtrl.item.author }}
+  </div>
+  <div class="property" ng-show="showItemCtrl.item.edition !== undefined">
+    Edition: {{ showItemCtrl.item.edition }}
+  </div>
+  <div class="property">
+    Publisher: {{ showItemCtrl.item.publisher }}
+  </div>
+  <div class="property" ng-show="showItemCtrl.item.pubPlace !== undefined">
+    Place of publishing: {{ showItemCtrl.item.pubPlace }}
+  </div>
+  <div class="property" ng-show="showItemCtrl.item.pubYear !== undefined">
+    Year of publishing: {{ showItemCtrl.item.pubYear }}
+  </div>
+  <div class="property" ng-show="showItemCtrl.item.isbn !== undefined">
+    ISBN: {{ showItemCtrl.item.isbn }}
+  </div>
+  <div class="property">
+    Item type: {{ showItemCtrl.item.itemType }}
+  </div>
+  <div class="property">
+    Barcode: {{ showItemCtrl.item.barcode}}
+  </div>
+</div>
