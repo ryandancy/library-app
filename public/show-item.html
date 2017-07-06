@@ -1,4 +1,5 @@
 <!-- TODO item covers/images/whatever -->
+<!-- TODO should *probably* use more semantic containers and whatnot -->
 
 <div class="item-title">
   {{ showItemCtrl.item.title }} by {{ showItemCtrl.item.author }}
@@ -35,4 +36,44 @@
   <div class="property">
     Barcode: {{ showItemCtrl.item.barcode}}
   </div>
+  
+  <div class="marc-properties">
+    MARC:
+    <div class="property marc-leader">
+      Leader: {{ showItemCtrl.item.marc.leader }}
+    </div>
+    <div class="control-fields">
+      Control fields:
+      <div class="control-field" ng-repeat="field in showItemCtrl.item.marc.fields.control">
+        {{ field.tag }}: {{ field.value }}
+      </div>
+    </div>
+    <div class="variable-fields">
+      Variable fields:
+      <div class="variable-field" ng-repeat="field in showItemCtrl.item.marc.fields.variable">
+        <div class="property">
+          Tag: {{ field.tag }}
+        </div>
+        <div class="property">
+          Indicator 1: {{ field.ind1 }}
+        </div>
+        <div class="property">
+          Indicator 2: {{ field.ind2 }}
+        </div>
+        <div class="subfields">
+          Subfields:
+          <div class="subfield property" ng-repeat="subfield in field.subfields">
+            ${{ subfield.tag }}: {{ subfield.value }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <input type="button" value="Show Raw MARC" ng-show="!showItemCtrl.showingMarc"
+    ng-click="showItemCtrl.showMarc()">
+  <input type="button" value="Hide Raw MARC" ng-show="showItemCtrl.showingMarc"
+    ng-click="showItemCtrl.hideMarc()">
+  
+  <pre class="marc-raw" ng-show="showItemCtrl.showingMarc">{{ showItemCtrl.rawMarc }}</pre>
 </div>
