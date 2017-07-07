@@ -13,6 +13,10 @@ angular.module('libraryApp')
     this.item = res.data;
   }, () => {});
   
+  this.back = () => {
+    $location.path('/items');
+  };
+  
   // Handle showing/fetching raw MARC
   
   this.showingMarc = false;
@@ -31,4 +35,11 @@ angular.module('libraryApp')
   };
   
   this.hideMarc = () => this.showingMarc = false;
+  
+  // Handle deleting this item
+  
+  this.delItem = () => {
+    $http.delete(`/v0/items/${id}`)
+    .then(this.back, () => {});
+  };
 });
