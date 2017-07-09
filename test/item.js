@@ -72,6 +72,7 @@ template({
     'checkoutID', 'subtitle', 'edition', 'pubPlace', 'pubYear', 'isbn'
   ],
   ignoredProperties: ['marc.fields.control.*', 'marc.fields.variable.*'],
+  customUnmodifiables: ['checkoutID'],
   generator: generateDocs,
   additionalTests: () => {
     for (let collection = 0; collection < 2; collection++) {
