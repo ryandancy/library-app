@@ -78,5 +78,69 @@
   <pre class="marc-raw" ng-show="showItemCtrl.showingMarc">{{ showItemCtrl.rawMarc }}</pre>
   
   <input type="button" value="Close" ng-click="showItemCtrl.back()">
+  <input type="button" value="Edit" ng-click="showItemCtrl.startEdit()">
   <input type="button" value="Delete" ng-click="showItemCtrl.delItem()">
+</div>
+
+<div class="properties" ng-show="showItemCtrl.editing">
+  <div class="field">
+    <label for="edit-item-title">Title:</label>
+    <input type="text" id="edit-item-title" ng-model="showItemCtrl.editItem.title">
+  </div>
+  <div class="field">
+    <label for="edit-item-subtitle">Subtitle:</label>
+    <input type="text" id="edit-item-subtitle" ng-model="showItemCtrl.editItem.subtitle">
+  </div>
+  <div class="field">
+    <label for="edit-item-author">Author:</label>
+    <input type="text" id="edit-item-author" ng-model="showItemCtrl.editItem.author">
+  </div>
+  <div class="field">
+    <label for="edit-item-edition">Edition:</label>
+    <input type="text" id="edit-item-edition" ng-model="showItemCtrl.editItem.edition">
+  </div>
+  <div class="field">
+    <label for="edit-item-publisher">Publisher:</label>
+    <input type="text" id="edit-item-publisher" ng-model="showItemCtrl.editItem.publisher">
+  </div>
+  <div class="field">
+    <label for="edit-item-pub-place">Place of publishing:</label>
+    <input type="text" id="edit-item-pub-place" ng-model="showItemCtrl.editItem.pubPlace">
+  </div>
+  <div class="field">
+    <label for="edit-item-pub-year">Year of publishing:</label>
+    <input type="number" id="edit-item-pub-year" ng-model="showItemCtrl.editItem.pubYear">
+  </div>
+  <div class="field">
+    <label for="edit-item-isbn">ISBN:</label>
+    <input type="number" id="edit-item-isbn" ng-model="showItemCtrl.editItem.isbn">
+  </div>
+  <div class="field">
+    <label for="edit-item-type">Item type:</label>
+    <select id="edit-item-type" ng-model="showItemCtrl.editItem.itemType">
+      <option ng-repeat="itemType in [
+        'language material',
+        'notated music',
+        'manuscript notated music',
+        'cartographic material',
+        'manuscript cartographic material',
+        'projected medium',
+        'nonmusical sound recording',
+        'musical sound recording',
+        'two-dimensional nonprojectable graphic',
+        'computer file',
+        'kit',
+        'mixed materials',
+        'three-dimensional artifact or naturally occuring object',
+        'manuscript language material'
+      ]" value="{{ itemType }}">{{ itemType }}</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="edit-item-barcode">Barcode:</label>
+    <input type="number" id="edit-item-barcode" ng-model="showItemCtrl.editItem.barcode">
+  </div>
+  
+  <input type="button" value="Save" ng-click="showItemCtrl.saveEdit()">
+  <input type="button" value="Cancel" ng-click="showItemCtrl.abortEdit()">
 </div>

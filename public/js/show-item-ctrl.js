@@ -1,10 +1,12 @@
 /* global angular */
+// TODO this has many, many similarities to show-patron-ctrl.js -- merge?
+// TODO more error handling
 
 angular.module('libraryApp')
 .controller('ShowItemCtrl', function($scope, $http, $location, $routeParams) {
   // Handle showing this item
   
-  this.editing = false;
+  let ITEM_UNMODIFIABLES = ['created', 'updated', 'id', 'checkoutID'];
   
   let id = $routeParams.id;
   this.item = {};
@@ -14,7 +16,32 @@ angular.module('libraryApp')
   }, () => {});
   
   this.back = () => {
+    this.abortEdit();
     $location.path('/items');
+  };
+  
+  // Handle editing this item
+  // TODO: editing MARC, overwrites (use overwrite func in add-item-ctrl.js)
+  
+  this.editItem = {};
+  this.editing = false;
+  
+  this.startEdit = () => {
+    this.editing = true;
+    this.editItem = angular.copy(this.item);
+    for (let unmod of ITEM_UNMODIFIABLES) {
+      delete this.editItem[unmod];
+    }
+  };
+  
+  this.abortEdit = () => {
+    this.editing = false;
+    this.editItem = {};
+  };
+  
+  this.saveEdit = () => {
+    $http.put(`/v0/items/${id}`, this.editItem)
+    .then(this.abortEdit, () => {});
   };
   
   // Handle showing/fetching raw MARC
