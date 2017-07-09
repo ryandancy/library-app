@@ -1,5 +1,6 @@
 <!-- TODO item covers/images/whatever -->
 <!-- TODO should *probably* use more semantic containers and whatnot -->
+<!-- TODO the editing stuff is basically a copy of add-item.html - merge/use template? -->
 
 <div class="item-title">
   {{ showItemCtrl.item.title }} by {{ showItemCtrl.item.author }}
@@ -139,6 +140,48 @@
   <div class="field">
     <label for="edit-item-barcode">Barcode:</label>
     <input type="number" id="edit-item-barcode" ng-model="showItemCtrl.editItem.barcode">
+  </div>
+  
+  <div class="marc-edit">
+    MARC:
+    <div class="control-fields">
+      Control fields:
+      <div class="field" ng-repeat="field in showItemCtrl.editItem.marc.fields.control">
+        <input type="number" ng-model="field.tag">: <input type="text" ng-model="field.value">
+        <input type="button" value="Delete"
+          ng-click="showItemCtrl.editItem.marc.fields.control.splice($index, 1)">
+      </div>
+      <input type="button" value="New Control Field"
+        ng-click="showItemCtrl.editItem.marc.fields.control.push({tag: '', value: ''})">
+    </div>
+    <div class="variable-fields">
+      Variable fields:
+      <div class="field" ng-repeat="field in showItemCtrl.editItem.marc.fields.variable">
+        <label for="tag">Tag:</label>
+        <input type="number" id="tag" ng-model="field.tag">
+        
+        <label for="ind1">Indicator 1:</label>
+        <input type="text" id="ind1" ng-model="field.ind1" maxlength="1">
+        
+        <label for="ind2">Indicator 2:</label>
+        <input type="text" id="ind2" ng-model="field.ind2" maxlength="1">
+        
+        <div class="subfield" ng-repeat="subfield in field.subfields">
+          $<input type="text" ng-model="subfield.tag" maxlength="1">:
+          <input type="text" ng-model="subfield.value">
+          
+          <input type="button" value="Delete" ng-click="field.subfields.splice($index, 1)">
+        </div>
+        
+        <input type="button" value="New Subfield"
+          ng-click="field.subfields.push({tag: '', value: ''})">
+        <input type="button" value="Delete"
+          ng-click="showItemCtrl.editItem.marc.fields.variable.splice($index, 1)">
+      </div>
+      <input type="button" value="New Variable Field"
+        ng-click="showItemCtrl.editItem.marc.fields.variable.push(
+          {tag: '', ind1: '', ind2: '', subfields: []})">
+    </div>
   </div>
   
   <input type="button" value="Save" ng-click="showItemCtrl.saveEdit()">
