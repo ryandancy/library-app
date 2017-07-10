@@ -72,7 +72,9 @@
          (In other words: be smarter!) -->
     <div class="control-fields">
       <div class="control-field" ng-repeat="field in addItemCtrl.item.marc.fields.control">
-        <input type="number" ng-model="field.tag">: <input type="text" ng-model="field.value">
+        <input type="number" ng-model="field.tag">:
+        <input type="text" ng-model="field.value" ng-trim="false">
+        
         <input type="button" value="Delete"
           ng-click="addItemCtrl.item.marc.fields.control.splice($index, 1)">
       </div>
@@ -93,14 +95,14 @@
         </span>
         
         <label for="ind1">Indicator 1:</label>
-        <input type="text" id="ind1" ng-model="field.ind1" ng-maxlength="1">
+        <input type="text" id="ind1" ng-model="field.ind1" maxlength="1" ng-trim="false">
         
         <label for="ind2">Indicator 2:</label>
-        <input type="text" id="ind2" ng-model="field.ind2" ng-maxlength="1">
+        <input type="text" id="ind2" ng-model="field.ind2" maxlength="1" ng-trim="false">
         
         <div class="subfields" ng-repeat="subfield in field.subfields">
-          $<input type="text" ng-model="subfield.tag" ng-maxlength="1">:
-          <input type="text" ng-model="subfield.value">
+          $<input type="text" ng-model="subfield.tag" maxlength="1">:
+          <input type="text" ng-model="subfield.value" ng-trim="false">
           
           <input type="button" value="Delete" ng-click="field.subfields.splice($index, 1)">
         </div>
