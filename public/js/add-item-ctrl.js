@@ -2,22 +2,12 @@
 // TODO more error handling
 
 angular.module('libraryApp')
-.controller('AddItemCtrl', function($scope, $http, $location) {
+.controller('AddItemCtrl', function($scope, $http, $location, marcOverwrite) {
   $scope.inputType = 'form'; // use form input by default
   
   this.item = {marc: {fields: {control: [], variable: []}}};
   
-  this.marcOverwrite = [
-    // tag, subfield, field-display, field-name, always overwritten?
-    [20, 'a', 'ISBN', 'isbn', false],
-    [100, 'a', 'Author', 'author', true],
-    [245, 'a', 'Title', 'title', true],
-    [245, 'b', 'Subtitle', 'subtitle', false],
-    [250, 'a', 'Edition', 'edition', false],
-    [260, 'a', 'Place of publishing', 'pubPlace', false],
-    [260, 'b', 'Publisher', 'publisher', true],
-    [260, 'c', 'Year of publishing', 'pubYear', false]
-  ];
+  this.marcOverwrite = marcOverwrite.data;
   
   this.checkRemove = prop => {
     if (!this.item[prop]) {
@@ -38,52 +28,11 @@ angular.module('libraryApp')
   this.saveForm = () => {
     // Do the overwriting stuff which if the template was smarter we wouldn't
     // even have to do.
-    // TODO what do we do about the indicator fields?
-    
-    for (let [tag, subfieldTag, , fieldName, always] of this.marcOverwrite) {
-      // find the variable field with the tag
-      // TODO should this dance + the subfield one below be combined?
-      let field = null;
-      for (let aField of this.item.marc.fields.variable) {
-        if (parseInt(aField.tag, 10) === tag) {
-          field = aField;
-          break;
-        }
-      }
-      
-      if (field === null) {
-        if (always) {
-          field = {tag: tag, ind1: ' ', ind2: ' ', subfields: []};
-          this.item.marc.fields.variable.push(field);
-        } else {
-          continue;
-        }
-      }
-      
-      // find the subfield
-      let subfield = null;
-      for (let aSubfield of field.subfields) {
-        if (aSubfield.tag === subfieldTag) {
-          subfield = aSubfield;
-          break;
-        }
-      }
-      
-      if (subfield === null) {
-        if (always) {
-          subfield = {tag: subfieldTag, value: ''};
-          field.subfields.push(subfield);
-        } else {
-          continue;
-        }
-      }
-      
-      // find the value, overwrite
-      if (fieldName in this.item) {
-        subfield.value = this.item[fieldName];
-      } else if (always) {
-        return; // validation will fail anyways, might as well fail now
-      }
+    try {
+      marcOverwrite.overwrite(this.item);
+    } catch (e) {
+      return; // validation will fail anyways, might as well fail now
+      // TODO actually show the error or something
     }
     
     this.item.status = 'in';
