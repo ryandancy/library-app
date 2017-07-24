@@ -3,8 +3,11 @@
 // TODO more error handling
 
 angular.module('libraryApp')
-.controller('ShowItemCtrl', function($scope, $http, $location, $routeParams) {
+.controller('ShowItemCtrl', function($scope, $http, $location,
+    $routeParams, marcOverwrite) {
   // Handle showing this item
+  
+  this.marcOverwrite = marcOverwrite.data;
   
   let ITEM_UNMODIFIABLES = ['created', 'updated', 'id', 'checkoutID'];
   
@@ -40,6 +43,14 @@ angular.module('libraryApp')
   };
   
   this.saveEdit = () => {
+    // MARC overwriting stuff!
+    try {
+      marcOverwrite.overwrite(this.editItem);
+    } catch (e) {
+      return; // validation will fail anyways, might as well fail now
+      // TODO actually show the error or something
+    }
+    
     $http.put(`/v0/items/${id}`, this.editItem)
     .then(this.abortEdit, () => {});
   };

@@ -162,6 +162,13 @@
         <label for="tag">Tag:</label>
         <input type="number" id="tag" ng-model="field.tag">
         
+        <!-- warnings! -->
+        <span class="warning" ng-show="+field.tag === data[0]"
+              ng-repeat="data in showItemCtrl.marcOverwrite">
+          Warning: subfield ${{ data[1] }} will be overwritten by the '{{ data[2] }}' field
+          above{{ data[4] ? '.' : ', if it is not empty.' }}
+        </span>
+        
         <label for="ind1">Indicator 1:</label>
         <input type="text" id="ind1" ng-model="field.ind1" maxlength="1" ng-trim="false">
         
