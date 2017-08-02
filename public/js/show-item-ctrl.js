@@ -24,7 +24,6 @@ angular.module('libraryApp')
   };
   
   // Handle editing this item
-  // TODO: editing MARC, overwrites (use overwrite func in add-item-ctrl.js)
   
   this.editItem = {};
   this.editing = false;
