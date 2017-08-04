@@ -9,4 +9,9 @@ angular.module('libraryApp')
   }
   
   return input;
+})
+.filter('onEnter', () => (input, $event) => {
+  if ($event.which === 13) { // 13 is keycode for Enter key
+    input();
+  }
 });
