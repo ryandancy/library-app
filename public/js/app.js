@@ -26,5 +26,9 @@ angular.module('libraryApp', ['ngRoute'])
   .when('/items/:id', {
     templateUrl: 'show-item.html',
     controller: 'ShowItemCtrl as showItemCtrl'
+  })
+  .when('/sign-out', {
+    templateUrl: 'sign-out.html',
+    controller: 'SignOutCtrl as signOutCtrl'
   });
 });
